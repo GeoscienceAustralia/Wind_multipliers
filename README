@@ -1,1 +1,17 @@
-This package is used to produce terrain and shielding multipliers.
+This package is used to produce wind terrain and shielding multipliers.
+
+Python 2.6, NumPy and SciPy are needed. ArcPy requiring ArcGIS 10 license is also needed.
+
+The script for deriving terrain and shielding multiplier is terr_shield.py that consists of two modules: terrain and shielding.
+
+Terrain module includes terrain_class2mz_orig.py and direction_filter.py. Shielding module includes dem_slope_aspect.py, terrain_class2ms_orig.py, direction_filter.py and combine.py.
+
+
+Before running terr_shield.py to produce terrain and shielding multipliers, the configuration file named terr_shield.cfg needs to be configured. There are some variables need to be pre-defined:
+
+  root: the working directory of the task.
+  loc_list: the location fo the interest.
+  cyclone_area: if the location is within the cyclone area
+  ArcToolbox: the path of the ArcGIS tool box
+  
+Then copy the input files (dem and terrain classes) into the input folder (created beforehand manually) under root, and start to run terr_shield.py. The resutls are respectively located under output folder (created automatically during the process) under root.
