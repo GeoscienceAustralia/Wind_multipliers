@@ -15,9 +15,10 @@ Before running terr\_shield.py to produce terrain and shielding
 multipliers, the configuration file named terr\_shield.cfg needs to be
 configured. There are some variables to be pre-defined:
 
-root: the working directory of the task. loc\_list: the location of the
-interest. cyclone\_area: if the location is within the cyclone area, it
-is yes, otherwise it is no. ArcToolbox: the path of the ArcGIS tool box
+<strong>root:</strong> the working directory of the task. loc\_<br/>
+<strong>list:</strong> the location of the interest.<br/>
+<strong>cyclone\_area:</strong> if the location is within the cyclone area, it is yes, otherwise it is no.<br/>
+<strong>ArcToolbox:</strong> the path of the ArcGIS tool box
 
 Then copy the input files (dem and terrain classes) into the input
 folder (created beforehand manually) under root, and start to run
@@ -38,14 +39,15 @@ the DEM and operates on that line to produce the hill shape multipliers.
 The calculated line of multipliers is then written back to the same
 array that holds the DEM data. The smoothing is done upon output. In the
 end, outputs including smoothed and unsmoothed data are written into
-ascii files. It calls the following functions: ascii\_read.py \# read
-input DEM data make\_path.py \# generate indices of a data line
-depending on the direction multiplier\_calc.py \# calculate the
-multipliers for a data line extracted from the dataset
-multiplier\_calc.py needs to call two functions:\
- Mh.py \# calculate Mh using the simpler formula modified by C.Thomas
-2009\
+ascii files. It calls the following functions:<br/> 
+
+ascii\_read.py \# read input DEM data<br/> 
+make\_path.py \# generate indices of a data line depending on the direction <br/>
+multiplier\_calc.py \# calculate the multipliers for a data line extracted from the dataset<br/>
+multiplier\_calc.py needs to call two functions:<br/>
+ Mh.py \# calculate Mh using the simpler formula modified by C.Thomas 2009<br/>
  findpeaks.py \# get the indices of the ridges in a data line Directory
+
 structure:
 
 ../py-files/: store all the Python codes including main and functions.
