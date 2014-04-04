@@ -1,0 +1,10 @@
+2014-04-01 10:48:03: Started log file topomult.log-5 (detail level INFO)
+2014-04-01 10:48:03: Running ../../topographic/py-files/topomult.py (pid 10717)
+2014-04-01 10:48:03: Version 0.3 - parallel implementation with configuration file
+2014-04-01 10:48:03: Reading data from topo_test_input/dem.asc
+2014-04-01 10:48:03: xll = 562275.000000
+2014-04-01 10:48:03: yll = 1449255.000000
+2014-04-01 10:48:03: data_spacing = 91.363586
+2014-04-01 10:48:05: outputting unsmoothed data to: topo_actual_output/mh_nw.asc
+2014-04-01 10:48:05: outputting smoothed data to: topo_actual_output/mh_nw_smooth.asc
+2014-04-01 10:48:05: Finished direction nw
