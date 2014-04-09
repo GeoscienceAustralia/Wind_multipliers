@@ -4,9 +4,24 @@ import sys
 from osgeo import gdal
 from osgeo.gdalconst import *
 
+"""
+.. module:: read_output.py
+   :synopsis: Module used to read in DEM file, and convert data to numpy array
 
+.. moduleauthor:: Daniel Wild <daniel.wild@ga.gov.au>
+
+
+"""
 def read(inputfile):
+    """Reads an input file, loops through adding its content to a numpy array
 
+    Args:
+        inputFile (str): The path to an input file (DEM).
+        e.g. 'test_topographic/topo_expected_output/mh_n.asc'
+
+    Returns:
+         A numpy array
+    """
 
     # debug - permit print whole numpy array
     # numpy.set_printoptions(threshold=numpy.nan)
@@ -54,5 +69,5 @@ def read(inputfile):
     return data
 
 
-if __name__ == '__main__':
-    read('test_topographic/topo_expected_output/dem_test.asc')
+#if __name__ == '__main__':
+    #read('test_topographic/small_test/topo_expected_output/dem_test.asc')

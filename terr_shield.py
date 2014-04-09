@@ -5,7 +5,7 @@
 # Created on 12 08 2011 by Tina Yang
 # ---------------------------------------------------------------------------
 
-    
+
 # Import system & process modules
 import sys, string, os, arcpy, time, inspect
 import terrain.terrain

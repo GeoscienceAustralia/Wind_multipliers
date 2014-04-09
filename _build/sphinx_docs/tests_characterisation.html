@@ -1,0 +1,181 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>test_terrain &mdash; Wind Multipliers v0.3 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Wind Multipliers v0.3 documentation" href="../index.html" />
+    <link rel="next" title="topographic" href="topographic.html" />
+    <link rel="prev" title="Wind Multipliers" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="topographic.html" title="topographic"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../index.html" title="Wind Multipliers"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Wind Multipliers v0.3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<div class="section" id="test-terrain">
+<h1>test_terrain<a class="headerlink" href="#test-terrain" title="Permalink to this headline">¶</a></h1>
+<p>test</p>
+</div>
+<div class="section" id="test-topographic">
+<h1>test_topographic<a class="headerlink" href="#test-topographic" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="run-all-py">
+<h2>run_all.py<a class="headerlink" href="#run-all-py" title="Permalink to this headline">¶</a></h2>
+<p>Used to initiate testing across all multipliers</p>
+<span class="target" id="module-tests_characterisation.run_all"></span></div>
+<div class="section" id="module-tests_characterisation.test_topographic.compare_output">
+<span id="compare-output-py"></span><h2>compare_output.py<a class="headerlink" href="#module-tests_characterisation.test_topographic.compare_output" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tests_characterisation.test_topographic.compare_output.TestOutput">
+<em class="property">class </em><tt class="descclassname">tests_characterisation.test_topographic.compare_output.</tt><tt class="descname">TestOutput</tt><big>(</big><em>methodName='runTest'</em><big>)</big><a class="reference internal" href="../_modules/tests_characterisation/test_topographic/compare_output.html#TestOutput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tests_characterisation.test_topographic.compare_output.TestOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test Class used to run a unit test comparison of expected against actual results outputted by topomult.py</p>
+<dl class="method">
+<dt id="tests_characterisation.test_topographic.compare_output.TestOutput.test_TopoOutput">
+<tt class="descname">test_TopoOutput</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/tests_characterisation/test_topographic/compare_output.html#TestOutput.test_TopoOutput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tests_characterisation.test_topographic.compare_output.TestOutput.test_TopoOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loops through each of the eight directions, reading input data into numpy array for comparison using
+np.allClose()</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tests_characterisation.test_topographic.read_output">
+<span id="read-output-py"></span><h2>read_output.py<a class="headerlink" href="#module-tests_characterisation.test_topographic.read_output" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="tests_characterisation.test_topographic.read_output.read">
+<tt class="descclassname">tests_characterisation.test_topographic.read_output.</tt><tt class="descname">read</tt><big>(</big><em>inputfile</em><big>)</big><a class="reference internal" href="../_modules/tests_characterisation/test_topographic/read_output.html#read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tests_characterisation.test_topographic.read_output.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads an input file, loops through adding its content to a numpy array</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>inputFile (str): The path to an input file (DEM).
+e.g. &#8216;test_topographic/topo_expected_output/mh_n.asc&#8217;</dd>
+<dt>Returns:</dt>
+<dd>A numpy array</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-tests_characterisation.test_topographic.test_topo">
+<span id="test-topo-py"></span><h2>test_topo.py<a class="headerlink" href="#module-tests_characterisation.test_topographic.test_topo" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="tests_characterisation.test_topographic.test_topo.run">
+<tt class="descclassname">tests_characterisation.test_topographic.test_topo.</tt><tt class="descname">run</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/tests_characterisation/test_topographic/test_topo.html#run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tests_characterisation.test_topographic.test_topo.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function runs the current version of topomult.py (Wind_multipliers/topographic/py-files/topomult.py),
+using a fixed input and compares the output with the expected result</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">test_terrain</a></li>
+<li><a class="reference internal" href="#test-topographic">test_topographic</a><ul>
+<li><a class="reference internal" href="#run-all-py">run_all.py</a></li>
+<li><a class="reference internal" href="#module-tests_characterisation.test_topographic.compare_output">compare_output.py</a></li>
+<li><a class="reference internal" href="#module-tests_characterisation.test_topographic.read_output">read_output.py</a></li>
+<li><a class="reference internal" href="#module-tests_characterisation.test_topographic.test_topo">test_topo.py</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../index.html"
+                        title="previous chapter">Wind Multipliers</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="topographic.html"
+                        title="next chapter">topographic</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/sphinx_docs/tests_characterisation.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="topographic.html" title="topographic"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../index.html" title="Wind Multipliers"
+             >previous</a> |</li>
+        <li><a href="../index.html">Wind Multipliers v0.3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Geoscience Australia.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

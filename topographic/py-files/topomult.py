@@ -23,11 +23,26 @@ import multiplier_calc
 
 from files import flStartLog
 
+"""
+.. module:: topomult
+   :synopsis: This is the main code for calculating 2-D multipliers - wind direction = north
+   input DEM is stored in ../input
+   outputs including smoothed and unsmoothed data are written in ../python_output
+   more details in readme.txt
+
+.. moduleauthor::  W.Jiang
+
+
+"""
+
 __version__ = '0.3 - parallel implementation with configuration file'
 
 
 def work(input_dem, mh_data_dir, directions):
-    
+    """example function def for work()
+
+
+    """
     for direction in balanced(directions):
         topomult(input_dem, mh_data_dir, direction)
 

@@ -7,13 +7,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Overview &mdash; WindMultipliers v3.0 documentation</title>
+    <title>Wind Multipliers &mdash; Wind Multipliers v0.3 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '3.0',
+        VERSION:     '0.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,7 +22,8 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="WindMultipliers v3.0 documentation" href="#" /> 
+    <link rel="top" title="Wind Multipliers v0.3 documentation" href="#" />
+    <link rel="next" title="test_terrain" href="sphinx_docs/tests_characterisation.html" /> 
   </head>
   <body>
     <div class="related">
@@ -31,7 +32,13 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li><a href="#">WindMultipliers v3.0 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="sphinx_docs/tests_characterisation.html" title="test_terrain"
+             accesskey="N">next</a> |</li>
+        <li><a href="#">Wind Multipliers v0.3 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -40,22 +47,20 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="toctree-wrapper compound">
-<ul class="simple">
-</ul>
-</div>
+  <div class="section" id="wind-multipliers">
+<h1>Wind Multipliers<a class="headerlink" href="#wind-multipliers" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="overview">
-<h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p>This package is used to produce wind terrain, shielding and topographic
 multipliers.</p>
 </div>
 <div class="section" id="dependencies">
-<h1>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h1>
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
 <p>Python 2.6, NumPy and SciPy are needed. ArcPy requiring ArcGIS 10
 license is also needed.</p>
 </div>
 <div class="section" id="terrain-sheilding-multipliers">
-<h1>Terrain &amp; Sheilding Multipliers<a class="headerlink" href="#terrain-sheilding-multipliers" title="Permalink to this headline">¶</a></h1>
+<h2>Terrain &amp; Sheilding Multipliers<a class="headerlink" href="#terrain-sheilding-multipliers" title="Permalink to this headline">¶</a></h2>
 <p>The script for deriving terrain and shielding multipliers is
 <strong>terr_shield.py</strong> that consists of two modules:</p>
 <ol class="arabic simple">
@@ -87,7 +92,7 @@ license is also needed.</p>
 </div>
 </div>
 <div class="section" id="background">
-<h1>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h1>
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
 <p>This repository also includes Python code for evaluating the 2-D
 topogrpahic multiplier.</p>
 <p>The Python code was produced for the 2-D wind multipliers based on the existing Octave code written by Chris Thomas (2009).</p>
@@ -115,14 +120,14 @@ the DEM and operates on that line to produce the hill shape multipliers.</p>
 </ul>
 </div>
 <div class="section" id="file-structure">
-<h1>File Structure<a class="headerlink" href="#file-structure" title="Permalink to this headline">¶</a></h1>
+<h2>File Structure<a class="headerlink" href="#file-structure" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><strong>py-files:</strong> store all the Python codes including main and functions.</li>
 <li><strong>python_output:</strong> generated automatically to store output files.</li>
 </ul>
 </div>
 <div class="section" id="notes">
-<h1>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h1>
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
 <p>Comparisons show small discrepancies between outputs from the
 Python and the Octave codes. The difference varies depending on the wind direction.</p>
 <p>The number of inconsistent data is up to 0.13% of the total
@@ -131,18 +136,55 @@ data (west wind) with the greatest magnitude of 0.02, which is 2% of the minimum
 <p>It also should be aware that some Python functions have slightly different functionality. For example, for values exactly halfway between rounded decimal values, Numpy rounds to the nearest even value.</p>
 </div>
 <div class="section" id="topographic-multiplier-v-0-2">
-<h1>Topographic Multiplier V 0.2<a class="headerlink" href="#topographic-multiplier-v-0-2" title="Permalink to this headline">¶</a></h1>
+<h2>Topographic Multiplier V 0.2<a class="headerlink" href="#topographic-multiplier-v-0-2" title="Permalink to this headline">¶</a></h2>
 <p>Parallel implementation Ported to parallel execution - using
 PyPar for MPI handling.</p>
-<p>To run in parallel mode: <tt class="docutils literal"><span class="pre">mpirun</span> <span class="pre">-np</span> <span class="pre">8</span> <span class="pre">python</span> <span class="pre">topomult.py</span> <span class="pre">-i</span> <span class="pre">&lt;input</span> <span class="pre">file&gt;</span> <span class="pre">-o</span> <span class="pre">&lt;output</span> <span class="pre">path&gt;</span></tt></p>
+<p>To run in parallel mode:</p>
+<div class="highlight-python"><pre>$ mpirun -np 8 python topomult.py -i &lt;input file&gt; -o &lt;output path&gt;</pre>
 </div>
-<div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Checking for infiniband may throw some warnings, eg:</p>
+<div class="highlight-python"><pre>A high-performance Open MPI point-to-point messaging module was unable to find any relevant network interfaces
+
+Another transport will be used instead, although this may result in lower performance.
+
+librdmacm: couldn't read ABI version.
+librdmacm: assuming: 4
+CMA: unable to get RDMA device list</pre>
+</div>
+<p>If not correctly running Infiniband etc. you can prevent it     from being called by including:</p>
+<div class="last highlight-python"><pre>$ -mca btl ^openib</pre>
+</div>
+</div>
+</div>
+<div class="section" id="code-documentation">
+<h2>Code Documentation<a class="headerlink" href="#code-documentation" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sphinx_docs/tests_characterisation.html">test_terrain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sphinx_docs/tests_characterisation.html#test-topographic">test_topographic</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sphinx_docs/tests_characterisation.html#run-all-py">run_all.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sphinx_docs/tests_characterisation.html#module-tests_characterisation.test_topographic.compare_output">compare_output.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sphinx_docs/tests_characterisation.html#module-tests_characterisation.test_topographic.read_output">read_output.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sphinx_docs/tests_characterisation.html#module-tests_characterisation.test_topographic.test_topo">test_topo.py</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sphinx_docs/topographic.html">topographic</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sphinx_docs/topographic.html#acsii-read-py">acsii_read.py</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="module-index">
+<h2>Module Index<a class="headerlink" href="#module-index" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
 <li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
 <li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
 </ul>
+</div>
 </div>
 
 
@@ -153,16 +195,25 @@ PyPar for MPI handling.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Overview</a></li>
+<li><a class="reference internal" href="#">Wind Multipliers</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
 <li><a class="reference internal" href="#dependencies">Dependencies</a></li>
 <li><a class="reference internal" href="#terrain-sheilding-multipliers">Terrain &amp; Sheilding Multipliers</a></li>
 <li><a class="reference internal" href="#background">Background</a></li>
 <li><a class="reference internal" href="#file-structure">File Structure</a></li>
 <li><a class="reference internal" href="#notes">Notes</a></li>
 <li><a class="reference internal" href="#topographic-multiplier-v-0-2">Topographic Multiplier V 0.2</a></li>
-<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+<li><a class="reference internal" href="#code-documentation">Code Documentation</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-index">Module Index</a></li>
+</ul>
+</li>
 </ul>
 
+  <h4>Next topic</h4>
+  <p class="topless"><a href="sphinx_docs/tests_characterisation.html"
+                        title="next chapter">test_terrain</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/index.txt"
@@ -191,7 +242,13 @@ PyPar for MPI handling.</p>
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
-        <li><a href="#">WindMultipliers v3.0 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="sphinx_docs/tests_characterisation.html" title="test_terrain"
+             >next</a> |</li>
+        <li><a href="#">Wind Multipliers v0.3 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

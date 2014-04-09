@@ -3,10 +3,11 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-.. toctree::
-   :maxdepth: 2
+Wind Multipliers
+**************************
 
 
+     
 Overview
 ===========================================
 
@@ -109,19 +110,44 @@ Topographic Multiplier V 0.2
 Parallel implementation Ported to parallel execution - using
 PyPar for MPI handling. 
 
-To run in parallel mode: ``mpirun -np 8 python topomult.py -i <input file> -o <output path>``
+To run in parallel mode:: 
+
+$ mpirun -np 8 python topomult.py -i <input file> -o <output path>
+
+
+.. note::
+	Checking for infiniband may throw some warnings, eg::
+
+
+		A high-performance Open MPI point-to-point messaging module was unable to find any relevant network interfaces
+
+		Another transport will be used instead, although this may result in lower performance.
+	
+		librdmacm: couldn't read ABI version.
+		librdmacm: assuming: 4
+		CMA: unable to get RDMA device list 
+
+	
+	If not correctly running Infiniband etc. you can prevent it 	from being called by including::
+
+	$ -mca btl ^openib
+
+
+Code Documentation
+==================
+
+
+.. toctree::
+   :maxdepth: 2
+   
+   sphinx_docs/tests_characterisation
+   sphinx_docs/topographic
 
 
 
-
-
-
-
-
-Indices and tables
+Module Index
 ==================
 
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
