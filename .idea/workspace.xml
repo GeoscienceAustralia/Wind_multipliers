@@ -456,7 +456,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1296" height="1010" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -647,15 +647,6 @@
         <state line="17" column="10" selection-start="289" selection-end="289" vertical-scroll-proportion="0.0" vertical-offset="55" max-vertical-offset="884">
           <folding>
             <element signature="e#0#38#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests_characterisation/param_test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="35" selection-start="165" selection-end="175" vertical-scroll-proportion="0.10253317" vertical-offset="0" max-vertical-offset="829">
-          <folding>
-            <element signature="e#0#55#0" expanded="true" />
           </folding>
         </state>
       </provider>
