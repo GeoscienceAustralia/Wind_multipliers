@@ -23,10 +23,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="run_all.py" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="run_all.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tests_characterisation/run_all.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="36" column="8" selection-start="885" selection-end="885" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="663">
+            <state line="31" column="4" selection-start="753" selection-end="753" vertical-scroll-proportion="0.5741858" vertical-offset="0" max-vertical-offset="829">
               <folding />
             </state>
           </provider>
@@ -35,7 +35,7 @@
       <file leaf-file-name="test_topo.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests_characterisation/test_topographic/test_topo.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="19" column="0" selection-start="391" selection-end="391" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1054">
+            <state line="34" column="11" selection-start="906" selection-end="906" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1054">
               <folding />
             </state>
           </provider>
@@ -59,10 +59,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="read_output.py" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="read_output.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests_characterisation/test_topographic/read_output.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="65" column="12" selection-start="1665" selection-end="1665" vertical-scroll-proportion="1.2714113" vertical-offset="0" max-vertical-offset="1224">
+            <state line="65" column="12" selection-start="1665" selection-end="1665" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1224">
               <folding />
             </state>
           </provider>
@@ -96,10 +96,10 @@
         <option value="$PROJECT_DIR$/tests_characterisation/test_topographic/param_test.py" />
         <option value="$PROJECT_DIR$/tests_characterisation/param_test.py" />
         <option value="$PROJECT_DIR$/tests_characterisation/misc.py" />
-        <option value="$PROJECT_DIR$/tests_characterisation/run_all.py" />
         <option value="$PROJECT_DIR$/tests_characterisation/test_topographic/test_topo.py" />
         <option value="$PROJECT_DIR$/tests_characterisation/parametrized_test_case.py" />
         <option value="$PROJECT_DIR$/tests_characterisation/test_topographic/read_output.py" />
+        <option value="$PROJECT_DIR$/tests_characterisation/run_all.py" />
       </list>
     </option>
   </component>
@@ -193,6 +193,15 @@
   <component name="PropertiesComponent">
     <property name="FullScreen" value="false" />
     <property name="recentsLimit" value="5" />
+    <property name="options.lastSelected" value="project.propVCSSupport.Mappings" />
+    <property name="options.splitter.main.proportions" value="0.3" />
+    <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.searchVisible" value="true" />
+  </component>
+  <component name="PyConsoleOptionsProvider">
+    <option name="myPythonConsoleState">
+      <console-settings />
+    </option>
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -442,6 +451,23 @@
     </recent_temporary>
   </component>
   <component name="ShelveChangesManager" show_recycled="false" />
+  <component name="SvnConfiguration" maxAnnotateRevisions="500" myUseAcceleration="nothing" myAutoUpdateAfterCommit="false" cleanupOnStartRun="false" SSL_PROTOCOLS="all">
+    <option name="USER" value="" />
+    <option name="PASSWORD" value="" />
+    <option name="mySSHConnectionTimeout" value="30000" />
+    <option name="mySSHReadTimeout" value="30000" />
+    <option name="LAST_MERGED_REVISION" />
+    <option name="MERGE_DRY_RUN" value="false" />
+    <option name="MERGE_DIFF_USE_ANCESTRY" value="true" />
+    <option name="UPDATE_LOCK_ON_DEMAND" value="false" />
+    <option name="IGNORE_SPACES_IN_MERGE" value="false" />
+    <option name="CHECK_NESTED_FOR_QUICK_MERGE" value="false" />
+    <option name="IGNORE_SPACES_IN_ANNOTATE" value="true" />
+    <option name="SHOW_MERGE_SOURCES_IN_ANNOTATE" value="true" />
+    <option name="FORCE_UPDATE" value="false" />
+    <option name="IGNORE_EXTERNALS" value="false" />
+    <myIsUseDefaultProxy>false</myIsUseDefaultProxy>
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="b1aba673-b5eb-4858-ac75-a0fa5b821292" name="Default" comment="" />
@@ -583,7 +609,9 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/topographic/py-files/topomult.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="260" column="0" selection-start="7807" selection-end="7844" vertical-scroll-proportion="0.0" vertical-offset="4420" max-vertical-offset="4556" />
+        <state line="260" column="0" selection-start="7807" selection-end="7844" vertical-scroll-proportion="0.0" vertical-offset="4420" max-vertical-offset="4556">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/conf.py">
@@ -638,19 +666,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/topographic/py-files/topomult.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="243" column="19" selection-start="7415" selection-end="7415" vertical-scroll-proportion="0.8603286" vertical-offset="3177" max-vertical-offset="4335" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests_characterisation/run_all.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="36" column="8" selection-start="885" selection-end="885" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="663">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests_characterisation/test_topographic/test_topo.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="19" column="0" selection-start="391" selection-end="391" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1054">
+        <state line="243" column="19" selection-start="7415" selection-end="7415" vertical-scroll-proportion="0.8603286" vertical-offset="3177" max-vertical-offset="4335">
           <folding />
         </state>
       </provider>
@@ -671,7 +687,21 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tests_characterisation/test_topographic/read_output.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="65" column="12" selection-start="1665" selection-end="1665" vertical-scroll-proportion="1.2714113" vertical-offset="0" max-vertical-offset="1224">
+        <state line="65" column="12" selection-start="1665" selection-end="1665" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1224">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests_characterisation/test_topographic/test_topo.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="34" column="11" selection-start="906" selection-end="906" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1054">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests_characterisation/run_all.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="31" column="4" selection-start="753" selection-end="753" vertical-scroll-proportion="0.5741858" vertical-offset="0" max-vertical-offset="829">
           <folding />
         </state>
       </provider>

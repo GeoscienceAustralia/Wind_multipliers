@@ -24,13 +24,11 @@ def run():
                         choices=["small", "medium", "large"],
                         default="small",
                         type=str)
+
     args = parser.parse_args()
 
-    if args.size:
-        test_size = args.size
-
     suite = unittest.TestSuite()
-    suite.addTest(ParametrizedTestCase.parametrize(test_topo.TestOutput, param=test_size))
+    suite.addTest(ParametrizedTestCase.parametrize(test_topo.TestOutput, param=args.size))
     unittest.TextTestRunner(verbosity=2).run(suite)
 
 if __name__ == '__main__':
