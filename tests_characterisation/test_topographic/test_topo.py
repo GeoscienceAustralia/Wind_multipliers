@@ -18,8 +18,6 @@ from misc import TestPaths
 """
 
 
-
-
 class TestOutput(ParametrizedTestCase):
     """Test Class used to run a unit test comparison of expected against actual results outputted by topomult.py
 

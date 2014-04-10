@@ -26,10 +26,8 @@
       <file leaf-file-name="run_all.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests_characterisation/run_all.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="17" column="10" selection-start="289" selection-end="289" vertical-scroll-proportion="0.0" vertical-offset="55" max-vertical-offset="884">
-              <folding>
-                <element signature="e#0#38#0" expanded="true" />
-              </folding>
+            <state line="36" column="8" selection-start="885" selection-end="885" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="663">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -37,10 +35,8 @@
       <file leaf-file-name="test_topo.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests_characterisation/test_topographic/test_topo.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="52" column="90" selection-start="1549" selection-end="1549" vertical-scroll-proportion="0.0" vertical-offset="361" max-vertical-offset="1207">
-              <folding>
-                <element signature="e#21#38#0" expanded="true" />
-              </folding>
+            <state line="19" column="0" selection-start="391" selection-end="391" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1054">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -57,7 +53,7 @@
       <file leaf-file-name="parametrized_test_case.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests_characterisation/parametrized_test_case.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="2" column="26" selection-start="23" selection-end="43" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="493">
+            <state line="2" column="0" selection-start="17" selection-end="17" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="510">
               <folding />
             </state>
           </provider>
@@ -66,7 +62,7 @@
       <file leaf-file-name="read_output.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tests_characterisation/test_topographic/read_output.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="47" column="0" selection-start="1151" selection-end="1151" vertical-scroll-proportion="0.3437877" vertical-offset="463" max-vertical-offset="1292">
+            <state line="65" column="12" selection-start="1665" selection-end="1665" vertical-scroll-proportion="1.2714113" vertical-offset="0" max-vertical-offset="1224">
               <folding />
             </state>
           </provider>
@@ -98,12 +94,12 @@
         <option value="$PROJECT_DIR$/topographic/py-files/ascii_read.py" />
         <option value="$PROJECT_DIR$/tests_characterisation/test_paths.py" />
         <option value="$PROJECT_DIR$/tests_characterisation/test_topographic/param_test.py" />
-        <option value="$PROJECT_DIR$/tests_characterisation/parametrized_test_case.py" />
         <option value="$PROJECT_DIR$/tests_characterisation/param_test.py" />
-        <option value="$PROJECT_DIR$/tests_characterisation/run_all.py" />
         <option value="$PROJECT_DIR$/tests_characterisation/misc.py" />
-        <option value="$PROJECT_DIR$/tests_characterisation/test_topographic/read_output.py" />
+        <option value="$PROJECT_DIR$/tests_characterisation/run_all.py" />
         <option value="$PROJECT_DIR$/tests_characterisation/test_topographic/test_topo.py" />
+        <option value="$PROJECT_DIR$/tests_characterisation/parametrized_test_case.py" />
+        <option value="$PROJECT_DIR$/tests_characterisation/test_topographic/read_output.py" />
       </list>
     </option>
   </component>
@@ -139,6 +135,7 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -191,7 +188,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -456,12 +452,11 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1296" height="1010" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32915717" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2494043" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -472,9 +467,10 @@
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32915717" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -491,9 +487,9 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32915717" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
     </layout-to-restore>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -513,46 +509,69 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/conf.py">
+    <entry file="file://$PROJECT_DIR$/tests_characterisation/run_all.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="38" column="0" selection-start="1378" selection-end="1378" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3791">
+        <state line="17" column="10" selection-start="289" selection-end="289" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="884">
           <folding />
         </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests_characterisation/test_topographic/test_topo.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="52" column="90" selection-start="1549" selection-end="1549" vertical-scroll-proportion="0.0" vertical-offset="361" max-vertical-offset="1207">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests_characterisation/misc.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5" column="16" selection-start="85" selection-end="85" vertical-scroll-proportion="0.0" vertical-offset="85" max-vertical-offset="578">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests_characterisation/parametrized_test_case.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2" column="26" selection-start="23" selection-end="43" vertical-scroll-proportion="0.0" vertical-offset="34" max-vertical-offset="493">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests_characterisation/test_topographic/read_output.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="47" column="0" selection-start="1151" selection-end="1151" vertical-scroll-proportion="0.0" vertical-offset="799" max-vertical-offset="1292">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/conf.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="38" column="0" selection-start="1378" selection-end="1378" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3791" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/topographic/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="102">
-          <folding />
-        </state>
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="102" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tests_characterisation/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="102">
-          <folding />
-        </state>
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="102" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tests_characterisation/test_topographic/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="0" selection-start="1" selection-end="1" vertical-scroll-proportion="0.0" vertical-offset="17" max-vertical-offset="119">
-          <folding />
-        </state>
+        <state line="1" column="0" selection-start="1" selection-end="1" vertical-scroll-proportion="0.0" vertical-offset="17" max-vertical-offset="119" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/topographic/py-files/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="102">
-          <folding />
-        </state>
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="102" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/topographic/py-files/ascii_read.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="20" selection-start="20" selection-end="20" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="680">
-          <folding />
-        </state>
+        <state line="0" column="20" selection-start="20" selection-end="20" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="680" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tests_characterisation/test_topographic/read_output.py">
@@ -564,23 +583,17 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/topographic/py-files/topomult.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="260" column="0" selection-start="7807" selection-end="7844" vertical-scroll-proportion="0.0" vertical-offset="4420" max-vertical-offset="4556">
-          <folding />
-        </state>
+        <state line="260" column="0" selection-start="7807" selection-end="7844" vertical-scroll-proportion="0.0" vertical-offset="4420" max-vertical-offset="4556" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/conf.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="18" column="36" selection-start="716" selection-end="716" vertical-scroll-proportion="0.0" vertical-offset="306" max-vertical-offset="3808">
-          <folding />
-        </state>
+        <state line="18" column="36" selection-start="716" selection-end="716" vertical-scroll-proportion="0.0" vertical-offset="306" max-vertical-offset="3808" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/conf.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="19" column="0" selection-start="721" selection-end="721" vertical-scroll-proportion="0.0" vertical-offset="323" max-vertical-offset="3791">
-          <folding />
-        </state>
+        <state line="19" column="0" selection-start="721" selection-end="721" vertical-scroll-proportion="0.0" vertical-offset="323" max-vertical-offset="3791" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/terr_shield.py">
@@ -595,65 +608,49 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/topographic/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="831">
-          <folding />
-        </state>
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="831" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tests_characterisation/test_topographic/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="0" selection-start="1" selection-end="1" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="119">
-          <folding />
-        </state>
+        <state line="1" column="0" selection-start="1" selection-end="1" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="119" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/topographic/py-files/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="831">
-          <folding />
-        </state>
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="831" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/conf.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="38" column="0" selection-start="1378" selection-end="1378" vertical-scroll-proportion="0.0" vertical-offset="170" max-vertical-offset="3791">
-          <folding />
-        </state>
+        <state line="38" column="0" selection-start="1378" selection-end="1378" vertical-scroll-proportion="0.0" vertical-offset="170" max-vertical-offset="3791" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tests_characterisation/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="831">
-          <folding />
-        </state>
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="831" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/topographic/py-files/ascii_read.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="20" selection-start="20" selection-end="20" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="831">
-          <folding />
-        </state>
+        <state line="0" column="20" selection-start="20" selection-end="20" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="831" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/topographic/py-files/topomult.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="243" column="19" selection-start="7415" selection-end="7415" vertical-scroll-proportion="0.8603286" vertical-offset="3177" max-vertical-offset="4335">
-          <folding />
-        </state>
+        <state line="243" column="19" selection-start="7415" selection-end="7415" vertical-scroll-proportion="0.8603286" vertical-offset="3177" max-vertical-offset="4335" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tests_characterisation/run_all.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="10" selection-start="289" selection-end="289" vertical-scroll-proportion="0.0" vertical-offset="55" max-vertical-offset="884">
-          <folding>
-            <element signature="e#0#38#0" expanded="true" />
-          </folding>
+        <state line="36" column="8" selection-start="885" selection-end="885" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="663">
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests_characterisation/parametrized_test_case.py">
+    <entry file="file://$PROJECT_DIR$/tests_characterisation/test_topographic/test_topo.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="26" selection-start="23" selection-end="43" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="493">
+        <state line="19" column="0" selection-start="391" selection-end="391" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1054">
           <folding />
         </state>
       </provider>
@@ -665,18 +662,16 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests_characterisation/test_topographic/test_topo.py">
+    <entry file="file://$PROJECT_DIR$/tests_characterisation/parametrized_test_case.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="52" column="90" selection-start="1549" selection-end="1549" vertical-scroll-proportion="0.0" vertical-offset="361" max-vertical-offset="1207">
-          <folding>
-            <element signature="e#21#38#0" expanded="true" />
-          </folding>
+        <state line="2" column="0" selection-start="17" selection-end="17" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="510">
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tests_characterisation/test_topographic/read_output.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="47" column="0" selection-start="1151" selection-end="1151" vertical-scroll-proportion="0.3437877" vertical-offset="463" max-vertical-offset="1292">
+        <state line="65" column="12" selection-start="1665" selection-end="1665" vertical-scroll-proportion="1.2714113" vertical-offset="0" max-vertical-offset="1224">
           <folding />
         </state>
       </provider>

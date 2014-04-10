@@ -14,7 +14,6 @@ from parametrized_test_case import ParametrizedTestCase
 """
 
 
-
 def run():
 
     import argparse
@@ -30,18 +29,9 @@ def run():
     if args.size:
         test_size = args.size
 
-    #test_topo.run(test_size)
-
-
-    #suite = unittest.TestLoader().loadTestsFromTestCase(topoTest)
-    #unittest.TextTestRunner(verbosity=2).run(suite)
-
-
     suite = unittest.TestSuite()
     suite.addTest(ParametrizedTestCase.parametrize(test_topo.TestOutput, param=test_size))
     unittest.TextTestRunner(verbosity=2).run(suite)
-
-
 
 if __name__ == '__main__':
     run()

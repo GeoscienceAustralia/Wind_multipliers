@@ -67,7 +67,3 @@ def read(inputfile):
             data[i:i+numRows, j:j+numCols] = dd
 
     return data
-
-
-#if __name__ == '__main__':
-    #read('test_topographic/small_test/topo_expected_output/dem_test.asc')
