@@ -4,9 +4,9 @@ import numpy as np
 import read_output
 import os
 import unittest
-from parametrized_test_case import ParametrizedTestCase
-from misc import DIRECTIONS
-from misc import TestPaths
+from tests_characterisation.parametrized_test_case import ParametrizedTestCase
+from tests_characterisation.misc import DIRECTIONS
+from tests_characterisation.misc import TestPaths
 
 """
 .. module:: test_topo
@@ -19,11 +19,19 @@ from misc import TestPaths
 
 
 class TestOutput(ParametrizedTestCase):
-    """Test Class used to run a unit test comparison of expected against actual results outputted by topomult.py
+    """
+    Test Class used to run a unit test comparison of expected against actual results outputted by topomult.py
+
+    :param ParametrizedTestCase: Parametrized subclass of unittest.TestCase
 
     """
 
     def test_TopoOutput(self):
+
+        """
+        Runs current version of topomult.py, compares output with expected for each direction using np.allClose()
+
+       """
 
         self.test_paths = TestPaths()
         self.test_paths.initTopoTestPaths(self.param)
@@ -37,19 +45,14 @@ class TestOutput(ParametrizedTestCase):
 
         subprocess.call(args)
 
-        """Loops through each of the eight directions, reading input data into numpy array for comparison using
-        np.allClose()
-
-       """
-
         # need to loop through all directions..
         for aDirection in DIRECTIONS:
 
             print 'Dir:', aDirection
 
-            expectedArray = read_output.read(os.path.join(self.test_paths.TOPO_TEST_EXPECTED_OUTPUT_DIR,
+            expectedArray = read_output.readASC(os.path.join(self.test_paths.TOPO_TEST_EXPECTED_OUTPUT_DIR,
                                                         'mh_'+ aDirection + '_smooth.asc'))
-            actualArray = read_output.read(os.path.join(self.test_paths.TOPO_TEST_ACTUAL_OUTPUT_DIR,
+            actualArray = read_output.readASC(os.path.join(self.test_paths.TOPO_TEST_ACTUAL_OUTPUT_DIR,
                                                         'mh_'+ aDirection + '_smooth.asc'))
 
             # ! allClose() will return False if NaN is detected

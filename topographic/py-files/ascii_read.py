@@ -1,12 +1,8 @@
-#!/usr/bin/python2.6
-##------------------------------------------------------
-## Read input DEM stored in ../input 
-##------------------------------------------------------
 import numpy
 
 """
-.. module:: test_topo
-   :synopsis: Module used to initiate characterisation tests for topographic multiplier
+.. module:: ascii_read.py
+   :synopsis: Read input DEM stored in ../input
 
 .. moduleauthor:: Daniel Wild <daniel.wild@ga.gov.au>
 
@@ -15,12 +11,14 @@ import numpy
 
 
 class ElevationData(object):
+    """
+    Read input DEM stored in ../input
 
-
-    def __init__(self, input_dem):
-        """Test Class used to run a unit test comparison of expected against actual results outputted by topomult.py
+    :param input_dem: Input DEM as .asc file
 
     """
+    def __init__(self, input_dem):
+
         with open(input_dem, 'r') as fid:
             for i in xrange(0, 6):
                 line = fid.readline()

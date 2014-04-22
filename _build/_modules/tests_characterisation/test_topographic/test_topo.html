@@ -48,9 +48,13 @@
   <h1>Source code for tests_characterisation.test_topographic.test_topo</h1><pre>
 #!/usr/bin/python2.6
 import subprocess
+import numpy as np
+import read_output
+import os
 import unittest
-import compare_output
-
+from tests_characterisation.parametrized_test_case import ParametrizedTestCase
+from tests_characterisation.misc import DIRECTIONS
+from tests_characterisation.misc import TestPaths
 
 """
 .. module:: test_topo
@@ -61,26 +65,51 @@ import compare_output
 
 """
 
-<div class="viewcode-block" id="run"><a class="viewcode-back" href="../../../sphinx_docs/tests_characterisation.html#tests_characterisation.test_topographic.test_topo.run">[docs]</a>def run():
-    """This function runs the current version of topomult.py (Wind_multipliers/topographic/py-files/topomult.py),
-    using a fixed input and compares the output with the expected result
 
-"""
+<div class="viewcode-block" id="TestOutput"><a class="viewcode-back" href="../../../sphinx_docs/tests_characterisation.html#tests_characterisation.test_topographic.test_topo.TestOutput">[docs]</a>class TestOutput(ParametrizedTestCase):
+    """Test Class used to run a unit test comparison of expected against actual results outputted by topomult.py
 
-    args = ['mpirun',
-            '-mca', 'btl', '^openib',  # don't check for inifiniband
-            '-np', '8',
-            'python', '../topographic/py-files/topomult.py',
-            '-i', 'test_topographic/topo_test_input/dem.asc',
-            '-o', 'test_topographic/topo_actual_output']
+    """
 
-    subprocess.call(args)
+<div class="viewcode-block" id="TestOutput.test_TopoOutput"><a class="viewcode-back" href="../../../sphinx_docs/tests_characterisation.html#tests_characterisation.test_topographic.test_topo.TestOutput.test_TopoOutput">[docs]</a>    def test_TopoOutput(self):
 
-    # run unit test comparison of new output against the expected
-    suite = unittest.TestLoader().loadTestsFromTestCase(compare_output.TestOutput)
-    unittest.TextTestRunner(verbosity=2).run(suite)
-</div>
-</pre>
+        self.test_paths = TestPaths()
+        self.test_paths.initTopoTestPaths(self.param)
+
+        args = ['mpirun',
+                '-mca', 'btl', '^openib',  # don't check for inifiniband
+                '-np', '8',
+                'python',  os.path.join(self.test_paths.TOPO_FILES_DIR, 'topomult.py'),
+                '-i',  os.path.join(self.test_paths.TOPO_TEST_INPUT_DIR, 'dem.asc'),
+                '-o',  self.test_paths.TOPO_TEST_ACTUAL_OUTPUT_DIR]
+
+        subprocess.call(args)
+
+        """Loops through each of the eight directions, reading input data into numpy array for comparison using
+        np.allClose()
+
+       """
+
+        # need to loop through all directions..
+        for aDirection in DIRECTIONS:
+
+            print 'Dir:', aDirection
+
+            expectedArray = read_output.readASC(os.path.join(self.test_paths.TOPO_TEST_EXPECTED_OUTPUT_DIR,
+                                                        'mh_'+ aDirection + '_smooth.asc'))
+            actualArray = read_output.readASC(os.path.join(self.test_paths.TOPO_TEST_ACTUAL_OUTPUT_DIR,
+                                                        'mh_'+ aDirection + '_smooth.asc'))
+
+            # ! allClose() will return False if NaN is detected
+            result = np.allclose(expectedArray, actualArray)
+
+            print "\n",aDirection, "test =", result
+
+            self.assertTrue(result)
+
+</div></div>
+if __name__ == '__main__':
+    unittest.main()</pre>
 
           </div>
         </div>

@@ -116,7 +116,7 @@ $ mpirun -np 8 python topomult.py -i <input file> -o <output path>
 
 
 .. note::
-	Checking for infiniband may throw some warnings, eg::
+	Checking for infiniband may throw some warnings on rhe-compute1, eg::
 
 
 		A high-performance Open MPI point-to-point messaging module was unable to find any relevant network interfaces
@@ -136,14 +136,13 @@ $ mpirun -np 8 python topomult.py -i <input file> -o <output path>
 Code Documentation
 ==================
 
-
 .. toctree::
    :maxdepth: 2
    
-   sphinx_docs/tests_characterisation
    sphinx_docs/topographic
 
-
+   sphinx_docs/tests_characterisation
+   
 
 Module Index
 ==================
@@ -151,3 +150,4 @@ Module Index
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+

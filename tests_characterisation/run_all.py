@@ -15,6 +15,10 @@ from parametrized_test_case import ParametrizedTestCase
 
 
 def run():
+    """
+    Used to initiate testing across all multipliers using specified test size/coverage (defaults to small)
+
+    """
 
     import argparse
 

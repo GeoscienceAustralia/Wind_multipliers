@@ -6,6 +6,15 @@ import numpy as np
 import csv
 from time import time, ctime, localtime, strftime
 
+"""
+.. module:: files.py
+   :synopsis: Handles file manipulation tasks
+
+.. moduleauthor:: Craig Arthur <craig.arthur@ga.gov.au>
+
+
+"""
+
 try:
     import hashlib
     md5_constructor = hashlib.md5
@@ -24,13 +33,19 @@ def flModulePath(level=1):
     """
     Get the path of the module <level> levels above this function
 
-    Input: level - level in the stack of the module calling this function
-           (default = 1, function calling flModulePath)
-    Output: path, basename and extension of the file containing the module
-    Example: path, base, ext = flModulePath( )
-             Calling flModulePath() from "/foo/bar/baz.py" produces the result
-             "/foo/bar", "baz", ".py"
+    :param level: level in the stack of the module calling this function\
+    (default = 1, function calling flModulePath)
+    :returns: path, basename and extension of the file containing the module
+
+    .. note::
+        ``path, base, ext = flModulePath( )``
+
+        Calling ``flModulePath()`` from ``"/foo/bar/baz.py"`` produces the result:
+
+        ``"/foo/bar", "baz", ".py"``
+
     """
+
     filename = os.path.realpath(sys._getframe(level).f_code.co_filename)
     path, fname = os.path.split(filename)
     base, ext = os.path.splitext(fname)
@@ -42,10 +57,12 @@ def flModuleName(level=1):
     """
     Get the name of the module <level> levels above this function
 
-    Input: level - level in the stack of the module calling this function
-           (default = 1, function calling flModuleName)
-    Output: module name (as str)
-    Example: mymodule = flModuleName( )
+    :param level: level in the stack of the module calling this function\
+    (default = 1, function calling flModuleName)
+    :returns: module name (as str)
+
+    .. note::
+        Example ``mymodule = flModuleName( )``
     """
     package = sys._getframe(level).f_code.co_name
     return package
@@ -57,11 +74,12 @@ def flProgramVersion(level=None):
     program, where it is defined.
     If it is not defined, return an empty string.
 
-    Input: level - level in the stack of the main script
-           (default = maximum level in the stack)
-    Output: version string (defined as the __version__ global variable)
+    :param level: level - level in the stack of the main script\
+    (default = maximum level in the stack)
+    :returns: version string (defined as the __version__ global variable)
 
-    Example: my_program_version = flProgramVersion( )
+    .. note::
+        Example ``my_program_version = flProgramVersion()``
     """
     if not level:
         import inspect
@@ -97,9 +115,12 @@ def flGetStat(filename, CHUNK=2 ** 16):
     base path), md5sum and the last modified date. Useful for checking
     if a file has previously been processed.
 
-    Input: filename, chunk size (for md5sum calculation)
-    Output: path, name, md5sum, modification date
-    Example: dir, name, md5sum, moddate = flGetStat(filename)
+    :param filename:
+    :param CHUNK: Chunk size (for md5sum calculation)
+    :returns: path, name, md5sum, modification date
+
+    .. note::
+        Example ``dir, name, md5sum, moddate = flGetStat(filename)``
     """
     try:
         fh = open(filename)
@@ -141,13 +162,16 @@ def flConfigFile(extension='.ini', prefix='', level=None):
     be useful for setting log file names automatically.
     If prefix is passed, this is preprended to the filename.
 
-    Input: extension (default=.ini), prefix (default is empty)
-    Output: Full path of calling function/module, with the source file's
-    extension replaced with extension, and optionally prefix inserted
-    after the last path separator
-    Example: configFile = flConfigFile('.ini')
-             Calling flConfigFile from /foo/bar/baz.py should
-             return /foo/bar/baz.ini
+    :param extension: (default=.ini)
+    :param prefix: (default is empty)
+    :param level:
+    :returns: Full path of calling function/module, with the source file's\
+    extension replaced with extension, and optionally prefix inserted after the last path separator
+
+    .. note::
+        Example ``configFile = flConfigFile('.ini')``
+
+        Calling ``flConfigFile`` from ``/foo/bar/baz.py`` should return ``/foo/bar/baz.ini``
     """
     if not level:
         import inspect
@@ -164,16 +188,17 @@ def flStartLog(logFile, logLevel, verbose=False, datestamp=False, newlog=True):
     Start logging to logFile all messages of logLevel and higher.
     Setting verbose=True will report all messages to STDOUT as well
 
-    Input: logFile - full path to log file
-           logLevel - string specifiying one of the standard Python logging
-               levels ('NOTSET','DEBUG','INFO','WARNING','ERROR','CRITICAL')
-           verbose - boolean: True will echo all logging calls to STDOUT
-           datestamp - boolean: True will include a timestamp of the creation
-                       time in the filename
-           newlog - boolean: True will create a new log file each time this
-                    function is called. False will append to the existing file.
-    Output: None
-    Example: flStartLog('/home/user/log/app.log','INFO',verbose=True)
+    :param logFile: full path to log file
+    :param logLevel: string specifiying one of the standard Python logging levels\
+    ('NOTSET','DEBUG','INFO','WARNING','ERROR','CRITICAL')
+    :param verbose: (boolean) True will echo all logging calls to STDOUT
+    :param datestamp: (boolean) True will include a timestamp of the creation time in the filename
+    :param newlog: (boolean) True will create a new log file each time this function is called.\
+    False will append to the existing file.
+    :returns: None
+
+    .. note::
+        Example ``flStartLog('/home/user/log/app.log','INFO',verbose=True)``
     """
     if datestamp:
         b, e = os.path.splitext(logFile)
@@ -228,8 +253,9 @@ def flLogFatalError(tblines):
     """
     Log the error messages normally reported in a traceback
     so that all error messages can be caught.
-    the input 'tblines' is created by calling
-    traceback.format_exc().splitlines()
+
+    :param tblines: created by calling ``traceback.format_exc().splitlines()``
+
     """
     for line in tblines:
         logger.critical(line.lstrip())
@@ -240,10 +266,12 @@ def flModDate(filename, dateformat='%Y-%m-%d %H:%M:%S'):
     """
     Return the update date of the input file
 
-    Input: filename - file name (full path)
-           dateformat - (optional) format string for the date
-    Output: File modification date/time as a string
-    Example: modDate = flModDate( 'C:/foo/bar.csv' , dateformat='%Y-%m-%dT%H:%M:%S' )
+    :param filename: file name (full path)
+    :param dateformat: (optional) format string for the date
+    :returns: File modification date/time as a string
+
+    .. note::
+        Example ``modDate = flModDate( 'C:/foo/bar.csv' , dateformat='%Y-%m-%dT%H:%M:%S' )``
     """
     try:
         si = os.stat(filename)
@@ -259,9 +287,11 @@ def flSize(filename):
     """
     Return the size of the input file in bytes
 
-    Input: filename - file name (full path)
-    Output: file size in bytes
-    Example: file_size = flSize( 'C:/foo/bar.csv' )
+    :param filename: file name (full path)
+    :returns: file size in bytes
+
+    .. note::
+        Example ``file_size = flSize( 'C:/foo/bar.csv' )``
     """
     try:
         si = os.stat(filename)

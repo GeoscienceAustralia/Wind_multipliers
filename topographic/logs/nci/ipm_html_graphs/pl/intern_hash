@@ -1,0 +1,35 @@
+#proc areadef
+  rectangle: 1 1 6 4
+  xrange: -1 9
+  yrange: 0 3"
+  xaxis.stubs: inc
+  yaxis.stubs: inc
+  xaxis.label: MPI rank
+  yaxis.label: # hash entries
+  xaxis.stubrange: 0 8
+  xaxis.stubvert: yes
+  yscaletype: log
+                                                                                
+#proc getdata
+data: 0 0 3" 
+1 1 3" 
+2 2 3" 
+3 3 3" 
+4 4 3" 
+5 5 3" 
+6 6 3" 
+7 7 3" 
+                                                                                
+                                                                                
+#proc lineplot
+  xfield: 1
+  yfield: 3
+  legendlabel: nkeys
+  linedetails: color=red
+  sort: yes
+                                                                                
+#proc legend
+  location: max+0.4 max
+//  reverseorder: yes
+  seglen: 0.3
+                                                                                

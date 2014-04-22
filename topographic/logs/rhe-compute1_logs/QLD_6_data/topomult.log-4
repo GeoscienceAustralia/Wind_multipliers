@@ -1,0 +1,10 @@
+2014-04-22 11:06:35: Started log file topomult.log-4 (detail level INFO)
+2014-04-22 11:06:35: Running topomult.py (pid 31357)
+2014-04-22 11:06:35: Version 0.3 - parallel implementation with configuration file
+2014-04-22 11:06:35: Reading data from ../py-input/dem_qld6.asc
+2014-04-22 11:06:57: xll = 449402.294857
+2014-04-22 11:06:57: yll = 8009050.890791
+2014-04-22 11:06:57: data_spacing = 30.137565
+2014-04-22 11:09:27: outputting unsmoothed data to: ../py-output/mh_ne.asc
+2014-04-22 11:09:32: outputting smoothed data to: ../py-output/mh_ne_smooth.asc
+2014-04-22 11:09:39: Finished direction ne

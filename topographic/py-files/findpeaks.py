@@ -1,10 +1,17 @@
-## --------------------------------------------------------
-## Generate the indices of the ridges in a data line
-## --------------------------------------------------------
-
 import numpy as np
 
+"""
+.. module:: findpeaks.py
+   :synopsis: Generate the indices of the ridges in a data line
+
+
+"""
+
 def findpeaks(y):
+    '''
+
+    :param y:
+    '''
 
     dy = np.diff(y)
     if y.size == 0:
@@ -51,6 +58,11 @@ def findpeaks(y):
     return ind
 
 def findvalleys(y):
+    '''
+    Generate the indices of the valleys in a data line
+
+    :param y:
+    '''
 
     y = -y
 

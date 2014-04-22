@@ -1,5 +1,3 @@
-.. toctree::
-   :maxdepth: 2
 
 
 topographic
@@ -14,11 +12,36 @@ File structure:
 * ``test/`` # contains scenario testing to verify output and and enhancements from AS1170.2 standard
 
 
-acsii_read.py
+ascii_read.py
 ===========================================
 
 
-.. automodule:: topographic.py-files.ascii_read
+.. automodule:: ascii_read
+   :members:
+
+
+files.py
+===========================================
+
+
+.. automodule:: files
+   :members:
+
+
+findpeaks.py
+===========================================
+
+
+.. automodule:: findpeaks
+   :members:
+
+
+
+topomult.py
+===========================================
+
+
+.. automodule:: topomult
    :members:
 
 

@@ -1,0 +1,48 @@
+#proc areadef
+  rectangle: 1 1 6 4
+  xrange: -1 9
+  yrange:  0 1.29658e+04
+  xaxis.stubs: inc
+  yaxis.stubs: inc
+  xaxis.stubrange: 0 8
+  xaxis.stubvert: yes
+  xaxis.label: sorted index
+  xaxis.labeldistance: 0.5
+  yaxis.label: time in seconds
+                                                                                
+#proc getdata
+data: 0 6 4.31931e+04 4.31840e+04 3.275e+00 1.29658e+04 30227.3 12966 2.6657e-05 7.0245e-07 
+1 7 4.31973e+04 4.31944e+04 2.900e+00 1.28388e+04 30358.5 12839 2.804e-05 7.248e-07 
+2 5 4.31931e+04 4.31847e+04 3.416e+00 1.15140e+04 31679.1 11514 2.1218e-05 6.1025e-07 
+3 4 4.31931e+04 4.31610e+04 2.111e+01 1.07247e+04 32468.4 10725 2.6935e-05 5.2946e-07 
+4 3 4.31931e+04 3.99032e+04 3.785e+00 8.42222e+03 34770.88 8422.2 2.8302e-05 4.4773e-07 
+5 2 4.31931e+04 3.98956e+04 4.112e+00 8.25809e+03 34935.01 8258.1 2.8408e-05 4.3144e-07 
+6 1 4.31931e+04 3.99084e+04 3.127e+00 3.54745e+03 39645.65 3547.4 2.4982e-05 5.7975e-07 
+7 0 4.31931e+04 3.95884e+04 3.575e+00 3.22103e-03 43193.09677897 0.0005828 0.0026372 1.0345e-06 
+                                                                                
+ #proc bars
+  lenfield: 8
+  locfield: 1
+  color: red
+  legendlabel: MPI_Barrier
+  barwidth: 0.444444444444444
+  outline: no
+  #saveas A
+ #proc bars
+  #clone: A
+  lenfield: 9
+  color: green
+  legendlabel: MPI_Comm_rank
+  stackfields: *
+                                                                                
+ #proc bars
+  #clone: A
+  lenfield: 10
+  color: blue
+  legendlabel: MPI_Comm_size
+  stackfields: *
+                                                                                
+ 
+#proc legend
+  location: max+0.4 max
+  seglen: 0.3
