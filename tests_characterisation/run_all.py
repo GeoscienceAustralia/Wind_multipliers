@@ -32,7 +32,13 @@ def run():
     args = parser.parse_args()
 
     suite = unittest.TestSuite()
-    suite.addTest(ParametrizedTestCase.parametrize(test_topo.TestOutput, param=args.size))
+
+    # Uncomment for DEM output test
+    #suite.addTest(ParametrizedTestCase.parametrize(test_topo.TestOutput, param=args.size))
+
+    # Dummy NETCDF test
+    suite.addTest(ParametrizedTestCase.parametrize(test_topo.TestDummyOutput, param=args.size))
+
     unittest.TextTestRunner(verbosity=2).run(suite)
 
 if __name__ == '__main__':

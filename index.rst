@@ -140,8 +140,8 @@ Code Documentation
    :maxdepth: 2
    
    sphinx_docs/topographic
-
    sphinx_docs/tests_characterisation
+   sphinx_docs/issues
    
 
 Module Index

@@ -33,7 +33,7 @@ def multiplier_calc(line, data_spacing):
          for i in range(1, np.size(ridge_ind)):
             m = Mh.Mh(fwd_line, ridge_ind[i], valley_ind[i-1], data_spacing)
             M = np.maximum(M, m)
-      
+
       else:                    # (2) up dowm up dowm ....
          for i in range(0, np.size(ridge_ind)):
             m = Mh.Mh(fwd_line, ridge_ind[i], valley_ind[i], data_spacing)

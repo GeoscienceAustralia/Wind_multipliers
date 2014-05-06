@@ -29,4 +29,8 @@ class ElevationData(object):
         self.data = numpy.genfromtxt(input_dem, skip_header=6)
 
         self.data = self.data.conj().transpose()
-        numpy.putmask(self.data, self.data==self.NODATA_value, numpy.nan)
+
+        #numpy.putmask(self.data, self.data==self.NODATA_value, numpy.nan)
+
+        # DEBUG - Uncomment to apply zero to NO_DATA values
+        numpy.putmask(self.data, self.data==self.NODATA_value, 0)

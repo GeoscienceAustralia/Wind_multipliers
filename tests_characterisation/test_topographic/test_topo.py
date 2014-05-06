@@ -1,12 +1,15 @@
 #!/usr/bin/python2.6
 import subprocess
-import numpy as np
-import read_output
 import os
 import unittest
+
+import numpy as np
+
+from tests_characterisation import read_file
 from tests_characterisation.parametrized_test_case import ParametrizedTestCase
 from tests_characterisation.misc import DIRECTIONS
 from tests_characterisation.misc import TestPaths
+
 
 """
 .. module:: test_topo
@@ -29,7 +32,7 @@ class TestOutput(ParametrizedTestCase):
     def test_TopoOutput(self):
 
         """
-        Runs current version of topomult.py, compares output with expected for each direction using np.allClose()
+        Runs current version of topomult.py, compares DEM output with expected for each direction using np.allClose()
 
        """
 
@@ -50,9 +53,9 @@ class TestOutput(ParametrizedTestCase):
 
             print 'Dir:', aDirection
 
-            expectedArray = read_output.readASC(os.path.join(self.test_paths.TOPO_TEST_EXPECTED_OUTPUT_DIR,
+            expectedArray = read_file.readASC(os.path.join(self.test_paths.TOPO_TEST_EXPECTED_OUTPUT_DIR,
                                                         'mh_'+ aDirection + '_smooth.asc'))
-            actualArray = read_output.readASC(os.path.join(self.test_paths.TOPO_TEST_ACTUAL_OUTPUT_DIR,
+            actualArray = read_file.readASC(os.path.join(self.test_paths.TOPO_TEST_ACTUAL_OUTPUT_DIR,
                                                         'mh_'+ aDirection + '_smooth.asc'))
 
             # ! allClose() will return False if NaN is detected
@@ -62,6 +65,35 @@ class TestOutput(ParametrizedTestCase):
 
             self.assertTrue(result)
 
+
+class TestDummyOutput(ParametrizedTestCase):
+    """
+
+    **This is a placeholder class**, currently used to simulate comparison of NETCDF output.
+    This test should be updated once NETCDF output is established for topomult.
+    """
+
+
+    def test_TopoOutputNC(self):
+
+        """
+        **This is a placeholder function**, currently used to simulate comparison of NETCDF output.
+        This test should be updated once NETCDF output is established for topomult.
+       """
+
+        self.test_paths = TestPaths()
+        self.test_paths.initTopoTestPaths(self.param)
+
+        expectedArray = read_file.readNetCDF(os.path.join(self.test_paths.TOPO_TEST_EXPECTED_OUTPUT_DIR,
+                                                            'netcdf_test_file.nc'),"e150s35demsCl")
+
+        actualArray = read_file.readNetCDF(os.path.join(self.test_paths.TOPO_TEST_ACTUAL_OUTPUT_DIR,
+                                                          'netcdf_test_file.nc'), "e150s35demsCl")
+
+        # ! allClose() will return False if NaN is detected
+        result = np.allclose(expectedArray, actualArray)
+
+        self.assertTrue(result)
 
 if __name__ == '__main__':
     unittest.main()

@@ -266,4 +266,17 @@ def run():
     pp.finalize()
     
 if __name__ == '__main__':
-    run()
+
+    # DEBUG - uncomment to print profiling log
+
+    import cProfile
+    import re
+    import pstats
+
+    cProfile.run('run()', "raw_profile_srtm")
+    p = pstats.Stats('raw_profile_srtm')
+    p.strip_dirs().sort_stats(-1).print_stats()
+
+
+
+    #run()

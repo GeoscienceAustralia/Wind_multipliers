@@ -13,7 +13,7 @@ def escarpment_factor(profile, ridge, valley, data_spacing):
     min_escarp = 0.5
     nrow = np.size(profile)
 
-    H  = profile[ridge] - profile[valley]
+    H = profile[ridge] - profile[valley]
     Lu = abs(ridge - valley) * data_spacing / 2
     slope = H / (2 * Lu)
     beta_ind = np.minimum(nrow - 1, np.floor(ridge + (2 * Lu / data_spacing)))
@@ -34,6 +34,7 @@ def escarpment_factor(profile, ridge, valley, data_spacing):
     else:      # the ridge is on the end
         slope_r2mL2 = 999
         escarp_factor = 1
+
     return escarp_factor
 
 def Mh(profile, ridge, valley, data_spacing):
