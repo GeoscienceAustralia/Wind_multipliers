@@ -30,7 +30,7 @@ class ElevationData(object):
 
         self.data = self.data.conj().transpose()
 
-        #numpy.putmask(self.data, self.data==self.NODATA_value, numpy.nan)
+        numpy.putmask(self.data, self.data==self.NODATA_value, numpy.nan)
 
         # DEBUG - Uncomment to apply zero to NO_DATA values
-        numpy.putmask(self.data, self.data==self.NODATA_value, 0)
+        #numpy.putmask(self.data, self.data==self.NODATA_value, 0)

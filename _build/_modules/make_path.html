@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Overview: module code &mdash; Wind Multipliers v0.3 documentation</title>
+    <title>make_path &mdash; Wind Multipliers v0.3 documentation</title>
     <link rel="stylesheet" href="../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -22,7 +22,8 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="Wind Multipliers v0.3 documentation" href="../index.html" /> 
+    <link rel="top" title="Wind Multipliers v0.3 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -34,7 +35,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">Wind Multipliers v0.3 documentation</a> &raquo;</li> 
+        <li><a href="../index.html">Wind Multipliers v0.3 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -43,26 +45,64 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>All modules for which code is available</h1>
-<ul><li><a href="Mh.html">Mh</a></li>
-<li><a href="ascii_read.html">ascii_read</a></li>
-<li><a href="combine.html">combine</a></li>
-<li><a href="direction_filter.html">direction_filter</a></li>
-<li><a href="files.html">files</a></li>
-<li><a href="findpeaks.html">findpeaks</a></li>
-<li><a href="make_path.html">make_path</a></li>
-<li><a href="multiplier_calc.html">multiplier_calc</a></li>
-<li><a href="terrain/terrain.html">terrain.terrain</a></li>
-<li><a href="terrain_class2mz_orig.html">terrain_class2mz_orig</a></li>
-<li><a href="test_topomult.html">test_topomult</a></li>
-<li><a href="tests_characterisation/misc.html">tests_characterisation.misc</a></li>
-<li><a href="tests_characterisation/parametrized_test_case.html">tests_characterisation.parametrized_test_case</a></li>
-<li><a href="tests_characterisation/read_file.html">tests_characterisation.read_file</a></li>
-<li><a href="tests_characterisation/run_all.html">tests_characterisation.run_all</a></li>
-<li><a href="tests_characterisation/test_topographic/read_output.html">tests_characterisation.test_topographic.read_output</a></li>
-<li><a href="tests_characterisation/test_topographic/test_topo.html">tests_characterisation.test_topographic.test_topo</a></li>
-<li><a href="topomult.html">topomult</a></li>
-</ul>
+  <h1>Source code for make_path</h1><pre>
+import numpy
+
+"""
+.. module:: make_path.py
+   :synopsis: Returns a vector of array indices for a path
+
+.. moduleauthor:: thomas - mar 2009
+
+"""
+
+<div class="viewcode-block" id="make_path"><a class="viewcode-back" href="../sphinx_docs/topographic.html#make_path.make_path">[docs]</a>def make_path(nr,nc,n,dir):
+
+    '''
+
+    Returns a vector of array indices for a path starting at index n in a matrix of size nr by nc and proceeding
+    in direction dir, where dir is one of the 8 cardinal directions (n,s,e,w,ne,nw,se,sw).
+    Note that the array indices are all 1-d indices.
+
+    :param nr:
+    :param nc:
+    :param n:
+    :param dir: Direction of the path
+    :returns: array
+    '''
+
+    dir = dir.lower()
+
+    #first compute the i,j coordinates from the 1-d index n
+    i = numpy.mod(n,nr) + 1
+    j = (n+1 - i)/nr + 1
+
+    # find the i and j increments according to
+    # the directions in which we traverse
+
+    if dir.find('n')&gt;=0:
+        i_incr = 1
+    elif dir.find('s')&gt;=0:
+        i_incr = -1
+    else:
+        i_incr = 0
+
+    if dir.find('w')&gt;=0:
+        j_incr = 1
+    elif dir.find('e')&gt;=0:
+        j_incr = -1
+    else:
+        j_incr = 0
+
+    # traverse, putting the positions in 1-index form
+    result = []
+    while ((i &lt;= nr and i &gt;= 1) and (j &lt;= nc and j &gt;= 1)):
+        l = i+(j-1)*nr-1
+        result.append(l)
+        i += i_incr
+        j += j_incr
+
+    return result</pre></div>
 
           </div>
         </div>
@@ -95,7 +135,8 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">Wind Multipliers v0.3 documentation</a> &raquo;</li> 
+        <li><a href="../index.html">Wind Multipliers v0.3 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

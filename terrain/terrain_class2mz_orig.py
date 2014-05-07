@@ -1,12 +1,21 @@
-import sys, string, os, time, shutil
+#import sys, string, os, time, shutil
 import value_lookup
+
+"""
+.. module:: terrain_class2mz_orig.py
+
+"""
 
 
 def terrain_class2mz_orig(terrain, loc, root, cyclone_area, ArcToolbox):
     """
-    Purpose: transfer the landsat classied image into original terrain multplier
-    Input: loc, input raster file format: loc + '_terrain_class.img', cyclone_area -yes or -no
-    Output: loc + '_mz_orig'
+    Transfer the landsat classied image into original terrain multplier
+
+    :param terrain:
+    :param loc: loc, input raster file format: loc + '_terrain_class.img'
+    :param root:
+    :param cyclone_area: yes/no
+    :param ArcToolbox: Path to Arc Toolbox
     """
 
     import arcpy

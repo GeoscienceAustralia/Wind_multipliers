@@ -295,11 +295,14 @@ Setting verbose=True will report all messages to STDOUT as well</p>
 <dl class="function">
 <dt id="findpeaks.findpeaks">
 <tt class="descclassname">findpeaks.</tt><tt class="descname">findpeaks</tt><big>(</big><em>y</em><big>)</big><a class="reference internal" href="../_modules/findpeaks.html#findpeaks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#findpeaks.findpeaks" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
+<dd><p>Generate the indices of the peaks in a data line</p>
+<table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>y</strong> &#8211; </td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">numpy array</td>
 </tr>
 </tbody>
 </table>
@@ -315,8 +318,126 @@ Setting verbose=True will report all messages to STDOUT as well</p>
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>y</strong> &#8211; </td>
 </tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">numpy array</td>
+</tr>
 </tbody>
 </table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-make_path">
+<span id="make-path-py"></span><h2>make_path.py<a class="headerlink" href="#module-make_path" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="make_path.make_path">
+<tt class="descclassname">make_path.</tt><tt class="descname">make_path</tt><big>(</big><em>nr</em>, <em>nc</em>, <em>n</em>, <em>dir</em><big>)</big><a class="reference internal" href="../_modules/make_path.html#make_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#make_path.make_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a vector of array indices for a path starting at index n in a matrix of size nr by nc and proceeding
+in direction dir, where dir is one of the 8 cardinal directions (n,s,e,w,ne,nw,se,sw).
+Note that the array indices are all 1-d indices.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>nr</strong> &#8211; </li>
+<li><strong>nc</strong> &#8211; </li>
+<li><strong>n</strong> &#8211; </li>
+<li><strong>dir</strong> &#8211; Direction of the path</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-Mh">
+<span id="mh-py"></span><h2>Mh.py<a class="headerlink" href="#module-Mh" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="Mh.Mh">
+<tt class="descclassname">Mh.</tt><tt class="descname">Mh</tt><big>(</big><em>profile</em>, <em>ridge</em>, <em>valley</em>, <em>data_spacing</em><big>)</big><a class="reference internal" href="../_modules/Mh.html#Mh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Mh.Mh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate M</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>profile</strong> &#8211; </li>
+<li><strong>ridge</strong> &#8211; </li>
+<li><strong>valley</strong> &#8211; </li>
+<li><strong>data_spacing</strong> &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">numpy array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Mh.escarpment_factor">
+<tt class="descclassname">Mh.</tt><tt class="descname">escarpment_factor</tt><big>(</big><em>profile</em>, <em>ridge</em>, <em>valley</em>, <em>data_spacing</em><big>)</big><a class="reference internal" href="../_modules/Mh.html#escarpment_factor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Mh.escarpment_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate escarpment factor</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>profile</strong> &#8211; </li>
+<li><strong>ridge</strong> &#8211; </li>
+<li><strong>valley</strong> &#8211; </li>
+<li><strong>data_spacing</strong> &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">escarpment factor (may be float || int)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-multiplier_calc">
+<span id="multiplier-calc-py"></span><h2>multiplier_calc.py<a class="headerlink" href="#module-multiplier_calc" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="multiplier_calc.multiplier_calc">
+<tt class="descclassname">multiplier_calc.</tt><tt class="descname">multiplier_calc</tt><big>(</big><em>line</em>, <em>data_spacing</em><big>)</big><a class="reference internal" href="../_modules/multiplier_calc.html#multiplier_calc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#multiplier_calc.multiplier_calc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the multipliers for a data line</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>line</strong> &#8211; </li>
+<li><strong>data_spacing</strong> &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">numpy array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-test_topomult">
+<span id="test-topomult-py"></span><h2>test_topomult.py<a class="headerlink" href="#module-test_topomult" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="test_topomult.TestFindPeaks">
+<em class="property">class </em><tt class="descclassname">test_topomult.</tt><tt class="descname">TestFindPeaks</tt><big>(</big><em>methodName='runTest'</em><big>)</big><a class="reference internal" href="../_modules/test_topomult.html#TestFindPeaks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_topomult.TestFindPeaks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unit test class for finding peaks and valleys</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="test_topomult.TestMultiplierCalc">
+<em class="property">class </em><tt class="descclassname">test_topomult.</tt><tt class="descname">TestMultiplierCalc</tt><big>(</big><em>methodName='runTest'</em><big>)</big><a class="reference internal" href="../_modules/test_topomult.html#TestMultiplierCalc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_topomult.TestMultiplierCalc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unit test class for top level multiplier calculation</p>
 </dd></dl>
 
 </div>
@@ -406,6 +527,10 @@ scattering.</p>
 <li><a class="reference internal" href="#module-ascii_read">ascii_read.py</a></li>
 <li><a class="reference internal" href="#module-files">files.py</a></li>
 <li><a class="reference internal" href="#module-findpeaks">findpeaks.py</a></li>
+<li><a class="reference internal" href="#module-make_path">make_path.py</a></li>
+<li><a class="reference internal" href="#module-Mh">Mh.py</a></li>
+<li><a class="reference internal" href="#module-multiplier_calc">multiplier_calc.py</a></li>
+<li><a class="reference internal" href="#module-test_topomult">test_topomult.py</a></li>
 <li><a class="reference internal" href="#module-topomult">topomult.py</a></li>
 </ul>
 </li>

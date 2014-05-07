@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Overview: module code &mdash; Wind Multipliers v0.3 documentation</title>
+    <title>sheilding &mdash; Wind Multipliers v0.3 documentation</title>
     <link rel="stylesheet" href="../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -22,7 +22,9 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="Wind Multipliers v0.3 documentation" href="../index.html" /> 
+    <link rel="top" title="Wind Multipliers v0.3 documentation" href="../index.html" />
+    <link rel="next" title="tests_characterisation" href="tests_characterisation.html" />
+    <link rel="prev" title="terrain" href="terrain.html" /> 
   </head>
   <body>
     <div class="related">
@@ -34,6 +36,12 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="tests_characterisation.html" title="tests_characterisation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="terrain.html" title="terrain"
+             accesskey="P">previous</a> |</li>
         <li><a href="../index.html">Wind Multipliers v0.3 documentation</a> &raquo;</li> 
       </ul>
     </div>  
@@ -43,32 +51,49 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>All modules for which code is available</h1>
-<ul><li><a href="Mh.html">Mh</a></li>
-<li><a href="ascii_read.html">ascii_read</a></li>
-<li><a href="combine.html">combine</a></li>
-<li><a href="direction_filter.html">direction_filter</a></li>
-<li><a href="files.html">files</a></li>
-<li><a href="findpeaks.html">findpeaks</a></li>
-<li><a href="make_path.html">make_path</a></li>
-<li><a href="multiplier_calc.html">multiplier_calc</a></li>
-<li><a href="terrain/terrain.html">terrain.terrain</a></li>
-<li><a href="terrain_class2mz_orig.html">terrain_class2mz_orig</a></li>
-<li><a href="test_topomult.html">test_topomult</a></li>
-<li><a href="tests_characterisation/misc.html">tests_characterisation.misc</a></li>
-<li><a href="tests_characterisation/parametrized_test_case.html">tests_characterisation.parametrized_test_case</a></li>
-<li><a href="tests_characterisation/read_file.html">tests_characterisation.read_file</a></li>
-<li><a href="tests_characterisation/run_all.html">tests_characterisation.run_all</a></li>
-<li><a href="tests_characterisation/test_topographic/read_output.html">tests_characterisation.test_topographic.read_output</a></li>
-<li><a href="tests_characterisation/test_topographic/test_topo.html">tests_characterisation.test_topographic.test_topo</a></li>
-<li><a href="topomult.html">topomult</a></li>
-</ul>
+  <div class="section" id="sheilding">
+<h1>sheilding<a class="headerlink" href="#sheilding" title="Permalink to this headline">¶</a></h1>
+<p>Sheilding multi docs go here..</p>
+<div class="section" id="module-combine">
+<span id="combine-py"></span><h2>combine.py<a class="headerlink" href="#module-combine" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="combine.combine">
+<tt class="descclassname">combine.</tt><tt class="descname">combine</tt><big>(</big><em>loc</em>, <em>root</em>, <em>ArcToolbox</em><big>)</big><a class="reference internal" href="../_modules/combine.html#combine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#combine.combine" title="Permalink to this definition">¶</a></dt>
+<dd><p>To Generate Shielding Multiplier. This tool will be used for each direction to
+derive the shielding multipliers after moving averaging the shielding multiplier using direction_filter.py
+It also will remove the conservatism. 
+input: slope, reclassified aspect, shield origin in one direction
+output: shielding multiplier in the dirction</p>
+</dd></dl>
+
+</div>
+</div>
+
 
           </div>
         </div>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">sheilding</a><ul>
+<li><a class="reference internal" href="#module-combine">combine.py</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="terrain.html"
+                        title="previous chapter">terrain</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tests_characterisation.html"
+                        title="next chapter">tests_characterisation</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/sphinx_docs/sheilding.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
@@ -95,6 +120,12 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="tests_characterisation.html" title="tests_characterisation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="terrain.html" title="terrain"
+             >previous</a> |</li>
         <li><a href="../index.html">Wind Multipliers v0.3 documentation</a> &raquo;</li> 
       </ul>
     </div>

@@ -9,8 +9,10 @@ import numpy as np
 
 def findpeaks(y):
     '''
+    Generate the indices of the peaks in a data line
 
     :param y:
+    :returns: numpy array
     '''
 
     dy = np.diff(y)
@@ -62,6 +64,7 @@ def findvalleys(y):
     Generate the indices of the valleys in a data line
 
     :param y:
+    :returns: numpy array
     '''
 
     y = -y

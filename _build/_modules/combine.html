@@ -1,8 +1,56 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>combine &mdash; Wind Multipliers v0.3 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Wind Multipliers v0.3 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Wind Multipliers v0.3 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for combine</h1><pre>
 #import sys, string, os, arcpy, time, shutil
 import value_lookup
 
 
-def combine(loc, root, ArcToolbox):
+<div class="viewcode-block" id="combine"><a class="viewcode-back" href="../sphinx_docs/sheilding.html#combine.combine">[docs]</a>def combine(loc, root, ArcToolbox):
     """
     To Generate Shielding Multiplier. This tool will be used for each direction to
     derive the shielding multipliers after moving averaging the shielding multiplier using direction_filter.py
@@ -50,14 +98,14 @@ def combine(loc, root, ArcToolbox):
     del arcpy
 
     
-
+</div>
 def combine_each(slope, aspect, shield_orig, ms, one_dir):
 
     dire_aspect = value_lookup.dire_aspect
     aspect_value = dire_aspect[one_dir]
     
     yes_dire = "Value = " + str(aspect_value)
-    not_dire = "Value <> " + str(aspect_value)
+    not_dire = "Value &lt;&gt; " + str(aspect_value)
 
     Input_raster_or_constant_value_2 = "0.9"
 
@@ -92,17 +140,17 @@ def combine_each(slope, aspect, shield_orig, ms, one_dir):
     arcpy.gp.ExtractByAttributes_sa(aspect, yes_dire, xasp_n)    
     arcpy.gp.Con_sa(xasp_n, slope, xslope_n, "", "")
 
-    # select pixel with slope value > 1.8
-    arcpy.gp.ExtractByAttributes_sa(xslope_n, "value > 1.8", xslope_n3)    
+    # select pixel with slope value &gt; 1.8
+    arcpy.gp.ExtractByAttributes_sa(xslope_n, "value &gt; 1.8", xslope_n3)    
     arcpy.gp.Reclassify_sa(xslope_n3, "Value", "1 1000 1", xshield_n31, "DATA")
 
-    # select pixel with slope value <= 5.71
-    arcpy.gp.ExtractByAttributes_sa(xslope_n, "value <= 5.71", xslope_n1)
+    # select pixel with slope value &lt;= 5.71
+    arcpy.gp.ExtractByAttributes_sa(xslope_n, "value &lt;= 5.71", xslope_n1)
     arcpy.gp.Con_sa(xslope_n1, shield_orig, xshield_n1, "", "")
 
-    # select pixel with slope value > 5.71 and value <= 21.8
-    arcpy.gp.ExtractByAttributes_sa(xslope_n, "value > 5.71", xslope_temp)
-    arcpy.gp.ExtractByAttributes_sa(xslope_temp, "value <= 21.8", xslope_n2)
+    # select pixel with slope value &gt; 5.71 and value &lt;= 21.8
+    arcpy.gp.ExtractByAttributes_sa(xslope_n, "value &gt; 5.71", xslope_temp)
+    arcpy.gp.ExtractByAttributes_sa(xslope_temp, "value &lt;= 21.8", xslope_n2)
     # interpolation 
     expr = "((1 - " + shield_orig + ") * (" + xslope_n2 + " - 5.71) / (21.8 - 5.71)) + " + shield_orig
     arcpy.gp.SingleOutputMapAlgebra_sa(expr, xslope_adjust)
@@ -115,10 +163,10 @@ def combine_each(slope, aspect, shield_orig, ms, one_dir):
     expr2 = "merge(" + xshield_o + "," + xshield_n1 + "," + xslope_adjust + "," + xshield_n31 + ")"
     arcpy.gp.SingleOutputMapAlgebra_sa(expr2, xshield_merge)
 
-    # Remove convertism, if value >= 0.9, times itself, if value < 0.9, times 0.9
-    arcpy.gp.ExtractByAttributes_sa(xshield_merge, "value >= 0.9", xshield_con1)
+    # Remove convertism, if value &gt;= 0.9, times itself, if value &lt; 0.9, times 0.9
+    arcpy.gp.ExtractByAttributes_sa(xshield_merge, "value &gt;= 0.9", xshield_con1)
     arcpy.gp.Square_sa(xshield_con1, xshield_1)
-    arcpy.gp.ExtractByAttributes_sa(xshield_merge, "value < 0.9", xshield_con2)
+    arcpy.gp.ExtractByAttributes_sa(xshield_merge, "value &lt; 0.9", xshield_con2)
     arcpy.gp.Times_sa(xshield_con2, Input_raster_or_constant_value_2, xshield_2)
 
     # merge the two into one
@@ -158,3 +206,46 @@ def combine_each(slope, aspect, shield_orig, ms, one_dir):
 ##
 ##                             
 
+</pre>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Wind Multipliers v0.3 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Geoscience Australia.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

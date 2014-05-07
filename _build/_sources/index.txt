@@ -132,6 +132,11 @@ $ mpirun -np 8 python topomult.py -i <input file> -o <output path>
 
 	$ -mca btl ^openib
 
+Issues
+======
+
+Issues for this project are currently being tracked through JIRA here: http://intranet.ga.gov.au/jira/browse/WM
+
 
 Code Documentation
 ==================
@@ -140,9 +145,10 @@ Code Documentation
    :maxdepth: 2
    
    sphinx_docs/topographic
+   sphinx_docs/terrain
+   sphinx_docs/sheilding
    sphinx_docs/tests_characterisation
-   sphinx_docs/issues
-   
+     
 
 Module Index
 ==================

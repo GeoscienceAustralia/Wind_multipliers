@@ -36,6 +36,35 @@ findpeaks.py
    :members:
 
 
+make_path.py
+============
+
+.. automodule:: make_path
+   :members:
+
+
+Mh.py
+============
+
+.. automodule:: Mh
+   :members:
+
+
+multiplier_calc.py
+===================
+
+.. automodule:: multiplier_calc
+   :members:
+
+
+test_topomult.py
+===================
+
+.. automodule:: test_topomult
+   :members:
+
+
+
 
 topomult.py
 ===========================================

@@ -19,6 +19,10 @@ import sys, os
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.append('/nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/wind_multiplier_git/Wind_multipliers/'
                 'topographic/py-files')
+sys.path.append('/nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/wind_multiplier_git/Wind_multipliers/'
+                'terrain')
+sys.path.append('/nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/wind_multiplier_git/Wind_multipliers/'
+                'shielding')
 
 # -- General configuration -----------------------------------------------------
 

@@ -44,11 +44,11 @@ test_topographic
 
 
 
-read_output.py
+read_file.py
 ===========================================
 
      
-.. automodule:: tests_characterisation.test_topographic.read_output
+.. automodule:: tests_characterisation.read_file
    :members:
 
 
