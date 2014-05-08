@@ -1,0 +1,14 @@
+Pypar (version 2.1.5) initialised MPI OK with 8 processors
+======================================================================================
+			Resource Usage on 2014-04-10 17:42:03.652208:
+	JobId:  3594050.r-man2  
+	Project: w85 
+	Exit Status: 271 (Linux Signal 15)
+	Service Units: 0.23
+	NCPUs Requested: 32				NCPUs Used: 32
+							CPU Time Used: 00:00:00
+	Memory Requested: 15000mb 			Memory Used: 0mb
+							Vmem Used: 0mb
+	Walltime requested: 15:00:00 			Walltime Used: 00:00:26
+	jobfs request: 200mb				jobfs used: 2mb
+======================================================================================

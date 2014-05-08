@@ -1,0 +1,144 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>multiplier_calc &mdash; Wind Multipliers v0.3 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Wind Multipliers v0.3 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Wind Multipliers v0.3 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for multiplier_calc</h1><pre>
+import logging as log
+import numpy as np
+import Mh            # calculate Mh using the simpler formula modified by C.Thomas 2009        
+from findpeaks import findpeaks, findvalleys     # get the indices of the ridges in a data line
+
+"""
+.. module:: multiplier_calc.py
+   :synopsis: Computes the multipliers for a data line
+
+"""
+
+
+<div class="viewcode-block" id="multiplier_calc"><a class="viewcode-back" href="../sphinx_docs/topographic.html#multiplier_calc.multiplier_calc">[docs]</a>def multiplier_calc(line, data_spacing):
+    """
+    Computes the multipliers for a data line
+
+    :param line:
+    :param data_spacing:
+    :returns: numpy array
+    """
+
+    # --------------------------------------------------------
+    # initialise M as an array filled with 1
+    # --------------------------------------------------------
+    nrow = np.size(line)
+    M = np.ones((nrow, 1), dtype=float)
+
+    # take the largest integer of each element of the data line
+    fwd_line = np.floor(line)
+
+    # Get the indices of the ridges &amp; valleys
+    ridge_ind  = findpeaks(fwd_line)        # relative ind
+    valley_ind = findvalleys(fwd_line)    # relative ind
+
+    if np.size(ridge_ind) == 0: # the DEM is completely flat
+        log.debug( "Flat line" )
+
+    elif np.size(ridge_ind) == 1 and ridge_ind[0] == 0:  # the DEM is downward slope all the time
+        log.debug( "Downward slope" )
+
+    else:                        # 2 general cases, calculate m, works as Mh.m
+
+        if ridge_ind[0] == 0:    # (1) down up down up ....
+            for i in range(1, np.size(ridge_ind)):
+                m = Mh.Mh(fwd_line, ridge_ind[i], valley_ind[i-1], data_spacing)
+                M = np.maximum(M, m)
+
+        else:                    # (2) up dowm up dowm ....
+            for i in range(0, np.size(ridge_ind)):
+                m = Mh.Mh(fwd_line, ridge_ind[i], valley_ind[i], data_spacing)
+                M = np.maximum(M, m)
+
+    return M</div>
+</pre>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Wind Multipliers v0.3 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Geoscience Australia.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

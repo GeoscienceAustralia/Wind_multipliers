@@ -1,13 +1,3 @@
-##------------------------------------------------------
-## This is the main code for calculating 2-D multipliers - wind direction = north 
-## input DEM is stored in ../input
-## outputs including smoothed and unsmoothed data are written in ../python_output
-## more details in readme.txt
-
-## 2013 Python code - W.Jiang
-# --------------------------------------------------------
-# import supporting modules
-# --------------------------------------------------------
 import os
 from os.path import join as pjoin, exists
 import numpy as np
@@ -23,15 +13,45 @@ import multiplier_calc
 
 from files import flStartLog
 
+"""
+.. module:: topomult
+   :synopsis: This is the main code for calculating 2-D multipliers - wind direction = north
+   input DEM is stored in ../input
+   outputs including smoothed and unsmoothed data are written in ../python_output
+   more details in readme.txt
+
+.. moduleauthor::  W.Jiang, 2013
+
+
+"""
+
 __version__ = '0.3 - parallel implementation with configuration file'
 
 
 def work(input_dem, mh_data_dir, directions):
-    
+    """
+    Iterates through directions executing :func:`run()`
+
+    :param input_dem: The path for input DEM
+    :param mh_data_dir: The path for output dir
+    :param directions: List of directions
+    :type directions: List
+
+    """
     for direction in balanced(directions):
         topomult(input_dem, mh_data_dir, direction)
 
 def topomult(input_dem, mh_data_dir, direction):
+
+    """
+    Executes core topographic multiplier functionality
+
+    :param input_dem: The path for input DEM
+    :param mh_data_dir: The path for output dir
+    :param direction: A direction
+    :type direction: str
+
+    """
     
     if not exists(mh_data_dir):
         try:
@@ -144,6 +164,8 @@ def balanced(iterable):
     the iterator to have been generated on all processors before hand. This is
     only some magical slicing of the iterator, i.e., a poor man version of
     scattering.
+
+    :param iterable: Iterable piece of data, i.e. list of directions
     """
     
     P, p = pp.size(), pp.rank()
@@ -244,4 +266,17 @@ def run():
     pp.finalize()
     
 if __name__ == '__main__':
-    run()
+
+    # DEBUG - uncomment to print profiling log
+
+    import cProfile
+    import re
+    import pstats
+
+    cProfile.run('run()', "raw_profile_srtm")
+    p = pstats.Stats('raw_profile_srtm')
+    p.strip_dirs().sort_stats(-1).print_stats()
+
+
+
+    #run()

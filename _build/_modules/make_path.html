@@ -1,0 +1,147 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>make_path &mdash; Wind Multipliers v0.3 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Wind Multipliers v0.3 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Wind Multipliers v0.3 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for make_path</h1><pre>
+import numpy
+
+"""
+.. module:: make_path.py
+   :synopsis: Returns a vector of array indices for a path
+
+.. moduleauthor:: thomas - mar 2009
+
+"""
+
+<div class="viewcode-block" id="make_path"><a class="viewcode-back" href="../sphinx_docs/topographic.html#make_path.make_path">[docs]</a>def make_path(nr,nc,n,dir):
+
+    '''
+
+    Returns a vector of array indices for a path starting at index n in a matrix of size nr by nc and proceeding
+    in direction dir, where dir is one of the 8 cardinal directions (n,s,e,w,ne,nw,se,sw).
+    Note that the array indices are all 1-d indices.
+
+    :param nr:
+    :param nc:
+    :param n:
+    :param dir: Direction of the path
+    :returns: array
+    '''
+
+    dir = dir.lower()
+
+    #first compute the i,j coordinates from the 1-d index n
+    i = numpy.mod(n,nr) + 1
+    j = (n+1 - i)/nr + 1
+
+    # find the i and j increments according to
+    # the directions in which we traverse
+
+    if dir.find('n')&gt;=0:
+        i_incr = 1
+    elif dir.find('s')&gt;=0:
+        i_incr = -1
+    else:
+        i_incr = 0
+
+    if dir.find('w')&gt;=0:
+        j_incr = 1
+    elif dir.find('e')&gt;=0:
+        j_incr = -1
+    else:
+        j_incr = 0
+
+    # traverse, putting the positions in 1-index form
+    result = []
+    while ((i &lt;= nr and i &gt;= 1) and (j &lt;= nc and j &gt;= 1)):
+        l = i+(j-1)*nr-1
+        result.append(l)
+        i += i_incr
+        j += j_incr
+
+    return result</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Wind Multipliers v0.3 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Geoscience Australia.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

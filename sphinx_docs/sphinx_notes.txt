@@ -1,0 +1,29 @@
+
+
+
+TO UPDATE/BUILD DOCS, RUN: $ sphinx-build -b html <input_dir> <output_dir>
+
+E.G. FROM WITHIN Wind_multipliers/
+
+$ sphinx-build -b html . _build
+
+
+
+FOR EACH PAGE IN DOC TREE, YOU NEED AN .RST FILE:
+
+E.G. INDEX .RTS LINKS TO sphinx_docs/topographic.rst - WHICH USES ..automodule:: DIRECTIVE 
+TO PULL OUT DOC STRINGS FROM GIVEN MODULES IN THE TOPOGRAPHIC MULTIPLIER.
+
+
+
+SEE THIS PAGE FOR EXAMPLE USAGE:
+
+https://pythonhosted.org/an_example_pypi_project/sphinx.html#full-code-example
+
+OUTPUT FOR GIVEN FORMATTING SHOWN HERE:
+
+https://pythonhosted.org/an_example_pypi_project/pkgcode.html
+
+
+IF YOU GET "MODULE NOT FOUND" TYPE ERRORS WHEN RUNNING BUILD, YOU MAY NEED TO APPEND MODULE 
+PATH IN THE CONF.PY FILE (IN ROOT, AROUND LINE 20)

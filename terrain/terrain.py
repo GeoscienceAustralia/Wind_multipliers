@@ -1,26 +1,36 @@
-# ---------------------------------------------------------------------------
-# Purpose: to derive the terrain multplier
-# Input: loc, input raster file format: loc + '_terrain_class.img'
-#        cyclone_area -yes or -no
-# Output: loc + '_mz_orig'
-# Created on 12 08 2011 by Tina Yang
-# ---------------------------------------------------------------------------
-
-    
-# Import system & process modules
-
-import sys, string, os, time, shutil
+import sys
+import string
+import os
+import time
+import shutil
 import terrain_class2mz_orig
 import direction_filter
 import ConfigParser
 import arcpy
 
+"""
+.. module:: terrain.py
+   :synopsis: Derive the terrain multplier
 
-def terrain(root, loc_list, cyclone_area, ArcToolbox):
-    
+.. moduleauthor:: Tina Yang <Tina.Yang@ga.gov.au>
+
+"""
+
+
+def terrain(root, loc_list, cyclone_area, arctoolbox):
+    """
+    Derives the terrain multplier
+
+    :param root:
+    :param loc_list: loc, input raster file format: loc + '_terrain_class.img'
+    :param cyclone_area: yes/no
+    :param arctoolbox: path to Arc Toolbox
+
+    :outputs: loc + '_mz_orig'
+    """
+
     # start timing
     startTime = time.time()
-
 
     directory = root + "\\process\\terrain"
     if os.path.exists(directory):
@@ -40,7 +50,7 @@ def terrain(root, loc_list, cyclone_area, ArcToolbox):
         
         # produce the original terrain multipler from the input terrain classified image   
         print '\nReclassfy the terrain classes into initial terrain multipliers ...'
-        terrain_class2mz_orig.terrain_class2mz_orig(terrain, loc, root, cyclone_area, ArcToolbox)
+        terrain_class2mz_orig.terrain_class2mz_orig(terrain, loc, root, cyclone_area, arctoolbox)
 
         # convoulution of the original terrain multipler into different directions
         print '\nMoving average for each direction ...'

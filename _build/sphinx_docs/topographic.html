@@ -1,0 +1,590 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>topographic &mdash; Wind Multipliers v0.3 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Wind Multipliers v0.3 documentation" href="../index.html" />
+    <link rel="next" title="tests_characterisation" href="tests_characterisation.html" />
+    <link rel="prev" title="Wind Multipliers" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tests_characterisation.html" title="tests_characterisation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../index.html" title="Wind Multipliers"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Wind Multipliers v0.3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="topographic">
+<h1>topographic<a class="headerlink" href="#topographic" title="Permalink to this headline">¶</a></h1>
+<p>File structure:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">py-files/</span></tt> # contains all multiplier code</li>
+<li><tt class="docutils literal"><span class="pre">py-input/</span></tt> # input (DEM)</li>
+<li><tt class="docutils literal"><span class="pre">py-output/</span></tt> # ouput (8 x DEMs)</li>
+<li><tt class="docutils literal"><span class="pre">test/</span></tt> # contains scenario testing to verify output and and enhancements from AS1170.2 standard</li>
+</ul>
+<div class="section" id="module-ascii_read">
+<span id="ascii-read-py"></span><h2>ascii_read.py<a class="headerlink" href="#module-ascii_read" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="ascii_read.ElevationData">
+<em class="property">class </em><tt class="descclassname">ascii_read.</tt><tt class="descname">ElevationData</tt><big>(</big><em>input_dem</em><big>)</big><a class="reference internal" href="../_modules/ascii_read.html#ElevationData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ascii_read.ElevationData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read input DEM stored in ../input</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>input_dem</strong> &#8211; Input DEM as .asc file</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-files">
+<span id="files-py"></span><h2>files.py<a class="headerlink" href="#module-files" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="files.flConfigFile">
+<tt class="descclassname">files.</tt><tt class="descname">flConfigFile</tt><big>(</big><em>extension='.ini'</em>, <em>prefix=''</em>, <em>level=None</em><big>)</big><a class="reference internal" href="../_modules/files.html#flConfigFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#files.flConfigFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build a configuration filename (default extension .ini) based on the
+name and path of the function/module calling this function. Can also
+be useful for setting log file names automatically.
+If prefix is passed, this is preprended to the filename.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>extension</strong> &#8211; (default=.ini)</li>
+<li><strong>prefix</strong> &#8211; (default is empty)</li>
+<li><strong>level</strong> &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Full path of calling function/module, with the source file&#8217;s    extension replaced with extension, and optionally prefix inserted after the last path separator</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Example <tt class="docutils literal"><span class="pre">configFile</span> <span class="pre">=</span> <span class="pre">flConfigFile('.ini')</span></tt></p>
+<p class="last">Calling <tt class="docutils literal"><span class="pre">flConfigFile</span></tt> from <tt class="docutils literal"><span class="pre">/foo/bar/baz.py</span></tt> should return <tt class="docutils literal"><span class="pre">/foo/bar/baz.ini</span></tt></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="files.flGetStat">
+<tt class="descclassname">files.</tt><tt class="descname">flGetStat</tt><big>(</big><em>filename</em>, <em>CHUNK=65536</em><big>)</big><a class="reference internal" href="../_modules/files.html#flGetStat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#files.flGetStat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get basic statistics of filename - namely directory, name (excluding
+base path), md5sum and the last modified date. Useful for checking
+if a file has previously been processed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>filename</strong> &#8211; </li>
+<li><strong>CHUNK</strong> &#8211; Chunk size (for md5sum calculation)</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">path, name, md5sum, modification date</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Example <tt class="docutils literal"><span class="pre">dir,</span> <span class="pre">name,</span> <span class="pre">md5sum,</span> <span class="pre">moddate</span> <span class="pre">=</span> <span class="pre">flGetStat(filename)</span></tt></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="files.flLogFatalError">
+<tt class="descclassname">files.</tt><tt class="descname">flLogFatalError</tt><big>(</big><em>tblines</em><big>)</big><a class="reference internal" href="../_modules/files.html#flLogFatalError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#files.flLogFatalError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log the error messages normally reported in a traceback
+so that all error messages can be caught.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tblines</strong> &#8211; created by calling <tt class="docutils literal"><span class="pre">traceback.format_exc().splitlines()</span></tt></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="files.flModDate">
+<tt class="descclassname">files.</tt><tt class="descname">flModDate</tt><big>(</big><em>filename</em>, <em>dateformat='%Y-%m-%d %H:%M:%S'</em><big>)</big><a class="reference internal" href="../_modules/files.html#flModDate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#files.flModDate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the update date of the input file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>filename</strong> &#8211; file name (full path)</li>
+<li><strong>dateformat</strong> &#8211; (optional) format string for the date</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">File modification date/time as a string</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Example <tt class="docutils literal"><span class="pre">modDate</span> <span class="pre">=</span> <span class="pre">flModDate(</span> <span class="pre">'C:/foo/bar.csv'</span> <span class="pre">,</span> <span class="pre">dateformat='%Y-%m-%dT%H:%M:%S'</span> <span class="pre">)</span></tt></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="files.flModuleName">
+<tt class="descclassname">files.</tt><tt class="descname">flModuleName</tt><big>(</big><em>level=1</em><big>)</big><a class="reference internal" href="../_modules/files.html#flModuleName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#files.flModuleName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the name of the module &lt;level&gt; levels above this function</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>level</strong> &#8211; level in the stack of the module calling this function    (default = 1, function calling flModuleName)</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">module name (as str)</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Example <tt class="docutils literal"><span class="pre">mymodule</span> <span class="pre">=</span> <span class="pre">flModuleName(</span> <span class="pre">)</span></tt></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="files.flModulePath">
+<tt class="descclassname">files.</tt><tt class="descname">flModulePath</tt><big>(</big><em>level=1</em><big>)</big><a class="reference internal" href="../_modules/files.html#flModulePath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#files.flModulePath" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the path of the module &lt;level&gt; levels above this function</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>level</strong> &#8211; level in the stack of the module calling this function    (default = 1, function calling flModulePath)</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">path, basename and extension of the file containing the module</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p><tt class="docutils literal"><span class="pre">path,</span> <span class="pre">base,</span> <span class="pre">ext</span> <span class="pre">=</span> <span class="pre">flModulePath(</span> <span class="pre">)</span></tt></p>
+<p>Calling <tt class="docutils literal"><span class="pre">flModulePath()</span></tt> from <tt class="docutils literal"><span class="pre">&quot;/foo/bar/baz.py&quot;</span></tt> produces the result:</p>
+<p class="last"><tt class="docutils literal"><span class="pre">&quot;/foo/bar&quot;,</span> <span class="pre">&quot;baz&quot;,</span> <span class="pre">&quot;.py&quot;</span></tt></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="files.flProgramVersion">
+<tt class="descclassname">files.</tt><tt class="descname">flProgramVersion</tt><big>(</big><em>level=None</em><big>)</big><a class="reference internal" href="../_modules/files.html#flProgramVersion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#files.flProgramVersion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to return the __version__ string from the parent
+program, where it is defined.
+If it is not defined, return an empty string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>level</strong> &#8211; level - level in the stack of the main script    (default = maximum level in the stack)</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">version string (defined as the __version__ global variable)</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Example <tt class="docutils literal"><span class="pre">my_program_version</span> <span class="pre">=</span> <span class="pre">flProgramVersion()</span></tt></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="files.flSize">
+<tt class="descclassname">files.</tt><tt class="descname">flSize</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="../_modules/files.html#flSize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#files.flSize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the size of the input file in bytes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> &#8211; file name (full path)</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">file size in bytes</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Example <tt class="docutils literal"><span class="pre">file_size</span> <span class="pre">=</span> <span class="pre">flSize(</span> <span class="pre">'C:/foo/bar.csv'</span> <span class="pre">)</span></tt></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="files.flStartLog">
+<tt class="descclassname">files.</tt><tt class="descname">flStartLog</tt><big>(</big><em>logFile</em>, <em>logLevel</em>, <em>verbose=False</em>, <em>datestamp=False</em>, <em>newlog=True</em><big>)</big><a class="reference internal" href="../_modules/files.html#flStartLog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#files.flStartLog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start logging to logFile all messages of logLevel and higher.
+Setting verbose=True will report all messages to STDOUT as well</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>logFile</strong> &#8211; full path to log file</li>
+<li><strong>logLevel</strong> &#8211; string specifiying one of the standard Python logging levels    (&#8216;NOTSET&#8217;,&#8217;DEBUG&#8217;,&#8217;INFO&#8217;,&#8217;WARNING&#8217;,&#8217;ERROR&#8217;,&#8217;CRITICAL&#8217;)</li>
+<li><strong>verbose</strong> &#8211; (boolean) True will echo all logging calls to STDOUT</li>
+<li><strong>datestamp</strong> &#8211; (boolean) True will include a timestamp of the creation time in the filename</li>
+<li><strong>newlog</strong> &#8211; (boolean) True will create a new log file each time this function is called.    False will append to the existing file.</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Example <tt class="docutils literal"><span class="pre">flStartLog('/home/user/log/app.log','INFO',verbose=True)</span></tt></p>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-findpeaks">
+<span id="findpeaks-py"></span><h2>findpeaks.py<a class="headerlink" href="#module-findpeaks" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="findpeaks.findpeaks">
+<tt class="descclassname">findpeaks.</tt><tt class="descname">findpeaks</tt><big>(</big><em>y</em><big>)</big><a class="reference internal" href="../_modules/findpeaks.html#findpeaks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#findpeaks.findpeaks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate the indices of the peaks in a data line</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>y</strong> &#8211; </td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">numpy array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="findpeaks.findvalleys">
+<tt class="descclassname">findpeaks.</tt><tt class="descname">findvalleys</tt><big>(</big><em>y</em><big>)</big><a class="reference internal" href="../_modules/findpeaks.html#findvalleys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#findpeaks.findvalleys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate the indices of the valleys in a data line</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>y</strong> &#8211; </td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">numpy array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-make_path">
+<span id="make-path-py"></span><h2>make_path.py<a class="headerlink" href="#module-make_path" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="make_path.make_path">
+<tt class="descclassname">make_path.</tt><tt class="descname">make_path</tt><big>(</big><em>nr</em>, <em>nc</em>, <em>n</em>, <em>dir</em><big>)</big><a class="reference internal" href="../_modules/make_path.html#make_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#make_path.make_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a vector of array indices for a path starting at index n in a matrix of size nr by nc and proceeding
+in direction dir, where dir is one of the 8 cardinal directions (n,s,e,w,ne,nw,se,sw).
+Note that the array indices are all 1-d indices.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>nr</strong> &#8211; </li>
+<li><strong>nc</strong> &#8211; </li>
+<li><strong>n</strong> &#8211; </li>
+<li><strong>dir</strong> &#8211; Direction of the path</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-Mh">
+<span id="mh-py"></span><h2>Mh.py<a class="headerlink" href="#module-Mh" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="Mh.Mh">
+<tt class="descclassname">Mh.</tt><tt class="descname">Mh</tt><big>(</big><em>profile</em>, <em>ridge</em>, <em>valley</em>, <em>data_spacing</em><big>)</big><a class="reference internal" href="../_modules/Mh.html#Mh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Mh.Mh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate M</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>profile</strong> &#8211; </li>
+<li><strong>ridge</strong> &#8211; </li>
+<li><strong>valley</strong> &#8211; </li>
+<li><strong>data_spacing</strong> &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">numpy array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Mh.escarpment_factor">
+<tt class="descclassname">Mh.</tt><tt class="descname">escarpment_factor</tt><big>(</big><em>profile</em>, <em>ridge</em>, <em>valley</em>, <em>data_spacing</em><big>)</big><a class="reference internal" href="../_modules/Mh.html#escarpment_factor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Mh.escarpment_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate escarpment factor</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>profile</strong> &#8211; </li>
+<li><strong>ridge</strong> &#8211; </li>
+<li><strong>valley</strong> &#8211; </li>
+<li><strong>data_spacing</strong> &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">escarpment factor (may be float || int)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-multiplier_calc">
+<span id="multiplier-calc-py"></span><h2>multiplier_calc.py<a class="headerlink" href="#module-multiplier_calc" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="multiplier_calc.multiplier_calc">
+<tt class="descclassname">multiplier_calc.</tt><tt class="descname">multiplier_calc</tt><big>(</big><em>line</em>, <em>data_spacing</em><big>)</big><a class="reference internal" href="../_modules/multiplier_calc.html#multiplier_calc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#multiplier_calc.multiplier_calc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the multipliers for a data line</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>line</strong> &#8211; </li>
+<li><strong>data_spacing</strong> &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">numpy array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-test_topomult">
+<span id="test-topomult-py"></span><h2>test_topomult.py<a class="headerlink" href="#module-test_topomult" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="test_topomult.TestFindPeaks">
+<em class="property">class </em><tt class="descclassname">test_topomult.</tt><tt class="descname">TestFindPeaks</tt><big>(</big><em>methodName='runTest'</em><big>)</big><a class="reference internal" href="../_modules/test_topomult.html#TestFindPeaks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_topomult.TestFindPeaks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unit test class for finding peaks and valleys</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="test_topomult.TestMultiplierCalc">
+<em class="property">class </em><tt class="descclassname">test_topomult.</tt><tt class="descname">TestMultiplierCalc</tt><big>(</big><em>methodName='runTest'</em><big>)</big><a class="reference internal" href="../_modules/test_topomult.html#TestMultiplierCalc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#test_topomult.TestMultiplierCalc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unit test class for top level multiplier calculation</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-topomult">
+<span id="topomult-py"></span><h2>topomult.py<a class="headerlink" href="#module-topomult" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="topomult.attemptParallel">
+<tt class="descclassname">topomult.</tt><tt class="descname">attemptParallel</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/topomult.html#attemptParallel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#topomult.attemptParallel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attempt to load Pypar globally as <cite>pp</cite>.  If pypar cannot be loaded then a
+dummy <cite>pp</cite> is created.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="topomult.balanced">
+<tt class="descclassname">topomult.</tt><tt class="descname">balanced</tt><big>(</big><em>iterable</em><big>)</big><a class="reference internal" href="../_modules/topomult.html#balanced"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#topomult.balanced" title="Permalink to this definition">¶</a></dt>
+<dd><p>Balance an iterator across processors.</p>
+<p>This partitions the work evenly across processors. However, it requires
+the iterator to have been generated on all processors before hand. This is
+only some magical slicing of the iterator, i.e., a poor man version of
+scattering.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>iterable</strong> &#8211; Iterable piece of data, i.e. list of directions</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="topomult.run">
+<tt class="descclassname">topomult.</tt><tt class="descname">run</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/topomult.html#run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#topomult.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the process, handling any parallelisation.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="topomult.topomult">
+<tt class="descclassname">topomult.</tt><tt class="descname">topomult</tt><big>(</big><em>input_dem</em>, <em>mh_data_dir</em>, <em>direction</em><big>)</big><a class="reference internal" href="../_modules/topomult.html#topomult"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#topomult.topomult" title="Permalink to this definition">¶</a></dt>
+<dd><p>Executes core topographic multiplier functionality</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>input_dem</strong> &#8211; The path for input DEM</li>
+<li><strong>mh_data_dir</strong> &#8211; The path for output dir</li>
+<li><strong>direction</strong> (<em>str</em>) &#8211; A direction</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="topomult.work">
+<tt class="descclassname">topomult.</tt><tt class="descname">work</tt><big>(</big><em>input_dem</em>, <em>mh_data_dir</em>, <em>directions</em><big>)</big><a class="reference internal" href="../_modules/topomult.html#work"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#topomult.work" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterates through directions executing <a class="reference internal" href="#topomult.run" title="topomult.run"><tt class="xref py py-func docutils literal"><span class="pre">run()</span></tt></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>input_dem</strong> &#8211; The path for input DEM</li>
+<li><strong>mh_data_dir</strong> &#8211; The path for output dir</li>
+<li><strong>directions</strong> (<em>List</em>) &#8211; List of directions</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">topographic</a><ul>
+<li><a class="reference internal" href="#module-ascii_read">ascii_read.py</a></li>
+<li><a class="reference internal" href="#module-files">files.py</a></li>
+<li><a class="reference internal" href="#module-findpeaks">findpeaks.py</a></li>
+<li><a class="reference internal" href="#module-make_path">make_path.py</a></li>
+<li><a class="reference internal" href="#module-Mh">Mh.py</a></li>
+<li><a class="reference internal" href="#module-multiplier_calc">multiplier_calc.py</a></li>
+<li><a class="reference internal" href="#module-test_topomult">test_topomult.py</a></li>
+<li><a class="reference internal" href="#module-topomult">topomult.py</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../index.html"
+                        title="previous chapter">Wind Multipliers</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tests_characterisation.html"
+                        title="next chapter">tests_characterisation</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/sphinx_docs/topographic.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tests_characterisation.html" title="tests_characterisation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../index.html" title="Wind Multipliers"
+             >previous</a> |</li>
+        <li><a href="../index.html">Wind Multipliers v0.3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Geoscience Australia.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

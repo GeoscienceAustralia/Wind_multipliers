@@ -34,10 +34,8 @@ terrain_class_desc = dict([(1, 'City Buildings'),
 #                         (13, 1000),
 #                         (14, 830), 
 #                         (15, 1037)])
-                         
 
-                         
-                         
+
 #Tina's value at 10 m used from 26/09/2013
 mz_init_non_cycl = dict([(1, 750),
                          (2, 774),
@@ -73,10 +71,6 @@ mz_init_cycl = dict([(1, 863),
                      (14, 940),
                      (15, 1014)])
 
-
-
-
-
 mz_init_phil = dict([(1, 660),
                      (2, 680),
                      (3, 700),
@@ -91,4 +85,4 @@ mz_init_phil = dict([(1, 660),
                      (12, 980),
                      (13, 1020),
                      (14, 1100)])                                       
-                         
+

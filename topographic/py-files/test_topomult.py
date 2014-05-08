@@ -4,10 +4,14 @@ from numpy.testing import assert_almost_equal
 
 import multiplier_calc
 import findpeaks
-import findvalleys
 import Mh
 
+
 class TestFindPeaks(unittest.TestCase):
+    """
+
+    Unit test class for finding peaks and valleys
+    """
 
     def setUp(self):
         # A single line of elevation data to use in the tests:
@@ -46,6 +50,11 @@ class TestFindPeaks(unittest.TestCase):
         assert_almost_equal(self.valley_index, valley_ind)
 
 class TestMultiplierCalc(unittest.TestCase):
+    """
+
+    Unit test class for top level multiplier calculation
+    """
+
 
     def setUp(self):
         self.line = np.array([236.,231.,199.,171.,152.,159.,162.,124.,106.,98.,89.,83.,\

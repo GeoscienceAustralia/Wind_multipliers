@@ -1,19 +1,28 @@
-##------------------------------------------------------
-##  Multiplier calculations
-##------------------------------------------------------
-
 import numpy as np
+
+"""
+.. module:: Mh.py
+   :synopsis: Multiplier calculations
+
+"""
+
 
 
 def escarpment_factor(profile, ridge, valley, data_spacing):
     """
     Calculate escarpment factor
+
+    :param profile:
+    :param ridge:
+    :param valley:
+    :param data_spacing:
+    :returns: escarpment factor (may be float || int)
     """
     max_escarp = 3
     min_escarp = 0.5
     nrow = np.size(profile)
 
-    H  = profile[ridge] - profile[valley]
+    H = profile[ridge] - profile[valley]
     Lu = abs(ridge - valley) * data_spacing / 2
     slope = H / (2 * Lu)
     beta_ind = np.minimum(nrow - 1, np.floor(ridge + (2 * Lu / data_spacing)))
@@ -34,9 +43,19 @@ def escarpment_factor(profile, ridge, valley, data_spacing):
     else:      # the ridge is on the end
         slope_r2mL2 = 999
         escarp_factor = 1
+
     return escarp_factor
 
 def Mh(profile, ridge, valley, data_spacing):
+    '''
+    Calculate M
+
+    :param profile:
+    :param ridge:
+    :param valley:
+    :param data_spacing:
+    :returns: numpy array
+    '''
 # --------------------------------------------------------
 # initialise parameters
 # --------------------------------------------------------
@@ -73,9 +92,9 @@ def Mh(profile, ridge, valley, data_spacing):
             m[k] = 1 + (H / (3.5 * (Z + L1))) * (1 - abs(x) / L2)
             # --------------------------------------------------------
             # for larger slopes, you still use the formula to calculate M,
-            # then re-value to 1.71 when it islarger. If use 1.71 for any slope 
+            # then re-value to 1.71 when it is larger. If use 1.71 for any slope
             # greater than 0.45, then all the points within the L2 zone will 
-            # have 1.71 rather than a gradual increaing, peaks and decreasing 
+            # have 1.71 rather than a gradual increasing, peaks and decreasing
             # pattern.
             # --------------------------------------------------------
             if m[k] > 1.71:

@@ -1,0 +1,139 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tests_characterisation.misc &mdash; Wind Multipliers v0.3 documentation</title>
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Wind Multipliers v0.3 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Wind Multipliers v0.3 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tests_characterisation.misc</h1><pre>
+import os
+
+"""
+.. module:: misc.py
+   :synopsis: Misc util module
+
+.. moduleauthor:: Daniel Wild &lt;daniel.wild@ga.gov.au&gt;
+
+
+"""
+
+
+DIRECTIONS = 'e', 'n', 'ne', 'nw', 's', 'se', 'sw', 'w'
+
+
+<div class="viewcode-block" id="TestPaths"><a class="viewcode-back" href="../../sphinx_docs/tests_characterisation.html#tests_characterisation.misc.TestPaths">[docs]</a>class TestPaths:
+    """
+    Used to build paths to test files and out dirs
+
+    """
+
+    def __init__(self):
+
+        # static paths
+        self.ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname('Wind_multipliers'), '..'))
+        self.TEST_DIR = os.path.join(self.ROOT_DIR, 'tests_characterisation')
+        self.BASE_TOPO_TEST_DIR = os.path.join(self.TEST_DIR, 'test_topographic')
+        self.TOPO_MULTI_DIR = os.path.join(self.ROOT_DIR, 'topographic')
+        self.TOPO_FILES_DIR = os.path.join(self.TOPO_MULTI_DIR, 'py-files')
+
+        # dynamic paths
+        self.TOPO_TEST_DIR = None
+        self.TOPO_TEST_INPUT_DIR = None
+        self.TOPO_TEST_ACTUAL_OUTPUT_DIR = None
+        self.TOPO_TEST_EXPECTED_OUTPUT_DIR = None
+
+
+<div class="viewcode-block" id="TestPaths.initTopoTestPaths"><a class="viewcode-back" href="../../sphinx_docs/tests_characterisation.html#tests_characterisation.misc.TestPaths.initTopoTestPaths">[docs]</a>    def initTopoTestPaths(self, test_size):
+        """
+        Builds test dir paths depending on test_size
+
+        :param name: The size of the test to run.
+        :type name: str.
+        """
+
+        self.TOPO_TEST_DIR = os.path.join(self.BASE_TOPO_TEST_DIR, test_size + '_test')
+        self.TOPO_TEST_INPUT_DIR = os.path.join(self.TOPO_TEST_DIR, 'topo_test_input')
+        self.TOPO_TEST_ACTUAL_OUTPUT_DIR = os.path.join(self.TOPO_TEST_DIR, 'topo_actual_output')
+        self.TOPO_TEST_EXPECTED_OUTPUT_DIR = os.path.join(self.TOPO_TEST_DIR, 'topo_expected_output')</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Wind Multipliers v0.3 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Geoscience Australia.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

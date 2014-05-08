@@ -1,1 +1,0 @@
-directions = 'e', 'n', 'ne', 'nw', 's', 'se', 'sw', 'w'

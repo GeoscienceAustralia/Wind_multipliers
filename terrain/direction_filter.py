@@ -1,14 +1,26 @@
-import arcpy, math
+import arcpy
+import math
 from arcpy.sa import *
-import os, sys, time, numpy, shutil
+import os
+import sys
+import time
+import numpy
+import shutil
+
+"""
+.. module:: direction_filter.py
+    :synopsis: Read input DEM stored in ../input
+"""
 
 def terrain_convo(loc, root):
     """
     Moving average in each direction the initial terrain multipliers to derive the terrain
     multipliers for each direction.
 
-    input: initial terrain multiplier (mz_orig) produced from module terrain_class2mz_orig.py
-    output: the terrain multiplier for each of the eight directions.
+    Input: initial terrain multiplier (mz_orig) produced from module terrain_class2mz_orig.py
+    :param loc:
+    :param root:
+    :returns: the terrain multiplier for each of the eight directions.
     """
 
     arcpy.env.overwriteOutput = True
@@ -66,7 +78,6 @@ def terrain_convo(loc, root):
 
         print 'convolution filter width ' + str(filter_width)
       
-        
         outdata = numpy.zeros((rows, cols), numpy.float32)
         convo_dir = globals()['convo_' + one_dir]
         outdata = convo_dir(data, rows, cols, outdata, filter_width)
@@ -82,15 +93,22 @@ def terrain_convo(loc, root):
              
     arcpy.BuildPyramidsandStatistics_management(output_folder, "#", "BUILD_PYRAMIDS", "CALCULATE_STATISTICS")
 
-
-
     ds = None
     del data  
 
 
-## calculate the west direction
+
 def convo_w(data, rows, cols, outdata, filter_width):
-    
+    """
+    Calculate the west direction
+
+    :param data:
+    :param rows:
+    :param cols:
+    :param outdata:
+    :param filter_width:
+    """
+
     for i in range(rows):
         
     # calculate average for each pixel
@@ -119,10 +137,17 @@ def convo_w(data, rows, cols, outdata, filter_width):
     return outdata
 
 
-
-## calculate the east direction
 def convo_e(data, rows, cols, outdata, filter_width):
-    
+    """
+    Calculate the east direction
+
+    :param data:
+    :param rows:
+    :param cols:
+    :param outdata:
+    :param filter_width:
+    """
+
     for i in range(rows):  
         
     # calculate average for each pixel
@@ -153,9 +178,18 @@ def convo_e(data, rows, cols, outdata, filter_width):
     return outdata
 
 
-## calculate the north direction
 def convo_n(data, rows, cols, outdata, filter_width):
-    
+
+    """
+    Calculate the north direction
+
+    :param data:
+    :param rows:
+    :param cols:
+    :param outdata:
+    :param filter_width:
+    """
+
     for i in range(cols):
         
     # calculate average for each pixel
@@ -184,10 +218,17 @@ def convo_n(data, rows, cols, outdata, filter_width):
     return outdata
 
 
-
-## calculate the south direction
 def convo_s(data, rows, cols, outdata, filter_width):
-    
+    """
+    Calculate the south direction
+
+    :param data:
+    :param rows:
+    :param cols:
+    :param outdata:
+    :param filter_width:
+    """
+
     for i in range(cols):
         
     # calculate average for each pixel
@@ -218,13 +259,19 @@ def convo_s(data, rows, cols, outdata, filter_width):
     return outdata
 
 
-
-
-## calculate the north west direction
 def convo_nw(data, rows, cols, outdata, filter_width):
+    """
+    Calculate the north west direction
 
-##    import pdb
-##    pdb.set_trace()
+    :param data:
+    :param rows:
+    :param cols:
+    :param outdata:
+    :param filter_width:
+    """
+
+    ##    import pdb
+    ##    pdb.set_trace()
     
     for i in range(rows):
         
@@ -256,10 +303,17 @@ def convo_nw(data, rows, cols, outdata, filter_width):
     return outdata
 
 
-
-## calculate the north east direction
 def convo_ne(data, rows, cols, outdata, filter_width):
-   
+    """
+    Calculate the north east direction
+
+    :param data:
+    :param rows:
+    :param cols:
+    :param outdata:
+    :param filter_width:
+    """
+
     for i in range(rows):
         
     # calculate average for each pixel
@@ -290,12 +344,19 @@ def convo_ne(data, rows, cols, outdata, filter_width):
     return outdata
 
 
-
-## calculate the south west direction
 def convo_sw(data, rows, cols, outdata, filter_width):
+    """
+    Calculate the south west direction
 
-##    import pdb
-##    pdb.set_trace()
+    :param data:
+    :param rows:
+    :param cols:
+    :param outdata:
+    :param filter_width:
+    """
+
+    ##    import pdb
+    ##    pdb.set_trace()
     
     for i in range(rows):
         
@@ -327,12 +388,19 @@ def convo_sw(data, rows, cols, outdata, filter_width):
     return outdata
 
 
-
-## calculate the south east direction
 def convo_se(data, rows, cols, outdata, filter_width):
+    """
+    Calculate the south east direction
 
-##    import pdb
-##    pdb.set_trace()
+    :param data:
+    :param rows:
+    :param cols:
+    :param outdata:
+    :param filter_width:
+    """
+
+    ##    import pdb
+    ##    pdb.set_trace()
     
     for i in range(rows):
         
