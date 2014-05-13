@@ -1,0 +1,175 @@
+
+#set TIMES = 0
+#set FLOPS = 0
+#set BYTES = 0
+#set HPMCT = 1
+#set SWICH = 0
+
+#proc getdata:
+  command: sort -n -k1 unknown_8_3729815.r-man2.dlw547.w85.1397626651_ipm_3729815.r-man2/task_data
+
+#proc areadef
+  rectangle: 1 1 6 4
+  xrange: 0 9
+  yrange: 0 100
+//  yautorange: datafield=2,3,4,5,6,7,8,9,10,11,12,13,14 hifix=100
+  xaxis.stubs: inc
+  yaxis.stubs: inc
+  xaxis.label: individually sorted indices
+  yaxis.label: % of maximum across MPI ranks
+  xaxis.stubrange: 0 8
+  xaxis.labeldistance: 0.5
+  xaxis.stubvert: yes
+
+
+
+#if @HPMCT = 1
+
+
+#proc getdata:
+  command: sort -n -k2 unknown_8_3729815.r-man2.dlw547.w85.1397626651_ipm_3729815.r-man2/task_data
+
+#proc lineplot
+ yfield: 2
+ legendlabel:             
+ linedetails: color=red
+ sort: yes
+
+
+#proc getdata:
+  command: sort -n -k3 unknown_8_3729815.r-man2.dlw547.w85.1397626651_ipm_3729815.r-man2/task_data
+
+#proc lineplot
+ yfield: 3
+ legendlabel: PAPI_FP_OPS
+ linedetails: color=green
+ sort: yes
+
+
+#proc getdata:
+  command: sort -n -k4 unknown_8_3729815.r-man2.dlw547.w85.1397626651_ipm_3729815.r-man2/task_data
+
+#proc lineplot
+ yfield: 4
+ legendlabel: PAPI_L2_TCA
+ linedetails: color=blue
+ sort: yes
+
+
+#proc getdata:
+  command: sort -n -k5 unknown_8_3729815.r-man2.dlw547.w85.1397626651_ipm_3729815.r-man2/task_data
+
+#proc lineplot
+ yfield: 5
+ legendlabel: PAPI_TOT_CYC
+ linedetails: color=yellow
+ sort: yes
+
+
+#proc getdata:
+  command: sort -n -k6 unknown_8_3729815.r-man2.dlw547.w85.1397626651_ipm_3729815.r-man2/task_data
+
+#proc lineplot
+ yfield: 6
+ legendlabel: PAPI_TOT_INS
+ linedetails: color=purple
+ sort: yes
+
+
+#endif
+
+
+#if @TIMES = 1
+
+#proc getdata:
+  command: sort -n -k7 unknown_8_3729815.r-man2.dlw547.w85.1397626651_ipm_3729815.r-man2/task_data
+
+#proc lineplot
+  yfield: 7
+  legendlabel: wtime
+  linedetails: color=orange
+ sort: yes
+
+#proc getdata:
+  command: sort -n -k8 unknown_8_3729815.r-man2.dlw547.w85.1397626651_ipm_3729815.r-man2/task_data
+
+#proc lineplot
+  yfield: 8
+  legendlabel: utime
+  linedetails: color=darkblue
+ sort: yes
+
+#proc getdata:
+  command: sort -n -k9 unknown_8_3729815.r-man2.dlw547.w85.1397626651_ipm_3729815.r-man2/task_data
+
+#proc lineplot
+  yfield: 9
+  legendlabel: stime
+  linedetails: color=limegreen
+ sort: yes
+
+#proc getdata:
+  command: sort -n -k10 unknown_8_3729815.r-man2.dlw547.w85.1397626651_ipm_3729815.r-man2/task_data
+
+#proc lineplot
+  yfield: 10
+  legendlabel: mtime
+  linedetails: color=skyblue
+ sort: yes
+
+#endif
+
+
+#if @BYTES = 1
+
+#proc getdata:
+  command: sort -n -k11 unknown_8_3729815.r-man2.dlw547.w85.1397626651_ipm_3729815.r-man2/task_data
+
+#proc lineplot
+  yfield: 11
+  legendlabel: gbyte
+  linedetails: color=claret
+ sort: yes
+
+#endif
+
+#if @FLOPS = 1
+#proc getdata:
+  command: sort -n -k12 unknown_8_3729815.r-man2.dlw547.w85.1397626651_ipm_3729815.r-man2/task_data
+
+#proc lineplot
+  yfield: 12
+  legendlabel: gflop
+  linedetails: color=teal
+ sort: yes
+
+#endif
+
+
+#if @SWICH = 1
+
+#proc getdata:
+  command: sort -n -k13 unknown_8_3729815.r-man2.dlw547.w85.1397626651_ipm_3729815.r-man2/task_data
+
+#proc lineplot
+  yfield: 13
+  legendlabel: bytes_tx
+  linedetails: color=magenta
+ sort: yes
+
+#proc getdata:
+  command: sort -n -k14 unknown_8_3729815.r-man2.dlw547.w85.1397626651_ipm_3729815.r-man2/task_data
+
+#proc lineplot
+  yfield: 14
+  legendlabel: bytes_rx
+  linedetails: color=brightblue
+ sort: yes
+
+#endif
+
+#proc legend
+  location: max+0.4 max
+//  reverseorder: yes
+  seglen: 0.3
+

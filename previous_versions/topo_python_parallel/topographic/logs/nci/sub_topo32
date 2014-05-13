@@ -1,0 +1,12 @@
+#!/bin/csh
+
+#PBS -q normal
+#PBS -l wd,walltime=15:00:00,mem=15000MB,ncpus=32
+
+module load python/2.7.3
+
+module unload openmpi/1.6.3
+module load openmpi/1.6.2
+
+mpirun -np 8 python topomult.py -i ../py-input/big_test.asc -o ../py-output32
+

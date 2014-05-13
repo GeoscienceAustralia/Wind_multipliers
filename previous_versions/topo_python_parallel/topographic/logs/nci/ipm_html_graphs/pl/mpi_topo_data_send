@@ -1,0 +1,10 @@
+#proc areadef
+  rectangle: 0 0 3.5 3
+  xrange: 0 1
+  yrange: 0 2
+                                                                                
+#proc annotate
+  location: 1 3
+  textdetails: size=32 color=black
+  backcolor: white
+  text: None
