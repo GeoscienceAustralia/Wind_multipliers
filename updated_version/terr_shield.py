@@ -236,7 +236,7 @@ class Mz_Ms(object):
     def __init__(self, tilegrid, sourceimg, dem, cyclone_area):
         self.tilegrid = tilegrid
         self.input_img = sourceimg
-        self.cyclone_area = cyclone_area
+        
         self.ds = gdal.Open(self.input_img, GA_ReadOnly)
         if self.ds is None:
             log.info('Could not open ' + self.input_img)
@@ -256,6 +256,15 @@ class Mz_Ms(object):
         self.pixelWidth_dem = geotransform_dem[1]
         self.pixelHeight_dem = -geotransform_dem[5]
     
+        self.cyclone_area = cyclone_area
+        self.cyclone_ds = gdal.Open(self.cyclone_area, GA_ReadOnly)
+        if self.cyclone_ds is None:
+            log.info('Could not open ' + self.dem)
+            sys.exit(1)
+            
+        geotransform_dem = self.cyclone_ds.GetGeoTransform()
+        self.pixelWidth_cycl = geotransform_dem[1]
+        self.pixelHeight_cycl = -geotransform_dem[5]
     
     def mz_ms_calculate(self, tile_info):
 #        import pdb
@@ -295,8 +304,7 @@ class Mz_Ms(object):
             log.error(result['stderr'] + 'stderr from %s' % command_string + '\t')
             raise Exception('%s failed' % command_string) 
         
-        # check the maximum value of the terrain map tile, if it greater than 0, go ahead
-        
+        # check the maximum value of the terrain map tile, if it greater than 0, go ahead        
         temp_tile_stat = pjoin(output_folder, tile_name + '_stat.img')
         gdal_translate_str = 'gdal_translate -stats %s %s'% (temp_tile, temp_tile_stat)
         execute(gdal_translate_str)
@@ -336,6 +344,46 @@ class Mz_Ms(object):
             if result['returncode']:
                 log.error(result['stderr'] + 'stderr from %s' % command_string + '\t')
                 raise Exception('%s failed' % command_string) 
+                       
+            
+            # create the temperal tile for Cyclone area
+            temp_tile_cyclone = pjoin(output_folder, tile_name + '_cycl.img')
+                                                                 
+            log.debug('tile_extents = %s', tile_extents)
+            
+            command_string = 'gdalwarp'
+            command_string += ' -t_srs %s -te %f %f %f %f -tr %f %f -tap -tap ' % (
+                self.cyclone_ds.GetProjection(),
+                tile_extents[0], tile_extents[3], tile_extents[2], tile_extents[1], 
+                self.pixelWidth_cycl, self.pixelHeight_cycl
+                )    
+        #        if nodata_value is not None:
+        #            command_string += ' -srcnodata %d -dstnodata %d' % (None, None)                                                              
+            command_string += ' -of HFA'                 
+            command_string += ' -overwrite %s %s' % (
+                self.cyclone_area,
+                temp_tile_cyclone
+                )
+            
+            #print command_string
+            log.debug('command_string = %s', command_string)        
+            result = execute(command_string=command_string)#        
+            if result['stdout']:
+                log.info(result['stdout'] + 'stdout from %s' % command_string + '\t')         
+            if result['returncode']:
+                log.error(result['stderr'] + 'stderr from %s' % command_string + '\t')
+                raise Exception('%s failed' % command_string) 
+            
+             # check the maximum value of the terrain map tile, if it greater than 0, go ahead        
+            cyclone_stat = pjoin(output_folder, tile_name + '_cycl_stat.img')
+            gdal_translate_str = 'gdal_translate -stats %s %s'% (temp_tile_cyclone, cyclone_stat)
+            execute(gdal_translate_str)
+            os.remove(temp_tile_cyclone)
+            
+            temp_dataset_cycl = gdal.Open(cyclone_stat) 
+            band = temp_dataset_cycl.GetRasterBand(1) 
+            stats = band.GetStatistics(0,1)
+            max_value_cycl = stats[1]            
             
             #resmaple the terrain as DEM
             temp_dataset_DEM = gdal.Open(temp_tile_dem)             
@@ -354,14 +402,21 @@ class Mz_Ms(object):
              
             # start to calculate the multipliers 
             log.info('producing Terrain multipliers ...')
-            #terrain.terrain.terrain(self.cyclone_area, terrain_resample)
+            if max_value_cycl > 0:
+                cyclone_area = cyclone_stat
+            else:
+                cyclone_area = None
+                
+            terrain.terrain.terrain(cyclone_area, terrain_resample)
             #terrain.terrain.terrain(self.cyclone_area, temp_tile_stat)
         
             log.info('producing Shielding multipliers ...')
             shielding.shielding.shield(terrain_resample, temp_tile_dem)
             
-            #os.remove(temp_tile_dem)
-            #os.remove(temp_tile_stat)
+            os.remove(temp_tile_dem)
+            os.remove(temp_tile_stat)
+            os.remove(terrain_resample)
+            os.remove(cyclone_stat)
         else:   
             os.remove(temp_tile_stat)
         
@@ -485,7 +540,7 @@ def doOutputDirectoryCreation(root):
     
     log.info('Output will be stored under %s', output)    
     
-    subdirs_1 = ['terrain', 'shielding', 'topographic', 'm4'] 
+    subdirs_1 = ['terrain', 'shielding', 'topographic'] 
     subdirs_2 = ['raster', 'netcdf']               
     
     if os.path.exists(output):
@@ -619,7 +674,7 @@ def run(callback=None):
 
     root = config.get('inputValues', 'root')
     loc = config.get('inputValues', 'loc')
-    cyclone_area = config.get('inputValues', 'cyclone_area')
+    
     tile_length = float(config.get('inputValues', 'tile_length'))
     upwind_length = float(config.get('inputValues', 'upwind_length'))
     #ArcToolbox = config.get('input_values', 'ArcToolbox')
@@ -635,6 +690,8 @@ def run(callback=None):
     # set input map and output folder
     terrain_map = pjoin(pjoin(root, 'input'), loc + "_terrain_class.img")
     dem = pjoin(pjoin(root, 'input'), "dems1_whole.img")
+    cyclone_area =  pjoin(pjoin(root, 'input'), "cyclone_dem_extent.img")
+    
     doOutputDirectoryCreation(root)
     
     global output_folder

@@ -1,114 +1,65 @@
-2014-05-06 17:24:07: Started log file terr_shield.log (detail level INFO)
-2014-05-06 17:24:07: Running terr_shield.py (pid 14654)
-2014-05-06 17:24:07: Version 
-2014-05-06 17:24:07: Output will be stored under /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output
-2014-05-06 17:24:07: get the tiles
-2014-05-06 17:24:07: Input raster format is HFA/ Erdas Imagine Images (.img)
-2014-05-06 17:24:07: Image size is 17454x 14474
-2014-05-06 17:24:07: Top left corner X,Y: 112.999861111 10.0007128892
-2014-05-06 17:24:07: Resolution 0.002349x 0.002349
-2014-05-06 17:24:07: The working tile is  e112.9998s10.0007
-2014-05-06 17:24:07: Creating output file that is 429P x 429L.
+2014-05-13 10:30:12: Started log file terr_shield.log (detail level INFO)
+2014-05-13 10:30:12: Running terr_shield.py (pid 5390)
+2014-05-13 10:30:13: Version 
+2014-05-13 10:30:16: get the tiles
+2014-05-13 10:30:16: Input raster format is HFA/ Erdas Imagine Images (.img)
+2014-05-13 10:2014-05-13 10:31:10: get the tiles
+2014-05-13 10:31:10: Input raster format is HFA/ Erdas Imagine Images (.img)
+2014-05-13 10:31:10: Image size is 17454x 12014-05-13 10:31:13: The working tile is  e115.9948s30.9655
+2014-05-13 10:31:17: Creating output file that is 433P x 433L.
 Processing input file /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img.
 Using internal nodata values (eg. 0) for image /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img.
 0...10...20...30...40...50...60...70...80...90...100 - done.
-stdout from gdalwarp -t_srs GEOGCS["GCS_WGS_1984",DATUM["WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]] -te 112.999861 -11.006085 114.005233 -10.000713 -tr 0.002349 0.002349 -tap -tap  -of HFA -overwrite /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output/e112.9998s10.0007.img	
-2014-05-06 17:24:07: The working tile is  e112.9998s10.9990
-2014-05-06 17:24:07: Creating output file that is 429P x 433L.
-Processing input file /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img.
-Using internal nodata values (eg. 0) for image /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img.
-0...10...20...30...40...50...60...70...80...90...100 - done.
-stdout from gdalwarp -t_srs GEOGCS["GCS_WGS_1984",DATUM["WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]] -te 112.999861 -12.004410 114.005233 -10.989642 -tr 0.002349 0.002349 -tap -tap  -of HFA -overwrite /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output/e112.9998s10.9990.img	
-2014-05-06 17:24:08: The working tile is  e112.9998s11.9973
-2014-05-06 17:24:08: Creating output file that is 429P x 433L.
-Processing input file /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img.
-Using internal nodata values (eg. 0) for image /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img.
-0...10...20...30...40...50...60...70...80...90...100 - done.
-stdout from gdalwarp -t_srs GEOGCS["GCS_WGS_1984",DATUM["WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]] -te 112.999861 -13.002735 114.005233 -11.987967 -tr 0.002349 0.002349 -tap -tap  -of HFA -overwrite /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output/e112.9998s11.9973.img	
-2014-05-06 17:24:08: The working tile is  e112.9998s12.9956
-2014-05-06 17:24:08: Creating output file that is 429P x 433L.
-Processing input file /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img.
-Using internal nodata values (eg. 0) for image /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img.
-0...10...20...30...40...50...60...70...80...90...100 - done.
-stdout from gdalwarp -t_srs GEOGCS["GCS_WGS_1984",DATUM["WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]] -te 112.999861 -14.001060 114.005233 -12.986292 -tr 0.002349 0.002349 -tap -tap  -of HFA -overwrite /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output/e112.9998s12.9956.img	
-2014-05-06 17:24:08: The working tile is  e112.9998s13.9940
-2014-05-06 17:24:08: Creating output file that is 429P x 433L.
-Processing input file /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img.
-Using internal nodata values (eg. 0) for image /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img.
-0...10...20...30...40...50...60...70...80...90...100 - done.
-stdout from gdalwarp -t_srs GEOGCS["GCS_WGS_1984",DATUM["WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]] -te 112.999861 -14.999385 114.005233 -13.984617 -tr 0.002349 0.002349 -tap -tap  -of HFA -overwrite /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output/e112.9998s13.9940.img	
-2014-05-06 17:24:08: The working tile is  e112.9998s14.9923
-2014-05-06 17:24:08: Creating output file that is 429P x 433L.
-Processing input file /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img.
-Using internal nodata values (eg. 0) for image /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img.
-0...10...20...30...40...50...60...70...80...90...100 - done.
-stdout from gdalwarp -t_srs GEOGCS["GCS_WGS_1984",DATUM["WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]] -te 112.999861 -15.997710 114.005233 -14.982942 -tr 0.002349 0.002349 -tap -tap  -of HFA -overwrite /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output/e112.9998s14.9923.img	
-2014-05-06 17:24:09: The working tile is  e112.9998s15.9906
-2014-05-06 17:24:09: Creating output file that is 429P x 433L.
-Processing input file /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img.
-Using internal nodata values (eg. 0) for image /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img.
-0...10...20...30...40...50...60...70...80...90...100 - done.
-stdout from gdalwarp -t_srs GEOGCS["GCS_WGS_1984",DATUM["WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]] -te 112.999861 -16.996035 114.005233 -15.981267 -tr 0.002349 0.002349 -tap -tap  -of HFA -overwrite /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output/e112.9998s15.9906.img	
-2014-05-06 17:24:09: The working tile is  e112.9998s16.9889
-2014-05-06 17:24:09: Creating output file that is 429P x 433L.
-Processing input file /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img.
-Using internal nodata values (eg. 0) for image /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img.
-0...10...20...30...40...50...60...70...80...90...100 - done.
-stdout from gdalwarp -t_srs GEOGCS["GCS_WGS_1984",DATUM["WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]] -te 112.999861 -17.994360 114.005233 -16.979592 -tr 0.002349 0.002349 -tap -tap  -of HFA -overwrite /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output/e112.9998s16.9889.img	
-2014-05-06 17:24:09: The working tile is  e112.9998s17.9873
-2014-05-06 17:24:09: Creating output file that is 429P x 433L.
-Processing input file /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img.
-Using internal nodata values (eg. 0) for image /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img.
-0...10...20...30...40...50...60...70...80...90...100 - done.
-stdout from gdalwarp -t_srs GEOGCS["GCS_WGS_1984",DATUM["WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]] -te 112.999861 -18.992685 114.005233 -17.977917 -tr 0.002349 0.002349 -tap -tap  -of HFA -overwrite /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output/e112.9998s17.9873.img	
-2014-05-06 17:24:09: The working tile is  e112.9998s18.9856
-2014-05-06 17:24:09: Creating output file that is 429P x 433L.
-Processing input file /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img.
-Using internal nodata values (eg. 0) for image /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img.
-0...10...20...30...40...50...60...70...80...90...100 - done.
-stdout from gdalwarp -t_srs GEOGCS["GCS_WGS_1984",DATUM["WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]] -te 112.999861 -19.991010 114.005233 -18.976242 -tr 0.002349 0.002349 -tap -tap  -of HFA -overwrite /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output/e112.9998s18.9856.img	
-2014-05-06 17:24:10: The working tile is  e112.9998s19.9839
-2014-05-06 17:24:10: Creating output file that is 429P x 433L.
-Processing input file /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img.
-Using internal nodata values (eg. 0) for image /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img.
-0...10...20...30...40...50...60...70...80...90...100 - done.
-stdout from gdalwarp -t_srs GEOGCS["GCS_WGS_1984",DATUM["WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]] -te 112.999861 -20.989335 114.005233 -19.974567 -tr 0.002349 0.002349 -tap -tap  -of HFA -overwrite /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output/e112.9998s19.9839.img	
-2014-05-06 17:24:10: The working tile is  e112.9998s20.9822
-2014-05-06 17:24:10: Creating output file that is 429P x 433L.
-Processing input file /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img.
-Using internal nodata values (eg. 0) for image /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img.
-0...10...20...30...40...50...60...70...80...90...100 - done.
-stdout from gdalwarp -t_srs GEOGCS["GCS_WGS_1984",DATUM["WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]] -te 112.999861 -21.987660 114.005233 -20.972892 -tr 0.002349 0.002349 -tap -tap  -of HFA -overwrite /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output/e112.9998s20.9822.img	
-2014-05-06 17:24:11: Creating output file that is 3617P x 3651L.
+stdout from gdalwarp -t_srs GEOGCS["GCS_WGS_1984",DATUM["WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]] -te 115.985440 -29.974260 117.000208 -28.959492 -tr 0.002349 0.002349 -tap -tap  -of HFA -overwrite /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output/e115.9948s28.9688.img	22014-05-13 10:31:49: Creating output file that is 3652P x 3651L.
 Processing input file /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/dems1_whole.img.
 Using internal nodata values (eg. -3.40282e+38) for image /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/dems1_whole.img.
 0...10...20...30...40...50...60...70...80...90...100 - done.
-stdout from gdalwarp -t_srs GEOGCS["GCS_WGS_1984",DATUM["WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]] -te 112.999861 -21.987660 114.005233 -20.972892 -tr 0.000278 0.000278 -tap -tap  -of HFA -overwrite /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/dems1_whole.img /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output/e112.9998s20.9822_dem.img	
-2014-05-06 17:24:14: producing Terrain multipliers ...
-2014-05-06 17:24:14: producing Shielding multipliers ...
-2014-05-06 17:26:43: The working tile is  e112.9998s21.9806
-2014-05-06 17:26:43: Creating output file that is 429P x 433L.
+stdout from gdalwarp -t_srs GEOGCS["GCS_WGS_1984",DATUM["WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]] -te 115.985440 -27.977610 117.000208 -26.962842 -tr 0.000278 0.000278 -tap -tap  -of HFA -overwrite /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/dems1_whole.img /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output/e115.9948s26.9722_dem.img	
+2014-05-13 10:32:00: Creating output file that is 3651P x 2014-05-13 10:32:20: Creating output file that is 3651P x 32014-05-13 10:32:22: Creating output file that is 433P x 433L.
 Processing input file /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img.
 Using internal nodata values (eg. 0) for image /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img.
 0...10...20...30...40...50...60...70...80...90...100 - done.
-stdout from gdalwarp -t_srs GEOGCS["GCS_WGS_1984",DATUM["WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]] -te 112.999861 -22.985985 114.005233 -21.971217 -tr 0.002349 0.002349 -tap -tap  -of HFA -overwrite /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output/e112.9998s21.9806.img	
-2014-05-06 17:26:44: Creating output file that is 3617P x 3651L.
-Processing input file /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/dems1_whole.img.
-Using internal nodata values (eg. -3.40282e+38) for image /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/dems1_whole.img.
-0...10...20...30...40...50...60...70...80...90...100 - done.
-stdout from gdalwarp -t_srs GEOGCS["GCS_WGS_1984",DATUM["WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]] -te 112.999861 -22.985985 114.005233 -21.971217 -tr 0.000278 0.000278 -tap -tap  -of HFA -overwrite /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/dems1_whole.img /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output/e112.9998s21.9806_dem.img	
-2014-05-06 17:26:48: producing Terrain multipliers ...
-2014-05-06 17:26:48: producing Shielding multipliers ...
-2014-05-06 17:29:17: The working tile is  e112.9998s22.9789
-2014-05-06 17:29:17: Creating output file that is 429P x 433L.
-Processing input file /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img.
-Using internal nodata values (eg. 0) for image /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img.
-0...10...20...30...40...50...60...70...80...90...100 - done.
-stdout from gdalwarp -t_srs GEOGCS["GCS_WGS_1984",DATUM["WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]] -te 112.999861 -23.984310 114.005233 -22.969542 -tr 0.002349 0.002349 -tap -tap  -of HFA -overwrite /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output/e112.9998s22.9789.img	
-2014-05-06 17:29:18: Creating output file that is 3617P x 3651L.
-Processing input file /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/dems1_whole.img.
-Using internal nodata values (eg. -3.40282e+38) for image /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/dems1_whole.img.
-0...10...20...30...40...50...60...70...80...90...100 - done.
-stdout from gdalwarp -t_srs GEOGCS["GCS_WGS_1984",DATUM["WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]] -te 112.999861 -23.984310 114.005233 -22.969542 -tr 0.000278 0.000278 -tap -tap  -of HFA -overwrite /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/dems1_whole.img /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output/e112.9998s22.9789_dem.img	
-2014-05-06 17:29:21: producing Terrain multipliers ...
-2014-05-06 17:29:21: producing Shielding multipliers ...
+stdout from gdalwarp -t_srs GEOGCS["GCS_WGS_1984",DATUM["WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]] -te 118.980415 -22.985985 119.995183 -21.971217 -tr 0.002349 0.002349 -tap -tap  -of HFA -overwrite /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img /nas/gemd/climate_chang2014-05-13 10:34:09: producing Terrain multipliers ...
+2014-05-13 10:34:17: Input raster format is HFA/ Erdas Imagine Images (.img)
+2014-05-13 10:34:17: Image size is 3617x 3652x 1
+2014-05-13 10:34:28: Reclassfy the terrain classes into initial terrain multipliers ...
+2014-05-13 10:34:57: Moving average for each direction ...
+2014-05-13 10:34:57: w
+2014-05-13 10:34:57: convolution filter width 34
+2014-05-13 10:56:23: e
+2014-05-13 10:56:23: convolution filter width 34
+out from gdalwarp -t_srs GEOGCS["GCS_WGS_1984",DATUM["WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]] -te 118.980415 -22.985985 119.995183 -21.971217 -tr 0.000278 0.000278 -tap -tap  -of HFA -overwrite /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/dems1_whole.img /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output/e118.9892014-05-13 10:35:05: producing Terrain multipliers ...
+2014-05-13 10:35:06: Input raster format is HFA/ Erdas Imagine Images (.img)
+2014-05-13 10:35:06: Image size is 3651x 3651x 1
+2014-05-13 10:35:07: Reclassfy the terrain classes into initial terrain multipliers ...
+2014-05-13 10:35:17: Moving average for each direction ...
+2014-05-13 10:35:17: w
+2014-05-13 10:35:17: convolution filter width 34
+2014-05-13 10:57:56: e
+2014-05-13 10:57:56: convolution filter width 34
+...20...30...40...50...60...70...80...90...100 - done.
+stdout from gdalwarp -t_srs GEOGCS["GCS_WGS_1984",DATUM["WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]] -te 119.978740 -23.984310 120.993508 -22.969542 -tr 0.002349 0.002349 -tap -tap  -of HFA -overwrite /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/lc_terrain_class.img /nas/gemd/climate_cha22014-05-13 10:35:40: producing Terrain multipliers ...22014-05-13 10:35:40: Input raster format is HFA/ Erdas Imagine Images (.img)
+2014-05-13 10:35:42: Image size is 3651x 3651x 122014-05-13 10:35:45: Reclassfy the terrain classes into initial terrain multipliers ...22014-05-13 10:36:00: Moving average for each direction ...
+2014-05-13 10:36:00: w
+2014-05-13 10:36:00: convolution filter width 3422014-05-13 10:56:40: e
+2014-05-13 10:56:40: convolution filter width 34
+dout from gdalwarp -t_srs GEOGCS["GCS_WGS_1984",DATUM["WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]] -te 119.978740 -20.989335 120.993508 -19.974567 -tr 0.000278 0.000278 -tap -tap  -of HFA -overwrite /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/dems1_whole.img /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output/e119.922014-05-13 10:35:39: producing Terrain multipliers ...2014-05-13 10:35:40: Input raster format is HFA/ Erdas Imagine Images (.img)
+22014-05-13 10:35:42: Image size is 3651x 3651x 122014-05-13 10:35:45: Reclassfy the terrain classes into initial terrain multipliers ...22014-05-13 10:35:51: Moving average for each direction ...
+2014-05-13 10:35:51: w
+2014-05-13 10:35:51: convolution filter width 3422014-05-13 10:57:22: e
+2014-05-13 10:57:22: convolution filter width 34
+"Geocentric_Datum_of_Australia_1994",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]] -te 119.978740 -20.989335 120.993508 -19.974567 -tr 0.000278 0.000278 -tap -tap  -of HFA -overwrite /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/cyclone_dem_extent.img /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output/e119.9881s19.9839_cycl.img	22014-05-13 10:35:58: producing Terrain multipliers ...
+2014-05-13 10:35:58: Input raster format is HFA/ Erdas Imagine Images (.img)
+2014-05-13 10:35:58: Image size is 3651x 3651x 1
+2014-05-13 10:35:58: Reclassfy the terrain classes into initial terrain multipliers ...
+2014-05-13 10:36:18: Moving average for each direction ...
+2014-05-13 10:36:18: w
+2014-05-13 10:36:18: convolution filter width 3422014-05-13 10:58:12: e
+2014-05-13 10:58:12: convolution filter width 34
+"Geocentric_Datum_of_Australia_1994",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]] -te 119.978740 -28.975935 120.993508 -27.961167 -tr 0.000278 0.000278 -tap -tap  -of HFA -overwrite /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/input/cyclone_dem_extent.img /nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output/e119.9881s27.9705_cycl.img	22014-05-13 10:35:57: producing Terrain multipliers ...
+2014-05-13 10:35:57: Input raster format is HFA/ Erdas Imagine Images (.img)
+2014-05-13 10:35:57: Image size is 3651x 3651x 1
+2014-05-13 10:35:57: Reclassfy the terrain classes into initial terrain multipliers ...22014-05-13 10:36:02: Moving average for each direction ...
+2014-05-13 10:36:02: w
+2014-05-13 10:36:02: convolution filter width 3422014-05-13 10:57:00: e
+2014-05-13 10:57:00: convolution filter width 34

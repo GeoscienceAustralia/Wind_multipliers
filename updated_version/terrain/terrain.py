@@ -15,10 +15,10 @@ import numpy as np, osgeo.gdal as gdal
 from osgeo.gdalconst import *
 from netCDF4 import Dataset
 from os.path import join as pjoin
+from scipy import signal
 
 
 def terrain(cyclone_area, temp_tile):
-    
     # start timing
     startTime = time.time()
     
@@ -58,7 +58,11 @@ def terrain(cyclone_area, temp_tile):
         if filter_width > reclassified_array.shape[0]:
             filter_width = reclassified_array.shape[0]
         
-        #log.info('convolution filter width ' + str(filter_width))
+        log.info('convolution filter width ' + str(filter_width))
+        
+#        kern_dir = globals()['kern_' + one_dir]
+#        mask = kern_dir(filter_width)
+#        outdata = blur_image(reclassified_array, mask) 
         
         convo_dir = globals()['convo_' + one_dir]
         outdata = convo_dir(reclassified_array, filter_width)  
@@ -131,33 +135,132 @@ def terrain_class2mz_orig(cyclone_area, data):
     Input: loc, input raster file format: loc + '_terrain_class.img', cyclone_area -yes or -no
     Output: loc + '_mz_orig'
     """
+       
+#    data = np.array([[2,4,4,5,13,11],
+#                      [7,14,3,1,8,6],
+#                      [1,9,4,7,2,18],
+#                      [2,5,15,12,7,8],
+#                      [3,8,3,1,5,2],
+#                      [2,9,4,15,1,3]])
+#    
+#    cycl = np.array([[1,0,0,0,0,0],
+#                              [0,0,0,1,0,0],
+#                              [0,0,0,0,0,0],
+#                              [0,0,0,0,0,0],
+#                              [0,0,0,1,0,0],
+#                              [0,0,0,0,1,0]])
+#                             
+#    cyclone_area = 'Yes'                             
+       
     
-    if cyclone_area == 'no':
-        mz_init = value_lookup.mz_init_non_cycl
-    if cyclone_area == 'yes':
-        mz_init = value_lookup.mz_init_cycl   
+    mz_init = value_lookup.mz_init_non_cycl
+    mz_init_cycl = value_lookup.mz_init_cycl 
+
+    outdata = np.zeros_like(data, np.float32)    
     
-    outdata = np.zeros_like(data, np.float32)
-    
-    # Reclassify the land classes into initial terrain multipliers  
+    # Reclassify the land classes into initial terrain multipliers 
     for i in mz_init.keys():
         outdata[data == i] = mz_init[i]/1000.0
+    
+#    import pdb
+#    pdb.set_trace()
+    
+    if cyclone_area <> None:
+        dataset = gdal.Open(cyclone_area)
+        cols = dataset.RasterXSize
+        rows = dataset.RasterYSize
+        band = dataset.GetRasterBand(1)     
+        cycl = band.ReadAsArray(0, 0, cols, rows)
         
-        
-#    for i in range(data.shape[0]):            
-#        for jj in range(data.shape[1]):
-#            flag = 0
-#            for terrain_class in mz_init.keys():
-#                if data[i,jj] == terrain_class:
-#                    outdata[i,jj] = mz_init[terrain_class]/1000.0
-#                    flag = 1
-#                    break
-#            if flag == 0:
-#                outdata[i,jj] = 1.0
-   
+        for i in mz_init_cycl.keys():
+            cycl_loc = np.where((data == i) & (cycl == 1))
+            outdata[cycl_loc] = mz_init_cycl[i]/1000.0
+              
+        dataset = None
     return outdata
     
-    
+ 
+#def init_kern_diag(size):
+#    """
+#    Returns a mean kernel for convolutions, with dimensions
+#    (2*size+1, 2*size+1), it is north east direction
+#    """    
+#    
+#    kernel = np.zeros((2*size+1, 2*size+1))
+#    kernel[size, size] = 1.0
+#    
+#    for i in range(0, size + 1):
+#        kernel[size-i, size + i] = 1.0
+#        
+##    kernel[size-3:size, size+1] = 1.0
+##    kernel[size-2:size, size+2] = 1.0
+##    kernel[size-1, size+3] = 1.0    
+#    
+#    return kernel / kernel.sum()
+#
+#
+#def init_kern(size):
+#    """
+#    Returns a mean kernel for convolutions, with dimensions
+#    (2*size+1, 2*size+1), it is south direction
+#    """       
+#    kernel = np.zeros((2*size+1, 2*size+1))
+#    
+#    for i in range(0, size+1):
+#        kernel[i+size, size] = 1.0
+#    
+#    return kernel / kernel.sum()
+#
+#
+#def kern_w(size):
+###    print np.rot90(init_kern(size), 3)    
+#    return np.rot90(init_kern(size), 3)
+#
+#
+#def kern_e(size):
+#    print np.rot90(init_kern(size), 1)    
+#    return np.rot90(init_kern(size), 1)    
+#
+#
+#def kern_n(size):
+###    print np.rot90(init_kern(size), 2)    
+#    return np.rot90(init_kern(size), 2)
+#
+#
+#def kern_s(size):
+###    print init_kern(size)    
+#    return init_kern(size)
+#
+#
+#def kern_ne(size):
+#    print init_kern_diag(size)    
+#    return init_kern_diag(size)
+#
+#
+#def kern_nw(size):
+###    print np.fliplr(init_kern_diag(size))    
+#    return np.fliplr(init_kern_diag(size))
+#
+#
+#def kern_sw(size):
+###    print np.flipud(np.fliplr(init_kern_diag(size)))    
+#    return np.flipud(np.fliplr(init_kern_diag(size)))
+#
+#
+#def kern_se(size):
+###    print np.flipud(init_kern_diag(size))    
+#    return np.flipud(init_kern_diag(size))
+#
+#
+#def blur_image(im, kernel, mode='same'):
+#    """
+#    Blurs the image by convolving with a kernel (e.g. mean or gaussian) of typical
+#    size n. The optional keyword argument ny allows for a different size in the
+#    y direction.
+#    """     
+#    improc = signal.convolve(im, kernel, mode=mode)
+#    return(improc)
+   
 ## calculate the west direction
 def convo_w(data, filter_width): 
 #    import pdb
@@ -384,3 +487,12 @@ def convo_se(data, filter_width):
 ##    loc_list = config.get('input_values', 'loc_list').split()
 ##    cyclone_area = config.get('input_values', 'cyclone_area')
 ##    terrain(root, loc_list, cyclone_area)
+
+#
+#if __name__ == '__main__':
+#    print kern_w(4)
+
+if __name__ == '__main__':
+    cyclone = r'N:\climate_change\CHARS\B_Wind\Projects\Multipliers\validation\output_work\test_cycl_stat.img'
+    terr = r'N:\climate_change\CHARS\B_Wind\Projects\Multipliers\validation\output_work\test_terr_resamp.img'
+    terrain(cyclone, terr)
