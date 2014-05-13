@@ -187,11 +187,7 @@ def get_slope_aspect(input_dem):
     
     dzdy_array = ndimage.sobel(elevation_array, axis=0)/(8. * pixel_y_size)
     dzdy_array = numexpr.evaluate("dzdy_array * pixel_y_size / y_m_array")
-    del y_m_array
-
-    # find output folder
-    ms_folder = pjoin(os.path.dirname(input_dem), 'shielding')
-    file_name = os.path.basename(input_dem) 
+    del y_m_array    
     
     # Slope    
     hypotenuse_array = np.hypot(dzdx_array, dzdy_array)

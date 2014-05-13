@@ -231,7 +231,7 @@ class TileGrid(object):
         return tile_x_start, tile_y_start, tile_x_end, tile_y_end
 
 
-class Mz_Ms(object):
+class Multipliers(object):
     
     def __init__(self, tilegrid, sourceimg, dem, cyclone_area):
         self.tilegrid = tilegrid
@@ -266,7 +266,7 @@ class Mz_Ms(object):
         self.pixelWidth_cycl = geotransform_dem[1]
         self.pixelHeight_cycl = -geotransform_dem[5]
     
-    def mz_ms_calculate(self, tile_info):
+    def multipliers_calculate(self, tile_info):
 #        import pdb
 #        pdb.set_trace()
         
@@ -408,10 +408,12 @@ class Mz_Ms(object):
                 cyclone_area = None
                 
             terrain.terrain.terrain(cyclone_area, terrain_resample)
-            #terrain.terrain.terrain(self.cyclone_area, temp_tile_stat)
         
             log.info('producing Shielding multipliers ...')
             shielding.shielding.shield(terrain_resample, temp_tile_dem)
+            
+            log.info('producing Topographic multipliers ...')
+            #topographic.toppomult.topomult(temp_tile_dem)
             
             os.remove(temp_tile_dem)
             os.remove(temp_tile_stat)
@@ -463,13 +465,13 @@ class Mz_Ms(object):
                 W = pp.receive(source=0, tag=work_tag)                
                 if W is None:                    
                     break                
-                status = self.mz_ms_calculate(W)                
+                status = self.multipliers_calculate(W)                
                 pp.send(status, destination=0, tag=result_tag)        
                 
         elif pp.size() == 1 and pp.rank() == 0:            
             # Assumed no Pypar - helps avoid the need to extend DummyPypar()            
             for i, tile in enumerate(tiles):                
-                self.mz_ms_calculate(tile)   
+                self.multipliers_calculate(tile)   
                 
                 if progressCallback:                    
                     progressCallback(i)
@@ -707,7 +709,7 @@ def run(callback=None):
     #    callback(i, len(tiles))                 
     
     pp.barrier()    
-    terrain_shield = Mz_Ms(TG, terrain_map, dem, cyclone_area)            
+    terrain_shield = Multipliers(TG, terrain_map, dem, cyclone_area)            
                           
     terrain_shield.paralleliseOnTiles(tiles)     
     
