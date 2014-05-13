@@ -48,6 +48,8 @@ def terrain(cyclone_area, temp_tile):
     # convolute for each direction
     dire = ['w', 'e', 'n', 's', 'nw', 'ne', 'se', 'sw']
 
+
+
     for one_dir in dire:
         log.info(one_dir)
         if one_dir in ['w', 'e', 'n', 's']:
