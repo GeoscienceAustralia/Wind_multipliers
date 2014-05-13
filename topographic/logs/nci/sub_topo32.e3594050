@@ -1,6 +1,0 @@
-openmpi/1.6.3(3):ERROR:150: Module 'openmpi/1.6.3' conflicts with the currently loaded module(s) 'openmpi/1.6.2'
-openmpi/1.6.3(3):ERROR:102: Tcl command execution failed: source /opt/Modules/extensions/extensions.tcl
-
-=>> PBS: job killed: mem 11839601kb exceeded limit 7680000kb
-mpirun: killing job...
-
