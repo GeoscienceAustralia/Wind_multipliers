@@ -319,8 +319,7 @@ def convo_combine(ms_orig, slope_array, aspect_array):
         ms_dir_ds.SetProjection(ms_orig_ds.GetProjection()) 
         
         outBand_ms_dir = ms_dir_ds.GetRasterBand(1)
-        outBand_ms_dir.WriteArray(result)
-        del result
+        outBand_ms_dir.WriteArray(result)       
         
         # flush data to disk, set the NoData value and calculate stats
         outBand_ms_dir.FlushCache()
@@ -334,14 +333,15 @@ def convo_combine(ms_orig, slope_array, aspect_array):
         tile_nc = pjoin(nc_folder, os.path.splitext(file_name)[0] + '_' + one_dir + '.nc')
         ncobj = Dataset(tile_nc, 'w', format='NETCDF4', clobber=True)
         # create the x and y dimensions
-        ncobj.createDimension('x', result.shape[0])
-        ncobj.createDimension('y', result.shape[1])
+        ncobj.createDimension('x', result.shape[1])
+        ncobj.createDimension('y', result.shape[0])
         #create the variable (Shielding multpler ms in float)
         data = ncobj.createVariable('ms', np.dtype(float), ('x', 'y'))
         # write data to variable
         data[:] = result
         #close the file
         ncobj.close()
+        del result
 
     ms_orig_ds = None
    

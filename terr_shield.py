@@ -39,7 +39,7 @@ class TileGrid(object):
     
     """    
     
-    def __init__(self, tile_length, upwind_length, terrain_map):        
+    def __init__(self, upwind_length, terrain_map):        
         """        
         Initialise the tile grid for dividing up the domain                
         
@@ -84,8 +84,8 @@ class TileGrid(object):
         log.info('Top left corner X,Y: %s' % self.x_Left + ' %s' % self.y_Upper)
         log.info('Resolution %s' % self.pixelWidth + 'x %s' % self.pixelHeight) 
         
-        self.x_step = tile_length 
-        self.y_step = tile_length 
+        self.x_step = int(np.ceil(1.0/float(self.pixelWidth))) 
+        self.y_step = int(np.ceil(1.0/float(self.pixelHeight)))
         self.upwind_length = upwind_length        
         self.x_buffer = int(upwind_length/self.pixelWidth)
         self.y_buffer = self.x_buffer              
@@ -99,7 +99,7 @@ class TileGrid(object):
         Defines the indices required to subset a 2D array into smaller        
         rectangular 2D arrays (of dimension x_step * y_step).          
         """        
-
+        
         subset_maxcols = int(np.ceil(self.x_dim/float(self.x_step)))        
         subset_maxrows = int(np.ceil(self.y_dim/float(self.y_step)))        
         self.num_tiles = subset_maxcols * subset_maxrows        
@@ -407,10 +407,10 @@ class Multipliers(object):
             else:
                 cyclone_area = None
                 
-            terrain.terrain.terrain(cyclone_area, terrain_resample)
+            #terrain.terrain.terrain(cyclone_area, terrain_resample)
         
             log.info('producing Shielding multipliers ...')
-            shielding.shielding.shield(terrain_resample, temp_tile_dem)
+            #shielding.shielding.shield(terrain_resample, temp_tile_dem)
             
             log.info('producing Topographic multipliers ...')
             #topographic.toppomult.topomult(temp_tile_dem)
@@ -675,11 +675,7 @@ def run(callback=None):
     config.read(pjoin(cmd_folder, 'terr_shield.cfg'))
 
     root = config.get('inputValues', 'root')
-    loc = config.get('inputValues', 'loc')
-    
-    tile_length = float(config.get('inputValues', 'tile_length'))
     upwind_length = float(config.get('inputValues', 'upwind_length'))
-    #ArcToolbox = config.get('input_values', 'ArcToolbox')
     
     logfile = 'terr_shield.log'    
     loglevel = 'INFO'
@@ -690,7 +686,7 @@ def run(callback=None):
     attemptParallel() 
     
     # set input map and output folder
-    terrain_map = pjoin(pjoin(root, 'input'), loc + "_terrain_class.img")
+    terrain_map = pjoin(pjoin(root, 'input'), "lc_terrain_class.img")
     dem = pjoin(pjoin(root, 'input'), "dems1_whole.img")
     cyclone_area =  pjoin(pjoin(root, 'input'), "cyclone_dem_extent.img")
     
@@ -700,7 +696,7 @@ def run(callback=None):
     output_folder = pjoin(root, 'output')
     
     log.info("get the tiles")    
-    TG = TileGrid(tile_length, upwind_length, terrain_map)    
+    TG = TileGrid(upwind_length, terrain_map)    
     tiles = getTiles(TG)
     
 #    import pdb
