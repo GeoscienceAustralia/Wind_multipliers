@@ -48,6 +48,8 @@ def terrain(cyclone_area, temp_tile):
     # convolute for each direction
     dire = ['w', 'e', 'n', 's', 'nw', 'ne', 'se', 'sw']
 
+
+
     for one_dir in dire:
         log.info(one_dir)
         if one_dir in ['w', 'e', 'n', 's']:
@@ -98,8 +100,8 @@ def terrain(cyclone_area, temp_tile):
         tile_nc = pjoin(nc_folder, os.path.splitext(file_name)[0] + '_mz_' + one_dir + '.nc')
         ncobj = Dataset(tile_nc, 'w', format='NETCDF4', clobber=True)
         # create the x and y dimensions
-        ncobj.createDimension('x', outdata.shape[0])
-        ncobj.createDimension('y', outdata.shape[1])
+        ncobj.createDimension('x', outdata.shape[1])
+        ncobj.createDimension('y', outdata.shape[0])
         #create the variable (Terrain multpler mz in float)
         data = ncobj.createVariable('mz', np.dtype(float), ('x', 'y'))
         # write data to variable

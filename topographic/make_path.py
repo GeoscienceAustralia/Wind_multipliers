@@ -24,6 +24,9 @@ def make_path(nr,nc,n,dir):
     '''
 
     dir = dir.lower()
+    
+#    import pdb
+#    pdb.set_trace()
 
     #first compute the i,j coordinates from the 1-d index n
     i = numpy.mod(n,nr) + 1
