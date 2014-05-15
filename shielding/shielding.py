@@ -287,7 +287,7 @@ def convo_combine(ms_orig, slope_array, aspect_array):
 
     for one_dir in dire:
 
-        print one_dir
+        log.info(one_dir)
         output_dir = pjoin(raster_folder, os.path.splitext(file_name)[0] +  '_' + one_dir + '.img')
 
         if one_dir in ['w', 'e', 'n', 's']:
@@ -329,18 +329,18 @@ def convo_combine(ms_orig, slope_array, aspect_array):
         
         ms_dir_ds = None
         
-        # output format as netCDF4       
-        tile_nc = pjoin(nc_folder, os.path.splitext(file_name)[0] + '_' + one_dir + '.nc')
-        ncobj = Dataset(tile_nc, 'w', format='NETCDF4', clobber=True)
-        # create the x and y dimensions
-        ncobj.createDimension('x', result.shape[1])
-        ncobj.createDimension('y', result.shape[0])
-        #create the variable (Shielding multpler ms in float)
-        data = ncobj.createVariable('ms', np.dtype(float), ('x', 'y'))
-        # write data to variable
-        data[:] = result
-        #close the file
-        ncobj.close()
+#        # output format as netCDF4       
+#        tile_nc = pjoin(nc_folder, os.path.splitext(file_name)[0] + '_' + one_dir + '.nc')
+#        ncobj = Dataset(tile_nc, 'w', format='NETCDF4', clobber=True)
+#        # create the x and y dimensions
+#        ncobj.createDimension('x', result.shape[1])
+#        ncobj.createDimension('y', result.shape[0])
+#        #create the variable (Shielding multpler ms in float)
+#        data = ncobj.createVariable('ms', np.dtype(float), ('x', 'y'))
+#        # write data to variable
+#        data[:] = result
+#        #close the file
+#        ncobj.close()
         del result
 
     ms_orig_ds = None

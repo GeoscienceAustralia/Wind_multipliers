@@ -139,17 +139,15 @@ def topomult(input_dem):
     data =  elevation_array.flatten()
     
     x_m_array, y_m_array = get_pixel_size_grids(ds)
-    cellsize = 0.5 * (np.mean(x_m_array) + np.mean(y_m_array))
-    
-#    import pdb
-#    pdb.set_trace()
-    
+    cellsize = 0.5 * (np.mean(x_m_array) + np.mean(y_m_array))    
+       
     # Compute the starting positions along the boundaries depending on dir 
     # Together, the direction and the starting position determines a line.
     # Note that the starting positions are defined
     # in terms of the 1-d index of the array.
     
     directions = ['ne','s','e','w','n','nw','se','sw']
+    #directions = ['s']
     
     for direction in directions:
         print direction        
@@ -185,9 +183,13 @@ def topomult(input_dem):
             M = multiplier_calc.multiplier_calc(line, data_spacing)
               
             # write the line back to the data array
-            M = M.conj().transpose()
+            #M = M.conj().transpose()
+            M = np.transpose(M)
             Mhdata[path] = M[0,].flatten()
         
+#        import pdb
+#        pdb.set_trace()
+    
         # Reshape the result to matrix like 
         Mhdata = np.reshape(Mhdata, (nc, nr))
         #Mhdata = Mhdata.conj().transpose()
@@ -195,8 +197,9 @@ def topomult(input_dem):
         
         g = np.ones((3, 3))/9.
         
-        mhsmooth = signal.convolve2d(Mhdata, g, mode='same', boundary='fill', 
-                                     fillvalue=1)
+#        mhsmooth = signal.convolve2d(Mhdata, g, mode='same', boundary='fill', 
+#                                     fillvalue=1)
+        mhsmooth = signal.convolve(Mhdata, g, mode='same')
                
         # output format as ERDAS Imagine
         driver = gdal.GetDriverByName('HFA')
@@ -221,18 +224,18 @@ def topomult(input_dem):
 #        import pdb
 #        pdb.set_trace()
         
-        # output format as netCDF4       
-        tile_nc = pjoin(nc_folder, os.path.splitext(file_name)[0] + '_' + direction + '.nc')
-        ncobj = Dataset(tile_nc, 'w', format='NETCDF4', clobber=True)
-        # create the x and y dimensions
-        ncobj.createDimension('x', mhsmooth.shape[1])
-        ncobj.createDimension('y', mhsmooth.shape[0])
-        #create the variable (Shielding multpler ms in float)
-        data = ncobj.createVariable('ms', np.dtype(float), ('x', 'y'))
-        # write data to variable
-        data[:] = mhsmooth
-        #close the file
-        ncobj.close()
+#        # output format as netCDF4       
+#        tile_nc = pjoin(nc_folder, os.path.splitext(file_name)[0] + '_' + direction + '.nc')
+#        ncobj = Dataset(tile_nc, 'w', format='NETCDF4', clobber=True)
+#        # create the x and y dimensions
+#        ncobj.createDimension('x', mhsmooth.shape[1])
+#        ncobj.createDimension('y', mhsmooth.shape[0])
+#        #create the variable (Shielding multpler ms in float)
+#        data = ncobj.createVariable('ms', np.dtype(float), ('x', 'y'))
+#        # write data to variable
+#        data[:] = mhsmooth
+#        #close the file
+#        ncobj.close()
         del mhsmooth
         
         log.info('Finished direction %s' % direction)

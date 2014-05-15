@@ -10,6 +10,7 @@
 import sys, string, os, time, inspect, shutil, numpy as np, osgeo.gdal as gdal, logging as log
 import terrain.terrain
 import shielding.shielding
+import topographic.topomult
 import ConfigParser
 from osgeo.gdalconst import *
 from files import flStartLog
@@ -407,13 +408,13 @@ class Multipliers(object):
             else:
                 cyclone_area = None
                 
-            #terrain.terrain.terrain(cyclone_area, terrain_resample)
+            terrain.terrain.terrain(cyclone_area, terrain_resample)
         
             log.info('producing Shielding multipliers ...')
-            #shielding.shielding.shield(terrain_resample, temp_tile_dem)
+            shielding.shielding.shield(terrain_resample, temp_tile_dem)
             
             log.info('producing Topographic multipliers ...')
-            #topographic.toppomult.topomult(temp_tile_dem)
+            topographic.topomult.topomult(temp_tile_dem)
             
             os.remove(temp_tile_dem)
             os.remove(temp_tile_stat)
@@ -686,7 +687,8 @@ def run(callback=None):
     attemptParallel() 
     
     # set input map and output folder
-    terrain_map = pjoin(pjoin(root, 'input'), "lc_terrain_class.img")
+    #terrain_map = pjoin(pjoin(root, 'input'), "lc_terrain_class.img")
+    terrain_map = pjoin(pjoin(root, 'input'), "MockLandCover250m_terrain_class.img")
     dem = pjoin(pjoin(root, 'input'), "dems1_whole.img")
     cyclone_area =  pjoin(pjoin(root, 'input'), "cyclone_dem_extent.img")
     
