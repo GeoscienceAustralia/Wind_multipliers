@@ -694,7 +694,7 @@ def run(callback=None):
     
     # set input map and output folder
     #terrain_map = pjoin(pjoin(root, 'input'), "lc_terrain_class.img")
-    terrain_map = pjoin(pjoin(root, 'input'), "MockLandCover250m_terrain_class.img")
+    terrain_map = pjoin(pjoin(root, 'input'), "lc_terrain_class.img")
     dem = pjoin(pjoin(root, 'input'), "dems1_whole.img")
     cyclone_area =  pjoin(pjoin(root, 'input'), "cyclone_dem_extent.img")
     
