@@ -103,9 +103,9 @@ def terrain(cyclone_area, temp_tile):
         ncobj.createDimension('x', outdata.shape[1])
         ncobj.createDimension('y', outdata.shape[0])
         #create the variable (Terrain multpler mz in float)
-        data = ncobj.createVariable('mz', np.dtype(float), ('x', 'y'))
+        nc_data = ncobj.createVariable('mz', np.dtype(float), ('x', 'y'))
         # write data to variable
-        data[:] = outdata
+        nc_data[:] = outdata
         #close the file
         ncobj.close()
         

@@ -135,8 +135,12 @@ def topomult(input_dem):
     nr = ds.RasterYSize
     band = ds.GetRasterBand(1)     
     elevation_array = band.ReadAsArray(0, 0, nc, nr)
+    elevation_array_tran = np.transpose(elevation_array)
     
-    data =  elevation_array.flatten()
+#    import pdb
+#    pdb.set_trace()
+    
+    data =  elevation_array_tran.flatten()
     
     x_m_array, y_m_array = get_pixel_size_grids(ds)
     cellsize = 0.5 * (np.mean(x_m_array) + np.mean(y_m_array))    
@@ -146,7 +150,7 @@ def topomult(input_dem):
     # Note that the starting positions are defined
     # in terms of the 1-d index of the array.
     
-    directions = ['ne','s','e','w','n','nw','se','sw']
+    directions = ['n','s','e','w','ne','nw','se','sw']
     #directions = ['s']
     
     for direction in directions:
@@ -187,8 +191,7 @@ def topomult(input_dem):
             M = np.transpose(M)
             Mhdata[path] = M[0,].flatten()
         
-#        import pdb
-#        pdb.set_trace()
+        
     
         # Reshape the result to matrix like 
         Mhdata = np.reshape(Mhdata, (nc, nr))
@@ -200,6 +203,7 @@ def topomult(input_dem):
 #        mhsmooth = signal.convolve2d(Mhdata, g, mode='same', boundary='fill', 
 #                                     fillvalue=1)
         mhsmooth = signal.convolve(Mhdata, g, mode='same')
+        del Mhdata
                
         # output format as ERDAS Imagine
         driver = gdal.GetDriverByName('HFA')
@@ -224,18 +228,18 @@ def topomult(input_dem):
 #        import pdb
 #        pdb.set_trace()
         
-#        # output format as netCDF4       
-#        tile_nc = pjoin(nc_folder, os.path.splitext(file_name)[0] + '_' + direction + '.nc')
-#        ncobj = Dataset(tile_nc, 'w', format='NETCDF4', clobber=True)
-#        # create the x and y dimensions
-#        ncobj.createDimension('x', mhsmooth.shape[1])
-#        ncobj.createDimension('y', mhsmooth.shape[0])
-#        #create the variable (Shielding multpler ms in float)
-#        data = ncobj.createVariable('ms', np.dtype(float), ('x', 'y'))
-#        # write data to variable
-#        data[:] = mhsmooth
-#        #close the file
-#        ncobj.close()
+        # output format as netCDF4       
+        tile_nc = pjoin(nc_folder, os.path.splitext(file_name)[0] + '_' + direction + '.nc')
+        ncobj = Dataset(tile_nc, 'w', format='NETCDF4', clobber=True)
+        # create the x and y dimensions
+        ncobj.createDimension('x', mhsmooth.shape[1])
+        ncobj.createDimension('y', mhsmooth.shape[0])
+        #create the variable (Shielding multpler ms in float)
+        nc_data = ncobj.createVariable('ms', np.dtype(float), ('x', 'y'))
+        # write data to variable
+        nc_data[:] = mhsmooth
+        #close the file
+        ncobj.close()
         del mhsmooth
         
         log.info('Finished direction %s' % direction)
@@ -245,6 +249,6 @@ def topomult(input_dem):
    
 if __name__ == '__main__': 
     #dem = r'N:\climate_change\CHARS\B_Wind\Projects\Multipliers\validation\output_work\test_dem.img'
-    dem = '/nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output_work/test_dem.img'
+    dem = '/nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output_work/test_dem399_00.IMG'
     #dem = r'N:\climate_change\CHARS\B_Wind\Projects\Multipliers\validation\output_work\test_dem.asc'
     topomult(dem)
