@@ -144,10 +144,10 @@ Code Documentation
 .. toctree::
    :maxdepth: 2
    
-   sphinx_docs/topographic
-   sphinx_docs/terrain
-   sphinx_docs/sheilding
-   sphinx_docs/tests_characterisation
+   docs/topographic
+   docs/terrain
+   docs/sheilding
+   docs/tests_characterisation
      
 
 Module Index

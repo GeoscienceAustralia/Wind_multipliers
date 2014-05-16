@@ -45,56 +45,57 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for tests_characterisation.misc</h1><pre>
-import os
+  <h1>Source code for tests_characterisation.misc</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">os</span>
 
-"""
-.. module:: misc.py
-   :synopsis: Misc util module
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: misc.py</span>
+<span class="sd">   :synopsis: Misc util module</span>
 
-.. moduleauthor:: Daniel Wild &lt;daniel.wild@ga.gov.au&gt;
-
-
-"""
+<span class="sd">.. moduleauthor:: Daniel Wild &lt;daniel.wild@ga.gov.au&gt;</span>
 
 
-DIRECTIONS = 'e', 'n', 'ne', 'nw', 's', 'se', 'sw', 'w'
+<span class="sd">&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="TestPaths"><a class="viewcode-back" href="../../sphinx_docs/tests_characterisation.html#tests_characterisation.misc.TestPaths">[docs]</a>class TestPaths:
-    """
-    Used to build paths to test files and out dirs
-
-    """
-
-    def __init__(self):
-
-        # static paths
-        self.ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname('Wind_multipliers'), '..'))
-        self.TEST_DIR = os.path.join(self.ROOT_DIR, 'tests_characterisation')
-        self.BASE_TOPO_TEST_DIR = os.path.join(self.TEST_DIR, 'test_topographic')
-        self.TOPO_MULTI_DIR = os.path.join(self.ROOT_DIR, 'topographic')
-        self.TOPO_FILES_DIR = os.path.join(self.TOPO_MULTI_DIR, 'py-files')
-
-        # dynamic paths
-        self.TOPO_TEST_DIR = None
-        self.TOPO_TEST_INPUT_DIR = None
-        self.TOPO_TEST_ACTUAL_OUTPUT_DIR = None
-        self.TOPO_TEST_EXPECTED_OUTPUT_DIR = None
+<span class="n">DIRECTIONS</span> <span class="o">=</span> <span class="s">&#39;e&#39;</span><span class="p">,</span> <span class="s">&#39;n&#39;</span><span class="p">,</span> <span class="s">&#39;ne&#39;</span><span class="p">,</span> <span class="s">&#39;nw&#39;</span><span class="p">,</span> <span class="s">&#39;s&#39;</span><span class="p">,</span> <span class="s">&#39;se&#39;</span><span class="p">,</span> <span class="s">&#39;sw&#39;</span><span class="p">,</span> <span class="s">&#39;w&#39;</span>
 
 
-<div class="viewcode-block" id="TestPaths.initTopoTestPaths"><a class="viewcode-back" href="../../sphinx_docs/tests_characterisation.html#tests_characterisation.misc.TestPaths.initTopoTestPaths">[docs]</a>    def initTopoTestPaths(self, test_size):
-        """
-        Builds test dir paths depending on test_size
+<div class="viewcode-block" id="TestPaths"><a class="viewcode-back" href="../../docs/tests_characterisation.html#tests_characterisation.misc.TestPaths">[docs]</a><span class="k">class</span> <span class="nc">TestPaths</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Used to build paths to test files and out dirs</span>
 
-        :param name: The size of the test to run.
-        :type name: str.
-        """
+<span class="sd">    &quot;&quot;&quot;</span>
 
-        self.TOPO_TEST_DIR = os.path.join(self.BASE_TOPO_TEST_DIR, test_size + '_test')
-        self.TOPO_TEST_INPUT_DIR = os.path.join(self.TOPO_TEST_DIR, 'topo_test_input')
-        self.TOPO_TEST_ACTUAL_OUTPUT_DIR = os.path.join(self.TOPO_TEST_DIR, 'topo_actual_output')
-        self.TOPO_TEST_EXPECTED_OUTPUT_DIR = os.path.join(self.TOPO_TEST_DIR, 'topo_expected_output')</pre></div></div>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="c"># static paths</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ROOT_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="s">&#39;Wind_multipliers&#39;</span><span class="p">),</span> <span class="s">&#39;..&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TEST_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ROOT_DIR</span><span class="p">,</span> <span class="s">&#39;tests_characterisation&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">BASE_TOPO_TEST_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">TEST_DIR</span><span class="p">,</span> <span class="s">&#39;test_topographic&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TOPO_MULTI_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ROOT_DIR</span><span class="p">,</span> <span class="s">&#39;topographic&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TOPO_FILES_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">TOPO_MULTI_DIR</span><span class="p">,</span> <span class="s">&#39;py-files&#39;</span><span class="p">)</span>
+
+        <span class="c"># dynamic paths</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TOPO_TEST_DIR</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TOPO_TEST_INPUT_DIR</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TOPO_TEST_ACTUAL_OUTPUT_DIR</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TOPO_TEST_EXPECTED_OUTPUT_DIR</span> <span class="o">=</span> <span class="bp">None</span>
+
+
+<div class="viewcode-block" id="TestPaths.initTopoTestPaths"><a class="viewcode-back" href="../../docs/tests_characterisation.html#tests_characterisation.misc.TestPaths.initTopoTestPaths">[docs]</a>    <span class="k">def</span> <span class="nf">initTopoTestPaths</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_size</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Builds test dir paths depending on test_size</span>
+
+<span class="sd">        :param name: The size of the test to run.</span>
+<span class="sd">        :type name: str.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">TOPO_TEST_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">BASE_TOPO_TEST_DIR</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">+</span> <span class="s">&#39;_test&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TOPO_TEST_INPUT_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">TOPO_TEST_DIR</span><span class="p">,</span> <span class="s">&#39;topo_test_input&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TOPO_TEST_ACTUAL_OUTPUT_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">TOPO_TEST_DIR</span><span class="p">,</span> <span class="s">&#39;topo_actual_output&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TOPO_TEST_EXPECTED_OUTPUT_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">TOPO_TEST_DIR</span><span class="p">,</span> <span class="s">&#39;topo_expected_output&#39;</span><span class="p">)</span></div></div>
+</pre></div>
 
           </div>
         </div>

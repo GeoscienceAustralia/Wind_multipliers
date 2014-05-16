@@ -7,12 +7,6 @@ terrain
 Terrain multi docs go here..
 
 
-direction_filter.py
-===========================================
-
-
-.. automodule:: direction_filter
-   :members:
 
 
 terrain.py
@@ -22,13 +16,6 @@ terrain.py
 .. automodule:: terrain.terrain
    :members:
 
-
-terrain_class2mz_orig.py
-===========================================
-
-
-.. automodule:: terrain_class2mz_orig
-   :members:
 
 
 value_lookup.py

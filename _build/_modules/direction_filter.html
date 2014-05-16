@@ -45,471 +45,469 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for direction_filter</h1><pre>
-#import arcpy
-import math
-#from arcpy.sa import *
-import os
-import sys
-import time
-import numpy
-import shutil
+  <h1>Source code for direction_filter</h1><div class="highlight"><pre>
+<span class="c">#import arcpy</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="c">#from arcpy.sa import *</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
 
-"""
-.. module:: direction_filter.py
-    :synopsis: Read input DEM stored in ../input
-"""
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: direction_filter.py</span>
+<span class="sd">    :synopsis: Read input DEM stored in ../input</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="terrain_convo"><a class="viewcode-back" href="../sphinx_docs/terrain.html#direction_filter.terrain_convo">[docs]</a>def terrain_convo(loc, root):
-    """
-    Moving average in each direction the initial terrain multipliers to derive the terrain
-    multipliers for each direction.
+<div class="viewcode-block" id="terrain_convo"><a class="viewcode-back" href="../sphinx_docs/terrain.html#direction_filter.terrain_convo">[docs]</a><span class="k">def</span> <span class="nf">terrain_convo</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Moving average in each direction the initial terrain multipliers to derive the terrain</span>
+<span class="sd">    multipliers for each direction.</span>
 
-    Input: initial terrain multiplier (mz_orig) produced from module terrain_class2mz_orig.py
-    :param loc:
-    :param root:
-    :returns: the terrain multiplier for each of the eight directions.
-    """
+<span class="sd">    Input: initial terrain multiplier (mz_orig) produced from module terrain_class2mz_orig.py</span>
+<span class="sd">    :param loc:</span>
+<span class="sd">    :param root:</span>
+<span class="sd">    :returns: the terrain multiplier for each of the eight directions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    arcpy.env.overwriteOutput = True
+    <span class="n">arcpy</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">overwriteOutput</span> <span class="o">=</span> <span class="bp">True</span>
 
-    # set directory
-    work_folder = root + '\\process\\terrain'
-    os.chdir(work_folder)
+    <span class="c"># set directory</span>
+    <span class="n">work_folder</span> <span class="o">=</span> <span class="n">root</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">process</span><span class="se">\\</span><span class="s">terrain&#39;</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">work_folder</span><span class="p">)</span>
     
-    output_folder = root + '\\output\\terrain'
+    <span class="n">output_folder</span> <span class="o">=</span> <span class="n">root</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">output</span><span class="se">\\</span><span class="s">terrain&#39;</span>
 
-    # open the image 
-    input_img = loc + '_mz_orig'
-    ds = Raster(input_img)
+    <span class="c"># open the image </span>
+    <span class="n">input_img</span> <span class="o">=</span> <span class="n">loc</span> <span class="o">+</span> <span class="s">&#39;_mz_orig&#39;</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">Raster</span><span class="p">(</span><span class="n">input_img</span><span class="p">)</span>
 
-    if ds is None:
-        print 'Could not open ' + input_img
-        sys.exit(1)
+    <span class="k">if</span> <span class="n">ds</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;Could not open &#39;</span> <span class="o">+</span> <span class="n">input_img</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
-    # get image size, format, projection
-    cols = ds.width
-    rows = ds.height
-    bands = ds.bandCount
-    pixelWidth = ds.meanCellWidth
-    pixelHeight = ds.meanCellHeight
+    <span class="c"># get image size, format, projection</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">width</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">height</span>
+    <span class="n">bands</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">bandCount</span>
+    <span class="n">pixelWidth</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">meanCellWidth</span>
+    <span class="n">pixelHeight</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">meanCellHeight</span>
 
-    print 'Format: ', ds.format
-    print 'Size is ',cols,'x',rows,'x',bands
+    <span class="k">print</span> <span class="s">&#39;Format: &#39;</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">format</span>
+    <span class="k">print</span> <span class="s">&#39;Size is &#39;</span><span class="p">,</span><span class="n">cols</span><span class="p">,</span><span class="s">&#39;x&#39;</span><span class="p">,</span><span class="n">rows</span><span class="p">,</span><span class="s">&#39;x&#39;</span><span class="p">,</span><span class="n">bands</span>
 
-    print 'extent: ', ds.extent
-    print 'resolution ', pixelWidth, 'x', pixelHeight
+    <span class="k">print</span> <span class="s">&#39;extent: &#39;</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">extent</span>
+    <span class="k">print</span> <span class="s">&#39;resolution &#39;</span><span class="p">,</span> <span class="n">pixelWidth</span><span class="p">,</span> <span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="n">pixelHeight</span>
 
-    #sr = arcpy.Describe(ds).spatialReference
-    sr = ds.spatialReference
+    <span class="c">#sr = arcpy.Describe(ds).spatialReference</span>
+    <span class="n">sr</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">spatialReference</span>
 
-    lowleft_corner = arcpy.Point(ds.extent.XMin,ds.extent.YMin)
+    <span class="n">lowleft_corner</span> <span class="o">=</span> <span class="n">arcpy</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">extent</span><span class="o">.</span><span class="n">XMin</span><span class="p">,</span><span class="n">ds</span><span class="o">.</span><span class="n">extent</span><span class="o">.</span><span class="n">YMin</span><span class="p">)</span>
 
     
-    data = arcpy.RasterToNumPyArray(ds)
+    <span class="n">data</span> <span class="o">=</span> <span class="n">arcpy</span><span class="o">.</span><span class="n">RasterToNumPyArray</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
     
 
-    dire = ['w', 'e', 'n', 's', 'nw', 'ne', 'se', 'sw']
+    <span class="n">dire</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;w&#39;</span><span class="p">,</span> <span class="s">&#39;e&#39;</span><span class="p">,</span> <span class="s">&#39;n&#39;</span><span class="p">,</span> <span class="s">&#39;s&#39;</span><span class="p">,</span> <span class="s">&#39;nw&#39;</span><span class="p">,</span> <span class="s">&#39;ne&#39;</span><span class="p">,</span> <span class="s">&#39;se&#39;</span><span class="p">,</span> <span class="s">&#39;sw&#39;</span><span class="p">]</span>
 
-    #dire = ['w']
+    <span class="c">#dire = [&#39;w&#39;]</span>
 
-    for one_dir in dire:
+    <span class="k">for</span> <span class="n">one_dir</span> <span class="ow">in</span> <span class="n">dire</span><span class="p">:</span>
 
-        print one_dir
+        <span class="k">print</span> <span class="n">one_dir</span>
 
-        output_dir = output_folder + '\\' + loc + '_mz_' + one_dir + '.img'
+        <span class="n">output_dir</span> <span class="o">=</span> <span class="n">output_folder</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">&#39;</span> <span class="o">+</span> <span class="n">loc</span> <span class="o">+</span> <span class="s">&#39;_mz_&#39;</span> <span class="o">+</span> <span class="n">one_dir</span> <span class="o">+</span> <span class="s">&#39;.img&#39;</span>
 
-        if one_dir in ['w', 'e', 'n', 's']:
-            filter_width = int(math.ceil(1000/pixelWidth))- 1
-        else:
-            filter_width = int(math.ceil(1000/(pixelWidth*1.414)))+ 1
+        <span class="k">if</span> <span class="n">one_dir</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;w&#39;</span><span class="p">,</span> <span class="s">&#39;e&#39;</span><span class="p">,</span> <span class="s">&#39;n&#39;</span><span class="p">,</span> <span class="s">&#39;s&#39;</span><span class="p">]:</span>
+            <span class="n">filter_width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="mi">1000</span><span class="o">/</span><span class="n">pixelWidth</span><span class="p">))</span><span class="o">-</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">filter_width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="mi">1000</span><span class="o">/</span><span class="p">(</span><span class="n">pixelWidth</span><span class="o">*</span><span class="mf">1.414</span><span class="p">)))</span><span class="o">+</span> <span class="mi">1</span>
 
-        print 'convolution filter width ' + str(filter_width)
+        <span class="k">print</span> <span class="s">&#39;convolution filter width &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">filter_width</span><span class="p">)</span>
       
-        outdata = numpy.zeros((rows, cols), numpy.float32)
-        convo_dir = globals()['convo_' + one_dir]
-        outdata = convo_dir(data, rows, cols, outdata, filter_width)
+        <span class="n">outdata</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">),</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="n">convo_dir</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()[</span><span class="s">&#39;convo_&#39;</span> <span class="o">+</span> <span class="n">one_dir</span><span class="p">]</span>
+        <span class="n">outdata</span> <span class="o">=</span> <span class="n">convo_dir</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">outdata</span><span class="p">,</span> <span class="n">filter_width</span><span class="p">)</span>
 
-        if arcpy.Exists(output_dir):
-            arcpy.Delete_management(output_dir)
+        <span class="k">if</span> <span class="n">arcpy</span><span class="o">.</span><span class="n">Exists</span><span class="p">(</span><span class="n">output_dir</span><span class="p">):</span>
+            <span class="n">arcpy</span><span class="o">.</span><span class="n">Delete_management</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
 
-        arcpy.NumPyArrayToRaster(outdata, lowleft_corner, pixelWidth, pixelHeight).save(output_dir) 
+        <span class="n">arcpy</span><span class="o">.</span><span class="n">NumPyArrayToRaster</span><span class="p">(</span><span class="n">outdata</span><span class="p">,</span> <span class="n">lowleft_corner</span><span class="p">,</span> <span class="n">pixelWidth</span><span class="p">,</span> <span class="n">pixelHeight</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span> 
         
-        arcpy.DefineProjection_management(output_dir, sr)
+        <span class="n">arcpy</span><span class="o">.</span><span class="n">DefineProjection_management</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">sr</span><span class="p">)</span>
 
-        del outdata
+        <span class="k">del</span> <span class="n">outdata</span>
              
-    arcpy.BuildPyramidsandStatistics_management(output_folder, "#", "BUILD_PYRAMIDS", "CALCULATE_STATISTICS")
+    <span class="n">arcpy</span><span class="o">.</span><span class="n">BuildPyramidsandStatistics_management</span><span class="p">(</span><span class="n">output_folder</span><span class="p">,</span> <span class="s">&quot;#&quot;</span><span class="p">,</span> <span class="s">&quot;BUILD_PYRAMIDS&quot;</span><span class="p">,</span> <span class="s">&quot;CALCULATE_STATISTICS&quot;</span><span class="p">)</span>
 
-    ds = None
-    del data  
+    <span class="n">ds</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">del</span> <span class="n">data</span>  
 
 
 </div>
-<div class="viewcode-block" id="convo_w"><a class="viewcode-back" href="../sphinx_docs/terrain.html#direction_filter.convo_w">[docs]</a>def convo_w(data, rows, cols, outdata, filter_width):
-    """
-    Calculate the west direction
+<div class="viewcode-block" id="convo_w"><a class="viewcode-back" href="../sphinx_docs/terrain.html#direction_filter.convo_w">[docs]</a><span class="k">def</span> <span class="nf">convo_w</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">outdata</span><span class="p">,</span> <span class="n">filter_width</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the west direction</span>
 
-    :param data:
-    :param rows:
-    :param cols:
-    :param outdata:
-    :param filter_width:
-    """
+<span class="sd">    :param data:</span>
+<span class="sd">    :param rows:</span>
+<span class="sd">    :param cols:</span>
+<span class="sd">    :param outdata:</span>
+<span class="sd">    :param filter_width:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    for i in range(rows):
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
         
-    # calculate average for each pixel
+    <span class="c"># calculate average for each pixel</span>
     
-        for jj in range(cols):
+        <span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>
             
-            neighbour_sum = 0
+            <span class="n">neighbour_sum</span> <span class="o">=</span> <span class="mi">0</span>
    
-            # for pixels whose west neighbour amount is less than defined value.
-            # e.g in terrian for each hori and vert direction, for 25m resolution, the amount is 39
+            <span class="c"># for pixels whose west neighbour amount is less than defined value.</span>
+            <span class="c"># e.g in terrian for each hori and vert direction, for 25m resolution, the amount is 39</span>
     
-            if jj &lt; filter_width:            
-                for m in range(jj+1):
-                    neighbour_sum += data[i, m]
-                average = neighbour_sum / float(jj+1)
+            <span class="k">if</span> <span class="n">jj</span> <span class="o">&lt;</span> <span class="n">filter_width</span><span class="p">:</span>            
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">jj</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">neighbour_sum</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="n">neighbour_sum</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">jj</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
                     
-            else:
-                for m in range(jj-filter_width, jj+1):
-                    neighbour_sum += data[i, m]
-                average = neighbour_sum / (filter_width + 1)
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">jj</span><span class="o">-</span><span class="n">filter_width</span><span class="p">,</span> <span class="n">jj</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">neighbour_sum</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="n">neighbour_sum</span> <span class="o">/</span> <span class="p">(</span><span class="n">filter_width</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
 
-            # get the calculated pixel value 
+            <span class="c"># get the calculated pixel value </span>
                 
-            outdata[i, jj] = average
+            <span class="n">outdata</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">jj</span><span class="p">]</span> <span class="o">=</span> <span class="n">average</span>
 
-    return outdata
+    <span class="k">return</span> <span class="n">outdata</span>
 
 </div>
-<div class="viewcode-block" id="convo_e"><a class="viewcode-back" href="../sphinx_docs/terrain.html#direction_filter.convo_e">[docs]</a>def convo_e(data, rows, cols, outdata, filter_width):
-    """
-    Calculate the east direction
+<div class="viewcode-block" id="convo_e"><a class="viewcode-back" href="../sphinx_docs/terrain.html#direction_filter.convo_e">[docs]</a><span class="k">def</span> <span class="nf">convo_e</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">outdata</span><span class="p">,</span> <span class="n">filter_width</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the east direction</span>
 
-    :param data:
-    :param rows:
-    :param cols:
-    :param outdata:
-    :param filter_width:
-    """
+<span class="sd">    :param data:</span>
+<span class="sd">    :param rows:</span>
+<span class="sd">    :param cols:</span>
+<span class="sd">    :param outdata:</span>
+<span class="sd">    :param filter_width:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    for i in range(rows):  
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>  
         
-    # calculate average for each pixel
+    <span class="c"># calculate average for each pixel</span>
     
-        for jj in range(cols):
+        <span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>
             
-            neighbour_sum = 0
+            <span class="n">neighbour_sum</span> <span class="o">=</span> <span class="mi">0</span>
    
-            # for pixels whose east neighbour amount is less than defined value.
-            # e.g in terrian for each hori and vert direction, for 25m resolution, the amount is 39
+            <span class="c"># for pixels whose east neighbour amount is less than defined value.</span>
+            <span class="c"># e.g in terrian for each hori and vert direction, for 25m resolution, the amount is 39</span>
 
-            starting_less = cols - filter_width
+            <span class="n">starting_less</span> <span class="o">=</span> <span class="n">cols</span> <span class="o">-</span> <span class="n">filter_width</span>
             
-            if jj &gt;= starting_less:            
-                for m in range(jj, cols):
-                    neighbour_sum += data[i, m]
-                average = neighbour_sum / float(cols - jj)
+            <span class="k">if</span> <span class="n">jj</span> <span class="o">&gt;=</span> <span class="n">starting_less</span><span class="p">:</span>            
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">jj</span><span class="p">,</span> <span class="n">cols</span><span class="p">):</span>
+                    <span class="n">neighbour_sum</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="n">neighbour_sum</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">cols</span> <span class="o">-</span> <span class="n">jj</span><span class="p">)</span>
                     
-            else:
-                for m in range(jj, jj + filter_width + 1):
-                    neighbour_sum += data[i, m]
-                average = neighbour_sum / (filter_width + 1)
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">jj</span><span class="p">,</span> <span class="n">jj</span> <span class="o">+</span> <span class="n">filter_width</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">neighbour_sum</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="n">neighbour_sum</span> <span class="o">/</span> <span class="p">(</span><span class="n">filter_width</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
 
-            # get the calculated pixel value 
+            <span class="c"># get the calculated pixel value </span>
                 
-            outdata[i, jj] = average
+            <span class="n">outdata</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">jj</span><span class="p">]</span> <span class="o">=</span> <span class="n">average</span>
 
-    return outdata
+    <span class="k">return</span> <span class="n">outdata</span>
 
 </div>
-<div class="viewcode-block" id="convo_n"><a class="viewcode-back" href="../sphinx_docs/terrain.html#direction_filter.convo_n">[docs]</a>def convo_n(data, rows, cols, outdata, filter_width):
+<div class="viewcode-block" id="convo_n"><a class="viewcode-back" href="../sphinx_docs/terrain.html#direction_filter.convo_n">[docs]</a><span class="k">def</span> <span class="nf">convo_n</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">outdata</span><span class="p">,</span> <span class="n">filter_width</span><span class="p">):</span>
 
-    """
-    Calculate the north direction
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the north direction</span>
 
-    :param data:
-    :param rows:
-    :param cols:
-    :param outdata:
-    :param filter_width:
-    """
+<span class="sd">    :param data:</span>
+<span class="sd">    :param rows:</span>
+<span class="sd">    :param cols:</span>
+<span class="sd">    :param outdata:</span>
+<span class="sd">    :param filter_width:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    for i in range(cols):
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>
         
-    # calculate average for each pixel
+    <span class="c"># calculate average for each pixel</span>
     
-        for jj in range(rows):
+        <span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
             
-            neighbour_sum = 0
+            <span class="n">neighbour_sum</span> <span class="o">=</span> <span class="mi">0</span>
    
-            # for pixels whose north neighbour amount is less than defined value.
-            # e.g in terrian for each hori and vert direction, for 25m resolution, the amount is 39
+            <span class="c"># for pixels whose north neighbour amount is less than defined value.</span>
+            <span class="c"># e.g in terrian for each hori and vert direction, for 25m resolution, the amount is 39</span>
     
-            if jj &lt; filter_width:            
-                for m in range(jj+1):
-                    neighbour_sum += data[m, i]
-                average = neighbour_sum / float(jj+1)
+            <span class="k">if</span> <span class="n">jj</span> <span class="o">&lt;</span> <span class="n">filter_width</span><span class="p">:</span>            
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">jj</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">neighbour_sum</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">m</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="n">neighbour_sum</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">jj</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
                     
-            else:
-                for m in range(jj-filter_width, jj+1):
-                    neighbour_sum += data[m, i]
-                average = neighbour_sum / (filter_width + 1)
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">jj</span><span class="o">-</span><span class="n">filter_width</span><span class="p">,</span> <span class="n">jj</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">neighbour_sum</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">m</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="n">neighbour_sum</span> <span class="o">/</span> <span class="p">(</span><span class="n">filter_width</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
 
-            # get the calculated pixel value 
+            <span class="c"># get the calculated pixel value </span>
                 
-            outdata[jj, i] = average
+            <span class="n">outdata</span><span class="p">[</span><span class="n">jj</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">average</span>
 
-    return outdata
+    <span class="k">return</span> <span class="n">outdata</span>
 
 </div>
-<div class="viewcode-block" id="convo_s"><a class="viewcode-back" href="../sphinx_docs/terrain.html#direction_filter.convo_s">[docs]</a>def convo_s(data, rows, cols, outdata, filter_width):
-    """
-    Calculate the south direction
+<div class="viewcode-block" id="convo_s"><a class="viewcode-back" href="../sphinx_docs/terrain.html#direction_filter.convo_s">[docs]</a><span class="k">def</span> <span class="nf">convo_s</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">outdata</span><span class="p">,</span> <span class="n">filter_width</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the south direction</span>
 
-    :param data:
-    :param rows:
-    :param cols:
-    :param outdata:
-    :param filter_width:
-    """
+<span class="sd">    :param data:</span>
+<span class="sd">    :param rows:</span>
+<span class="sd">    :param cols:</span>
+<span class="sd">    :param outdata:</span>
+<span class="sd">    :param filter_width:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    for i in range(cols):
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>
         
-    # calculate average for each pixel
+    <span class="c"># calculate average for each pixel</span>
     
-        for jj in range(rows):
+        <span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
             
-            neighbour_sum = 0
+            <span class="n">neighbour_sum</span> <span class="o">=</span> <span class="mi">0</span>
    
-            # for pixels whose south neighbour amount is less than defined value.
-            # e.g in terrian for each hori and vert direction, for 25m resolution, the amount is 39
+            <span class="c"># for pixels whose south neighbour amount is less than defined value.</span>
+            <span class="c"># e.g in terrian for each hori and vert direction, for 25m resolution, the amount is 39</span>
 
-            starting_less = rows - filter_width
+            <span class="n">starting_less</span> <span class="o">=</span> <span class="n">rows</span> <span class="o">-</span> <span class="n">filter_width</span>
             
-            if jj &gt;= starting_less:            
-                for m in range(jj, rows):
-                    neighbour_sum += data[m, i]
-                average = neighbour_sum / float(rows - jj)
+            <span class="k">if</span> <span class="n">jj</span> <span class="o">&gt;=</span> <span class="n">starting_less</span><span class="p">:</span>            
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">jj</span><span class="p">,</span> <span class="n">rows</span><span class="p">):</span>
+                    <span class="n">neighbour_sum</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">m</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="n">neighbour_sum</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">rows</span> <span class="o">-</span> <span class="n">jj</span><span class="p">)</span>
                     
-            else:
-                for m in range(jj, jj + filter_width + 1):
-                    neighbour_sum += data[m, i]
-                average = neighbour_sum / (filter_width + 1)
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">jj</span><span class="p">,</span> <span class="n">jj</span> <span class="o">+</span> <span class="n">filter_width</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">neighbour_sum</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">m</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="n">neighbour_sum</span> <span class="o">/</span> <span class="p">(</span><span class="n">filter_width</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
     
-            # get the calculated pixel value 
+            <span class="c"># get the calculated pixel value </span>
                 
-            outdata[jj, i] = average
+            <span class="n">outdata</span><span class="p">[</span><span class="n">jj</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">average</span>
 
-    return outdata
+    <span class="k">return</span> <span class="n">outdata</span>
 
 </div>
-<div class="viewcode-block" id="convo_nw"><a class="viewcode-back" href="../sphinx_docs/terrain.html#direction_filter.convo_nw">[docs]</a>def convo_nw(data, rows, cols, outdata, filter_width):
-    """
-    Calculate the north west direction
+<div class="viewcode-block" id="convo_nw"><a class="viewcode-back" href="../sphinx_docs/terrain.html#direction_filter.convo_nw">[docs]</a><span class="k">def</span> <span class="nf">convo_nw</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">outdata</span><span class="p">,</span> <span class="n">filter_width</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the north west direction</span>
 
-    :param data:
-    :param rows:
-    :param cols:
-    :param outdata:
-    :param filter_width:
-    """
+<span class="sd">    :param data:</span>
+<span class="sd">    :param rows:</span>
+<span class="sd">    :param cols:</span>
+<span class="sd">    :param outdata:</span>
+<span class="sd">    :param filter_width:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    ##    import pdb
-    ##    pdb.set_trace()
+    <span class="c">##    import pdb</span>
+    <span class="c">##    pdb.set_trace()</span>
     
-    for i in range(rows):
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
         
-    # calculate average for each pixel
+    <span class="c"># calculate average for each pixel</span>
     
-        for jj in range(cols):
+        <span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>
             
-            neighbour_sum = 0
+            <span class="n">neighbour_sum</span> <span class="o">=</span> <span class="mi">0</span>
    
-            # for pixels whose north west neighbour amount is less than defined value.
-            # e.g in terrian for each hori and vert direction, for 25m resolution, the amount is 29
+            <span class="c"># for pixels whose north west neighbour amount is less than defined value.</span>
+            <span class="c"># e.g in terrian for each hori and vert direction, for 25m resolution, the amount is 29</span>
     
-            less_boundary = min(i, jj)
+            <span class="n">less_boundary</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">jj</span><span class="p">)</span>
             
-            if less_boundary &lt; filter_width:            
-                for m in range(less_boundary + 1):
-                    neighbour_sum += data[i-m, jj-m]
-                average = neighbour_sum / float(less_boundary+1)
+            <span class="k">if</span> <span class="n">less_boundary</span> <span class="o">&lt;</span> <span class="n">filter_width</span><span class="p">:</span>            
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">less_boundary</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">neighbour_sum</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">m</span><span class="p">,</span> <span class="n">jj</span><span class="o">-</span><span class="n">m</span><span class="p">]</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="n">neighbour_sum</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">less_boundary</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
                     
-            else:
-                for m in range(filter_width+1):
-                    neighbour_sum += data[i-m, jj-m]
-                average = neighbour_sum / (filter_width + 1)
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">filter_width</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">neighbour_sum</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">m</span><span class="p">,</span> <span class="n">jj</span><span class="o">-</span><span class="n">m</span><span class="p">]</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="n">neighbour_sum</span> <span class="o">/</span> <span class="p">(</span><span class="n">filter_width</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
 
-            # get the calculated pixel value 
+            <span class="c"># get the calculated pixel value </span>
                 
-            outdata[i, jj] = average
+            <span class="n">outdata</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">jj</span><span class="p">]</span> <span class="o">=</span> <span class="n">average</span>
 
-    return outdata
+    <span class="k">return</span> <span class="n">outdata</span>
 
 </div>
-<div class="viewcode-block" id="convo_ne"><a class="viewcode-back" href="../sphinx_docs/terrain.html#direction_filter.convo_ne">[docs]</a>def convo_ne(data, rows, cols, outdata, filter_width):
-    """
-    Calculate the north east direction
+<div class="viewcode-block" id="convo_ne"><a class="viewcode-back" href="../sphinx_docs/terrain.html#direction_filter.convo_ne">[docs]</a><span class="k">def</span> <span class="nf">convo_ne</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">outdata</span><span class="p">,</span> <span class="n">filter_width</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the north east direction</span>
 
-    :param data:
-    :param rows:
-    :param cols:
-    :param outdata:
-    :param filter_width:
-    """
+<span class="sd">    :param data:</span>
+<span class="sd">    :param rows:</span>
+<span class="sd">    :param cols:</span>
+<span class="sd">    :param outdata:</span>
+<span class="sd">    :param filter_width:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    for i in range(rows):
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
         
-    # calculate average for each pixel
+    <span class="c"># calculate average for each pixel</span>
     
-        for jj in range(cols):
+        <span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>
             
-            neighbour_sum = 0
+            <span class="n">neighbour_sum</span> <span class="o">=</span> <span class="mi">0</span>
    
-            # for pixels whose north east neighbour amount is less than defined value.
-            # e.g in terrian for each hori and vert direction, for 25m resolution, the amount is 29
+            <span class="c"># for pixels whose north east neighbour amount is less than defined value.</span>
+            <span class="c"># e.g in terrian for each hori and vert direction, for 25m resolution, the amount is 29</span>
     
-            less_boundary = min(i, cols-jj-1)
+            <span class="n">less_boundary</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">cols</span><span class="o">-</span><span class="n">jj</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
             
-            if less_boundary &lt; filter_width:            
-                for m in range(less_boundary + 1):
-                    neighbour_sum += data[i-m, jj+m]
-                average = neighbour_sum / float(less_boundary+1)
+            <span class="k">if</span> <span class="n">less_boundary</span> <span class="o">&lt;</span> <span class="n">filter_width</span><span class="p">:</span>            
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">less_boundary</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">neighbour_sum</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">m</span><span class="p">,</span> <span class="n">jj</span><span class="o">+</span><span class="n">m</span><span class="p">]</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="n">neighbour_sum</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">less_boundary</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
                     
-            else:
-                for m in range(filter_width+1):
-                    neighbour_sum += data[i-m, jj+m]
-                average = neighbour_sum / (filter_width + 1)
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">filter_width</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">neighbour_sum</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">m</span><span class="p">,</span> <span class="n">jj</span><span class="o">+</span><span class="n">m</span><span class="p">]</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="n">neighbour_sum</span> <span class="o">/</span> <span class="p">(</span><span class="n">filter_width</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
 
-            # get the calculated pixel value 
+            <span class="c"># get the calculated pixel value </span>
                 
-            outdata[i, jj] = average
+            <span class="n">outdata</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">jj</span><span class="p">]</span> <span class="o">=</span> <span class="n">average</span>
 
-    return outdata
+    <span class="k">return</span> <span class="n">outdata</span>
 
 </div>
-<div class="viewcode-block" id="convo_sw"><a class="viewcode-back" href="../sphinx_docs/terrain.html#direction_filter.convo_sw">[docs]</a>def convo_sw(data, rows, cols, outdata, filter_width):
-    """
-    Calculate the south west direction
+<div class="viewcode-block" id="convo_sw"><a class="viewcode-back" href="../sphinx_docs/terrain.html#direction_filter.convo_sw">[docs]</a><span class="k">def</span> <span class="nf">convo_sw</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">outdata</span><span class="p">,</span> <span class="n">filter_width</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the south west direction</span>
 
-    :param data:
-    :param rows:
-    :param cols:
-    :param outdata:
-    :param filter_width:
-    """
+<span class="sd">    :param data:</span>
+<span class="sd">    :param rows:</span>
+<span class="sd">    :param cols:</span>
+<span class="sd">    :param outdata:</span>
+<span class="sd">    :param filter_width:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    ##    import pdb
-    ##    pdb.set_trace()
+    <span class="c">##    import pdb</span>
+    <span class="c">##    pdb.set_trace()</span>
     
-    for i in range(rows):
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
         
-    # calculate average for each pixel
+    <span class="c"># calculate average for each pixel</span>
     
-        for jj in range(cols):
+        <span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>
             
-            neighbour_sum = 0
+            <span class="n">neighbour_sum</span> <span class="o">=</span> <span class="mi">0</span>
    
-            # for pixels whose south west neighbour amount is less than defined value.
-            # e.g in terrian for each hori and vert direction, for 25m resolution, the amount is 29
+            <span class="c"># for pixels whose south west neighbour amount is less than defined value.</span>
+            <span class="c"># e.g in terrian for each hori and vert direction, for 25m resolution, the amount is 29</span>
     
-            less_boundary = min(rows-i-1, jj)
+            <span class="n">less_boundary</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">rows</span><span class="o">-</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">jj</span><span class="p">)</span>
             
-            if less_boundary &lt; filter_width:            
-                for m in range(less_boundary + 1):
-                    neighbour_sum += data[i+m, jj-m]
-                average = neighbour_sum / float(less_boundary+1)
+            <span class="k">if</span> <span class="n">less_boundary</span> <span class="o">&lt;</span> <span class="n">filter_width</span><span class="p">:</span>            
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">less_boundary</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">neighbour_sum</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">m</span><span class="p">,</span> <span class="n">jj</span><span class="o">-</span><span class="n">m</span><span class="p">]</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="n">neighbour_sum</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">less_boundary</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
                     
-            else:
-                for m in range(filter_width+1):
-                    neighbour_sum += data[i+m, jj-m]
-                average = neighbour_sum / (filter_width + 1)
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">filter_width</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">neighbour_sum</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">m</span><span class="p">,</span> <span class="n">jj</span><span class="o">-</span><span class="n">m</span><span class="p">]</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="n">neighbour_sum</span> <span class="o">/</span> <span class="p">(</span><span class="n">filter_width</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
 
-            # get the calculated pixel value 
+            <span class="c"># get the calculated pixel value </span>
                 
-            outdata[i, jj] = average
+            <span class="n">outdata</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">jj</span><span class="p">]</span> <span class="o">=</span> <span class="n">average</span>
 
-    return outdata
+    <span class="k">return</span> <span class="n">outdata</span>
 
 </div>
-<div class="viewcode-block" id="convo_se"><a class="viewcode-back" href="../sphinx_docs/terrain.html#direction_filter.convo_se">[docs]</a>def convo_se(data, rows, cols, outdata, filter_width):
-    """
-    Calculate the south east direction
+<div class="viewcode-block" id="convo_se"><a class="viewcode-back" href="../sphinx_docs/terrain.html#direction_filter.convo_se">[docs]</a><span class="k">def</span> <span class="nf">convo_se</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">outdata</span><span class="p">,</span> <span class="n">filter_width</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the south east direction</span>
 
-    :param data:
-    :param rows:
-    :param cols:
-    :param outdata:
-    :param filter_width:
-    """
+<span class="sd">    :param data:</span>
+<span class="sd">    :param rows:</span>
+<span class="sd">    :param cols:</span>
+<span class="sd">    :param outdata:</span>
+<span class="sd">    :param filter_width:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    ##    import pdb
-    ##    pdb.set_trace()
+    <span class="c">##    import pdb</span>
+    <span class="c">##    pdb.set_trace()</span>
     
-    for i in range(rows):
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
         
-    # calculate average for each pixel
+    <span class="c"># calculate average for each pixel</span>
     
-        for jj in range(cols):
+        <span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>
             
-            neighbour_sum = 0
+            <span class="n">neighbour_sum</span> <span class="o">=</span> <span class="mi">0</span>
    
-            # for pixels whose south east neighbour amount is less than defined value.
-            # e.g in terrian for each hori and vert direction, for 25m resolution, the amount is 29
+            <span class="c"># for pixels whose south east neighbour amount is less than defined value.</span>
+            <span class="c"># e.g in terrian for each hori and vert direction, for 25m resolution, the amount is 29</span>
     
-            less_boundary = min(rows-i-1, cols-jj-1)
+            <span class="n">less_boundary</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">rows</span><span class="o">-</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">cols</span><span class="o">-</span><span class="n">jj</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
             
-            if less_boundary &lt; filter_width:            
-                for m in range(less_boundary + 1):
-                    neighbour_sum += data[i+m, jj+m]
-                average = neighbour_sum / float(less_boundary+1)
+            <span class="k">if</span> <span class="n">less_boundary</span> <span class="o">&lt;</span> <span class="n">filter_width</span><span class="p">:</span>            
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">less_boundary</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">neighbour_sum</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">m</span><span class="p">,</span> <span class="n">jj</span><span class="o">+</span><span class="n">m</span><span class="p">]</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="n">neighbour_sum</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">less_boundary</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
                     
-            else:
-                for m in range(filter_width+1):
-                    neighbour_sum += data[i+m, jj+m]
-                average = neighbour_sum / (filter_width + 1)
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">filter_width</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">neighbour_sum</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">m</span><span class="p">,</span> <span class="n">jj</span><span class="o">+</span><span class="n">m</span><span class="p">]</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="n">neighbour_sum</span> <span class="o">/</span> <span class="p">(</span><span class="n">filter_width</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
 
-            # get the calculated pixel value 
+            <span class="c"># get the calculated pixel value </span>
                 
-            outdata[i, jj] = average
+            <span class="n">outdata</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">jj</span><span class="p">]</span> <span class="o">=</span> <span class="n">average</span>
 
-    return outdata
-
-
+    <span class="k">return</span> <span class="n">outdata</span>
 
 
 
-##if __name__=='__main__':
-##
-##    # start timing
-##    startTime = time.time()
-##
-##    root = 'N:\\climate_change\\workspaces\\Tina\Multiplier\\validation'
-##
-##    loc = 'act'
-##    
-##    terrain_convo(loc, root)
-##
-##    print 'finish successfully'
-##
-##    # figure out how long the script took to run
-##    stopTime = time.time()
-##    sec = stopTime - startTime
-##    days = int(sec / 86400)
-##    sec -= 86400*days
-##    hrs = int(sec / 3600)
-##    sec -= 3600*hrs
-##    mins = int(sec / 60)
-##    sec -= 60*mins
-##    print 'The scipt took ', days, 'days, ', hrs, 'hours, ', mins, 'minutes ', '%.2f ' %sec, 'seconds'
-##
 
-</div>
-</pre>
+
+<span class="c">##if __name__==&#39;__main__&#39;:</span>
+<span class="c">##</span>
+<span class="c">##    # start timing</span>
+<span class="c">##    startTime = time.time()</span>
+<span class="c">##</span>
+<span class="c">##    root = &#39;N:\\climate_change\\workspaces\\Tina\Multiplier\\validation&#39;</span>
+<span class="c">##</span>
+<span class="c">##    loc = &#39;act&#39;</span>
+<span class="c">##    </span>
+<span class="c">##    terrain_convo(loc, root)</span>
+<span class="c">##</span>
+<span class="c">##    print &#39;finish successfully&#39;</span>
+<span class="c">##</span>
+<span class="c">##    # figure out how long the script took to run</span>
+<span class="c">##    stopTime = time.time()</span>
+<span class="c">##    sec = stopTime - startTime</span>
+<span class="c">##    days = int(sec / 86400)</span>
+<span class="c">##    sec -= 86400*days</span>
+<span class="c">##    hrs = int(sec / 3600)</span>
+<span class="c">##    sec -= 3600*hrs</span>
+<span class="c">##    mins = int(sec / 60)</span>
+<span class="c">##    sec -= 60*mins</span>
+<span class="c">##    print &#39;The scipt took &#39;, days, &#39;days, &#39;, hrs, &#39;hours, &#39;, mins, &#39;minutes &#39;, &#39;%.2f &#39; %sec, &#39;seconds&#39;</span>
+<span class="c">##</span>
+</pre></div></div>
 
           </div>
         </div>

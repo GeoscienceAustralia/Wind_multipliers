@@ -7,12 +7,9 @@ sheilding
 Sheilding multi docs go here..
 
 
-combine.py
+blrb.py
 ===========================================
 
-
-.. automodule:: combine
-   :members:
-
+static output for now...
 
 

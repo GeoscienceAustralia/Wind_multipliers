@@ -1,0 +1,148 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>terrain &mdash; Wind Multipliers v0.3 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Wind Multipliers v0.3 documentation" href="../index.html" />
+    <link rel="next" title="sheilding" href="sheilding.html" />
+    <link rel="prev" title="topographic" href="topographic.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="sheilding.html" title="sheilding"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="topographic.html" title="topographic"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Wind Multipliers v0.3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="terrain">
+<h1>terrain<a class="headerlink" href="#terrain" title="Permalink to this headline">¶</a></h1>
+<p>Terrain multi docs go here..</p>
+<div class="section" id="module-terrain.terrain">
+<span id="terrain-py"></span><h2>terrain.py<a class="headerlink" href="#module-terrain.terrain" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="terrain.terrain.terrain_class2mz_orig">
+<tt class="descclassname">terrain.terrain.</tt><tt class="descname">terrain_class2mz_orig</tt><big>(</big><em>cyclone_area</em>, <em>data</em><big>)</big><a class="headerlink" href="#terrain.terrain.terrain_class2mz_orig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Purpose: transfer the landsat classied image into original terrain multplier
+Input: loc, input raster file format: loc + &#8216;_terrain_class.img&#8217;, cyclone_area -yes or -no
+Output: loc + &#8216;_mz_orig&#8217;</p>
+</dd></dl>
+
+</div>
+<div class="section" id="value-lookup-py">
+<h2>value_lookup.py<a class="headerlink" href="#value-lookup-py" title="Permalink to this headline">¶</a></h2>
+<p>Contains lookup dictionaries for classification, e.g.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">terrain_class_desc</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;City Buildings&#39;</span><span class="p">),</span>
+<span class="gp">&gt;&gt;&gt; </span>                          <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s">&#39;Dense Forest&#39;</span><span class="p">),</span>
+<span class="gp">&gt;&gt;&gt; </span>                          <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">&#39;High Density Metro&#39;</span><span class="p">),</span>
+<span class="gp">&gt;&gt;&gt; </span>                          <span class="o">...</span>
+<span class="gp">&gt;&gt;&gt; </span>                          <span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="s">&#39;orched/open forest&#39;</span><span class="p">),</span>
+<span class="gp">&gt;&gt;&gt; </span>                          <span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="s">&#39;Mudflats/saltevaporators/sandy beaches&#39;</span><span class="p">)])</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">terrain</a><ul>
+<li><a class="reference internal" href="#module-terrain.terrain">terrain.py</a></li>
+<li><a class="reference internal" href="#value-lookup-py">value_lookup.py</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="topographic.html"
+                        title="previous chapter">topographic</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="sheilding.html"
+                        title="next chapter">sheilding</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/docs/terrain.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="sheilding.html" title="sheilding"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="topographic.html" title="topographic"
+             >previous</a> |</li>
+        <li><a href="../index.html">Wind Multipliers v0.3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Geoscience Australia.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

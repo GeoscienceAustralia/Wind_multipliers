@@ -45,71 +45,72 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for tests_characterisation.test_topographic.test_topo</h1><pre>
-#!/usr/bin/python2.6
-import subprocess
-import numpy as np
-import read_output
-import os
-import unittest
-from tests_characterisation.parametrized_test_case import ParametrizedTestCase
-from tests_characterisation.misc import DIRECTIONS
-from tests_characterisation.misc import TestPaths
+  <h1>Source code for tests_characterisation.test_topographic.test_topo</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/python2.6</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">read_output</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+<span class="kn">from</span> <span class="nn">tests_characterisation.parametrized_test_case</span> <span class="kn">import</span> <span class="n">ParametrizedTestCase</span>
+<span class="kn">from</span> <span class="nn">tests_characterisation.misc</span> <span class="kn">import</span> <span class="n">DIRECTIONS</span>
+<span class="kn">from</span> <span class="nn">tests_characterisation.misc</span> <span class="kn">import</span> <span class="n">TestPaths</span>
 
-"""
-.. module:: test_topo
-   :synopsis: Module used to initiate characterisation tests for topographic multiplier
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: test_topo</span>
+<span class="sd">   :synopsis: Module used to initiate characterisation tests for topographic multiplier</span>
 
-.. moduleauthor:: Daniel Wild &lt;daniel.wild@ga.gov.au&gt;
-
-
-"""
+<span class="sd">.. moduleauthor:: Daniel Wild &lt;daniel.wild@ga.gov.au&gt;</span>
 
 
-<div class="viewcode-block" id="TestOutput"><a class="viewcode-back" href="../../../sphinx_docs/tests_characterisation.html#tests_characterisation.test_topographic.test_topo.TestOutput">[docs]</a>class TestOutput(ParametrizedTestCase):
-    """Test Class used to run a unit test comparison of expected against actual results outputted by topomult.py
+<span class="sd">&quot;&quot;&quot;</span>
 
-    """
 
-<div class="viewcode-block" id="TestOutput.test_TopoOutput"><a class="viewcode-back" href="../../../sphinx_docs/tests_characterisation.html#tests_characterisation.test_topographic.test_topo.TestOutput.test_TopoOutput">[docs]</a>    def test_TopoOutput(self):
+<div class="viewcode-block" id="TestOutput"><a class="viewcode-back" href="../../../docs/tests_characterisation.html#tests_characterisation.test_topographic.test_topo.TestOutput">[docs]</a><span class="k">class</span> <span class="nc">TestOutput</span><span class="p">(</span><span class="n">ParametrizedTestCase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Test Class used to run a unit test comparison of expected against actual results outputted by topomult.py</span>
 
-        self.test_paths = TestPaths()
-        self.test_paths.initTopoTestPaths(self.param)
+<span class="sd">    &quot;&quot;&quot;</span>
 
-        args = ['mpirun',
-                '-mca', 'btl', '^openib',  # don't check for inifiniband
-                '-np', '8',
-                'python',  os.path.join(self.test_paths.TOPO_FILES_DIR, 'topomult.py'),
-                '-i',  os.path.join(self.test_paths.TOPO_TEST_INPUT_DIR, 'dem.asc'),
-                '-o',  self.test_paths.TOPO_TEST_ACTUAL_OUTPUT_DIR]
+<div class="viewcode-block" id="TestOutput.test_TopoOutput"><a class="viewcode-back" href="../../../docs/tests_characterisation.html#tests_characterisation.test_topographic.test_topo.TestOutput.test_TopoOutput">[docs]</a>    <span class="k">def</span> <span class="nf">test_TopoOutput</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
-        subprocess.call(args)
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_paths</span> <span class="o">=</span> <span class="n">TestPaths</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_paths</span><span class="o">.</span><span class="n">initTopoTestPaths</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">)</span>
 
-        """Loops through each of the eight directions, reading input data into numpy array for comparison using
-        np.allClose()
+        <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;mpirun&#39;</span><span class="p">,</span>
+                <span class="s">&#39;-mca&#39;</span><span class="p">,</span> <span class="s">&#39;btl&#39;</span><span class="p">,</span> <span class="s">&#39;^openib&#39;</span><span class="p">,</span>  <span class="c"># don&#39;t check for inifiniband</span>
+                <span class="s">&#39;-np&#39;</span><span class="p">,</span> <span class="s">&#39;8&#39;</span><span class="p">,</span>
+                <span class="s">&#39;python&#39;</span><span class="p">,</span>  <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_paths</span><span class="o">.</span><span class="n">TOPO_FILES_DIR</span><span class="p">,</span> <span class="s">&#39;topomult.py&#39;</span><span class="p">),</span>
+                <span class="s">&#39;-i&#39;</span><span class="p">,</span>  <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_paths</span><span class="o">.</span><span class="n">TOPO_TEST_INPUT_DIR</span><span class="p">,</span> <span class="s">&#39;dem.asc&#39;</span><span class="p">),</span>
+                <span class="s">&#39;-o&#39;</span><span class="p">,</span>  <span class="bp">self</span><span class="o">.</span><span class="n">test_paths</span><span class="o">.</span><span class="n">TOPO_TEST_ACTUAL_OUTPUT_DIR</span><span class="p">]</span>
 
-       """
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
 
-        # need to loop through all directions..
-        for aDirection in DIRECTIONS:
+        <span class="sd">&quot;&quot;&quot;Loops through each of the eight directions, reading input data into numpy array for comparison using</span>
+<span class="sd">        np.allClose()</span>
 
-            print 'Dir:', aDirection
+<span class="sd">       &quot;&quot;&quot;</span>
 
-            expectedArray = read_output.readASC(os.path.join(self.test_paths.TOPO_TEST_EXPECTED_OUTPUT_DIR,
-                                                        'mh_'+ aDirection + '_smooth.asc'))
-            actualArray = read_output.readASC(os.path.join(self.test_paths.TOPO_TEST_ACTUAL_OUTPUT_DIR,
-                                                        'mh_'+ aDirection + '_smooth.asc'))
+        <span class="c"># need to loop through all directions..</span>
+        <span class="k">for</span> <span class="n">aDirection</span> <span class="ow">in</span> <span class="n">DIRECTIONS</span><span class="p">:</span>
 
-            # ! allClose() will return False if NaN is detected
-            result = np.allclose(expectedArray, actualArray)
+            <span class="k">print</span> <span class="s">&#39;Dir:&#39;</span><span class="p">,</span> <span class="n">aDirection</span>
 
-            print "\n",aDirection, "test =", result
+            <span class="n">expectedArray</span> <span class="o">=</span> <span class="n">read_output</span><span class="o">.</span><span class="n">readASC</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_paths</span><span class="o">.</span><span class="n">TOPO_TEST_EXPECTED_OUTPUT_DIR</span><span class="p">,</span>
+                                                        <span class="s">&#39;mh_&#39;</span><span class="o">+</span> <span class="n">aDirection</span> <span class="o">+</span> <span class="s">&#39;_smooth.asc&#39;</span><span class="p">))</span>
+            <span class="n">actualArray</span> <span class="o">=</span> <span class="n">read_output</span><span class="o">.</span><span class="n">readASC</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_paths</span><span class="o">.</span><span class="n">TOPO_TEST_ACTUAL_OUTPUT_DIR</span><span class="p">,</span>
+                                                        <span class="s">&#39;mh_&#39;</span><span class="o">+</span> <span class="n">aDirection</span> <span class="o">+</span> <span class="s">&#39;_smooth.asc&#39;</span><span class="p">))</span>
 
-            self.assertTrue(result)
+            <span class="c"># ! allClose() will return False if NaN is detected</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">expectedArray</span><span class="p">,</span> <span class="n">actualArray</span><span class="p">)</span>
+
+            <span class="k">print</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">aDirection</span><span class="p">,</span> <span class="s">&quot;test =&quot;</span><span class="p">,</span> <span class="n">result</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 
 </div></div>
-if __name__ == '__main__':
-    unittest.main()</pre>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
 
           </div>
         </div>

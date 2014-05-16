@@ -31,6 +31,7 @@ def flModulePath(level=1):
              Calling flModulePath() from "/foo/bar/baz.py" produces the result
              "/foo/bar", "baz", ".py"
     """
+
     filename = os.path.realpath(sys._getframe(level).f_code.co_filename)
     path, fname = os.path.split(filename)
     base, ext = os.path.splitext(fname)
@@ -47,6 +48,7 @@ def flModuleName(level=1):
     Output: module name (as str)
     Example: mymodule = flModuleName( )
     """
+
     package = sys._getframe(level).f_code.co_name
     return package
 
@@ -63,6 +65,7 @@ def flProgramVersion(level=None):
 
     Example: my_program_version = flProgramVersion( )
     """
+
     if not level:
         import inspect
         level = len(inspect.stack()) - 1
@@ -101,6 +104,7 @@ def flGetStat(filename, CHUNK=2 ** 16):
     Output: path, name, md5sum, modification date
     Example: dir, name, md5sum, moddate = flGetStat(filename)
     """
+
     try:
         fh = open(filename)
         fh.close()
@@ -149,6 +153,7 @@ def flConfigFile(extension='.ini', prefix='', level=None):
              Calling flConfigFile from /foo/bar/baz.py should
              return /foo/bar/baz.ini
     """
+
     if not level:
         import inspect
         level = len(inspect.stack())
@@ -233,6 +238,7 @@ def flLogFatalError(tblines):
     the input 'tblines' is created by calling
     traceback.format_exc().splitlines()
     """
+
     for line in tblines:
         logger.critical(line.lstrip())
     sys.exit()
@@ -247,6 +253,7 @@ def flModDate(filename, dateformat='%Y-%m-%d %H:%M:%S'):
     Output: File modification date/time as a string
     Example: modDate = flModDate( 'C:/foo/bar.csv' , dateformat='%Y-%m-%dT%H:%M:%S' )
     """
+
     try:
         si = os.stat(filename)
     except IOError:
@@ -265,6 +272,7 @@ def flSize(filename):
     Output: file size in bytes
     Example: file_size = flSize( 'C:/foo/bar.csv' )
     """
+
     try:
         si = os.stat(filename)
     except WindowsError:

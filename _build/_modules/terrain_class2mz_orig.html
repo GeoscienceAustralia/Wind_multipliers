@@ -45,112 +45,111 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for terrain_class2mz_orig</h1><pre>
-import sys, string, os, time, shutil
-import value_lookup
+  <h1>Source code for terrain_class2mz_orig</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">string</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">value_lookup</span>
 
 
-<div class="viewcode-block" id="terrain_class2mz_orig"><a class="viewcode-back" href="../sphinx_docs/terrain.html#terrain_class2mz_orig.terrain_class2mz_orig">[docs]</a>def terrain_class2mz_orig(terrain, loc, root, cyclone_area, ArcToolbox):
-    """
-    Purpose: transfer the landsat classied image into original terrain multplier
-    Input: loc, input raster file format: loc + '_terrain_class.img', cyclone_area -yes or -no
-    Output: loc + '_mz_orig'
-    """
+<div class="viewcode-block" id="terrain_class2mz_orig"><a class="viewcode-back" href="../sphinx_docs/terrain.html#terrain_class2mz_orig.terrain_class2mz_orig">[docs]</a><span class="k">def</span> <span class="nf">terrain_class2mz_orig</span><span class="p">(</span><span class="n">terrain</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">cyclone_area</span><span class="p">,</span> <span class="n">ArcToolbox</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Purpose: transfer the landsat classied image into original terrain multplier</span>
+<span class="sd">    Input: loc, input raster file format: loc + &#39;_terrain_class.img&#39;, cyclone_area -yes or -no</span>
+<span class="sd">    Output: loc + &#39;_mz_orig&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    import arcpy
+    <span class="kn">import</span> <span class="nn">arcpy</span>
     
-    directory = root + "\\process\\terrain"
+    <span class="n">directory</span> <span class="o">=</span> <span class="n">root</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\\</span><span class="s">process</span><span class="se">\\</span><span class="s">terrain&quot;</span>
     
-    #if os.path.exists(directory):
-    #    shutil.rmtree(directory)
-    #os.makedirs(directory)
+    <span class="c">#if os.path.exists(directory):</span>
+    <span class="c">#    shutil.rmtree(directory)</span>
+    <span class="c">#os.makedirs(directory)</span>
    
     
-    # Create the Geoprocessor object
-    arcpy.env.workspace = directory
+    <span class="c"># Create the Geoprocessor object</span>
+    <span class="n">arcpy</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">workspace</span> <span class="o">=</span> <span class="n">directory</span>
     
-    # Check out any necessary licenses
-    arcpy.CheckOutExtension("spatial")
+    <span class="c"># Check out any necessary licenses</span>
+    <span class="n">arcpy</span><span class="o">.</span><span class="n">CheckOutExtension</span><span class="p">(</span><span class="s">&quot;spatial&quot;</span><span class="p">)</span>
 
-    # Load required toolboxes...
-    arcpy.AddToolbox(ArcToolbox + "/Spatial Analyst Tools.tbx")
+    <span class="c"># Load required toolboxes...</span>
+    <span class="n">arcpy</span><span class="o">.</span><span class="n">AddToolbox</span><span class="p">(</span><span class="n">ArcToolbox</span> <span class="o">+</span> <span class="s">&quot;/Spatial Analyst Tools.tbx&quot;</span><span class="p">)</span>
 
-    if cyclone_area == 'no':
-        mz_init = value_lookup.mz_init_non_cycl
-    if cyclone_area == 'yes':
-        mz_init = value_lookup.mz_init_cycl
+    <span class="k">if</span> <span class="n">cyclone_area</span> <span class="o">==</span> <span class="s">&#39;no&#39;</span><span class="p">:</span>
+        <span class="n">mz_init</span> <span class="o">=</span> <span class="n">value_lookup</span><span class="o">.</span><span class="n">mz_init_non_cycl</span>
+    <span class="k">if</span> <span class="n">cyclone_area</span> <span class="o">==</span> <span class="s">&#39;yes&#39;</span><span class="p">:</span>
+        <span class="n">mz_init</span> <span class="o">=</span> <span class="n">value_lookup</span><span class="o">.</span><span class="n">mz_init_cycl</span>
       
-    # output as the mz_orig in ESRI Grid format, it will need convoulution into different directions in ERDAS imagine
-    mz_orig = loc + "_mz_orig"
+    <span class="c"># output as the mz_orig in ESRI Grid format, it will need convoulution into different directions in ERDAS imagine</span>
+    <span class="n">mz_orig</span> <span class="o">=</span> <span class="n">loc</span> <span class="o">+</span> <span class="s">&quot;_mz_orig&quot;</span>
 
     
-    # Reclassify the land classes into initial shielding multipliers
-    remap = "0 1000;"
-    value_max = int(arcpy.GetRasterProperties_management(terrain, "MAXIMUM").getOutput(0))
+    <span class="c"># Reclassify the land classes into initial shielding multipliers</span>
+    <span class="n">remap</span> <span class="o">=</span> <span class="s">&quot;0 1000;&quot;</span>
+    <span class="n">value_max</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">arcpy</span><span class="o">.</span><span class="n">GetRasterProperties_management</span><span class="p">(</span><span class="n">terrain</span><span class="p">,</span> <span class="s">&quot;MAXIMUM&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">getOutput</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
 
-    print 'Landsat classified image has ' + str(value_max) + ' classes'
+    <span class="k">print</span> <span class="s">&#39;Landsat classified image has &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">value_max</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39; classes&#39;</span>
 
-    if value_max &lt;= 15:
-        for i in range(value_max):
-            remap += str(i+1) + ' ' + str(mz_init[i+1]) + ';'
-    #    remap += str(value_max) + ' ' + str(mz_init[value_max])
-    else:
-        for i in range(15):
-            remap += str(i+1) + ' ' + str(mz_init[i+1]) + ';'    
-        for i in range(15, value_max):
-            remap += str(i+1) + ' ' + str(1000) + ';'
-    #    remap += str(value_max) + ' ' + str(1000)
+    <span class="k">if</span> <span class="n">value_max</span> <span class="o">&lt;=</span> <span class="mi">15</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">value_max</span><span class="p">):</span>
+            <span class="n">remap</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">mz_init</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="s">&#39;;&#39;</span>
+    <span class="c">#    remap += str(value_max) + &#39; &#39; + str(mz_init[value_max])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">15</span><span class="p">):</span>
+            <span class="n">remap</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">mz_init</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="s">&#39;;&#39;</span>    
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="n">value_max</span><span class="p">):</span>
+            <span class="n">remap</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;;&#39;</span>
+    <span class="c">#    remap += str(value_max) + &#39; &#39; + str(1000)</span>
 
-    print remap
+    <span class="k">print</span> <span class="n">remap</span>
 
-    if arcpy.Exists('temp1'):
-        arcpy.Delete_management('temp1')
-    arcpy.gp.Reclassify_sa(terrain, "Value", remap, "temp1", "NODATA")
-    if arcpy.Exists('temp2'):
-        arcpy.Delete_management('temp2')
-    arcpy.gp.Float_sa('temp1', 'temp2')
-    if arcpy.Exists(mz_orig):
-        arcpy.Delete_management(mz_orig)
-    arcpy.gp.Divide_sa('temp2', '1000.0', mz_orig)
+    <span class="k">if</span> <span class="n">arcpy</span><span class="o">.</span><span class="n">Exists</span><span class="p">(</span><span class="s">&#39;temp1&#39;</span><span class="p">):</span>
+        <span class="n">arcpy</span><span class="o">.</span><span class="n">Delete_management</span><span class="p">(</span><span class="s">&#39;temp1&#39;</span><span class="p">)</span>
+    <span class="n">arcpy</span><span class="o">.</span><span class="n">gp</span><span class="o">.</span><span class="n">Reclassify_sa</span><span class="p">(</span><span class="n">terrain</span><span class="p">,</span> <span class="s">&quot;Value&quot;</span><span class="p">,</span> <span class="n">remap</span><span class="p">,</span> <span class="s">&quot;temp1&quot;</span><span class="p">,</span> <span class="s">&quot;NODATA&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">arcpy</span><span class="o">.</span><span class="n">Exists</span><span class="p">(</span><span class="s">&#39;temp2&#39;</span><span class="p">):</span>
+        <span class="n">arcpy</span><span class="o">.</span><span class="n">Delete_management</span><span class="p">(</span><span class="s">&#39;temp2&#39;</span><span class="p">)</span>
+    <span class="n">arcpy</span><span class="o">.</span><span class="n">gp</span><span class="o">.</span><span class="n">Float_sa</span><span class="p">(</span><span class="s">&#39;temp1&#39;</span><span class="p">,</span> <span class="s">&#39;temp2&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">arcpy</span><span class="o">.</span><span class="n">Exists</span><span class="p">(</span><span class="n">mz_orig</span><span class="p">):</span>
+        <span class="n">arcpy</span><span class="o">.</span><span class="n">Delete_management</span><span class="p">(</span><span class="n">mz_orig</span><span class="p">)</span>
+    <span class="n">arcpy</span><span class="o">.</span><span class="n">gp</span><span class="o">.</span><span class="n">Divide_sa</span><span class="p">(</span><span class="s">&#39;temp2&#39;</span><span class="p">,</span> <span class="s">&#39;1000.0&#39;</span><span class="p">,</span> <span class="n">mz_orig</span><span class="p">)</span>
 
-    # delete intermeidiate files
-    g_list = arcpy.ListRasters('g_g*')
-    for g_file in g_list:
-        arcpy.Delete_management(g_file)
-    if arcpy.Exists('temp1'):
-        arcpy.Delete_management('temp1')
-    if arcpy.Exists('temp2'):
-        arcpy.Delete_management('temp2')
+    <span class="c"># delete intermeidiate files</span>
+    <span class="n">g_list</span> <span class="o">=</span> <span class="n">arcpy</span><span class="o">.</span><span class="n">ListRasters</span><span class="p">(</span><span class="s">&#39;g_g*&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">g_file</span> <span class="ow">in</span> <span class="n">g_list</span><span class="p">:</span>
+        <span class="n">arcpy</span><span class="o">.</span><span class="n">Delete_management</span><span class="p">(</span><span class="n">g_file</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">arcpy</span><span class="o">.</span><span class="n">Exists</span><span class="p">(</span><span class="s">&#39;temp1&#39;</span><span class="p">):</span>
+        <span class="n">arcpy</span><span class="o">.</span><span class="n">Delete_management</span><span class="p">(</span><span class="s">&#39;temp1&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">arcpy</span><span class="o">.</span><span class="n">Exists</span><span class="p">(</span><span class="s">&#39;temp2&#39;</span><span class="p">):</span>
+        <span class="n">arcpy</span><span class="o">.</span><span class="n">Delete_management</span><span class="p">(</span><span class="s">&#39;temp2&#39;</span><span class="p">)</span>
 
-    del mz_init
-    del arcpy
+    <span class="k">del</span> <span class="n">mz_init</span>
+    <span class="k">del</span> <span class="n">arcpy</span>
 
     
-##if __name__ == '__main__':
-##
-##    startTime = time.clock()
-##
-##    # setting data source, 
-##    root = "N:\\climate_change\\Workspaces\\Tina\\Multiplier\\validation" 
-##    loc = 'act'
-##    cyclone_area = 'no'
-##    # setting input file as the Landsat calssified image in ERDAS imagine format,
-##    terrain = root + '\\input\\' + loc + "_terrain_class.img"
-##
-##    terrain_class2mz_orig(terrain, loc, root, cyclone_area)    
-##    
-##    print 'finish successfully'
-##    stopTime = time.clock()
-##    sec = stopTime - startTime
-##    days = int(sec / 86400)
-##    sec -= 86400*days
-##    hrs = int(sec / 3600)
-##    sec -= 3600*hrs
-##    mins = int(sec / 60)
-##    sec -= 60*mins
-##    print days, 'days, ', hrs, 'hours, ', mins, 'minutes ', sec, 'seconds'
-</div>
-</pre>
+<span class="c">##if __name__ == &#39;__main__&#39;:</span>
+<span class="c">##</span>
+<span class="c">##    startTime = time.clock()</span>
+<span class="c">##</span>
+<span class="c">##    # setting data source, </span>
+<span class="c">##    root = &quot;N:\\climate_change\\Workspaces\\Tina\\Multiplier\\validation&quot; </span>
+<span class="c">##    loc = &#39;act&#39;</span>
+<span class="c">##    cyclone_area = &#39;no&#39;</span>
+<span class="c">##    # setting input file as the Landsat calssified image in ERDAS imagine format,</span>
+<span class="c">##    terrain = root + &#39;\\input\\&#39; + loc + &quot;_terrain_class.img&quot;</span>
+<span class="c">##</span>
+<span class="c">##    terrain_class2mz_orig(terrain, loc, root, cyclone_area)    </span>
+<span class="c">##    </span>
+<span class="c">##    print &#39;finish successfully&#39;</span>
+<span class="c">##    stopTime = time.clock()</span>
+<span class="c">##    sec = stopTime - startTime</span>
+<span class="c">##    days = int(sec / 86400)</span>
+<span class="c">##    sec -= 86400*days</span>
+<span class="c">##    hrs = int(sec / 3600)</span>
+<span class="c">##    sec -= 3600*hrs</span>
+<span class="c">##    mins = int(sec / 60)</span>
+<span class="c">##    sec -= 60*mins</span>
+<span class="c">##    print days, &#39;days, &#39;, hrs, &#39;hours, &#39;, mins, &#39;minutes &#39;, sec, &#39;seconds&#39;</span>
+</pre></div></div>
 
           </div>
         </div>
