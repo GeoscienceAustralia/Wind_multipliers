@@ -127,19 +127,14 @@ def topomult(input_dem):
     mh_folder = pjoin(os.path.dirname(input_dem), 'topographic')
     file_name = os.path.basename(input_dem)
     raster_folder = pjoin(mh_folder, 'raster')
-    nc_folder = pjoin(mh_folder, 'netcdf')    
-    
+    nc_folder = pjoin(mh_folder, 'netcdf')        
     
     ds = gdal.Open(input_dem)    
     nc = ds.RasterXSize
     nr = ds.RasterYSize
     band = ds.GetRasterBand(1)     
     elevation_array = band.ReadAsArray(0, 0, nc, nr)
-    elevation_array_tran = np.transpose(elevation_array)
-    
-#    import pdb
-#    pdb.set_trace()
-    
+    elevation_array_tran = np.transpose(elevation_array)        
     data =  elevation_array_tran.flatten()
     
     x_m_array, y_m_array = get_pixel_size_grids(ds)
@@ -154,7 +149,7 @@ def topomult(input_dem):
     #directions = ['s']
     
     for direction in directions:
-        print direction        
+        log.info(direction)        
         
         if len(direction) == 2:
             data_spacing = cellsize*math.sqrt(2)
@@ -190,8 +185,7 @@ def topomult(input_dem):
             #M = M.conj().transpose()
             M = np.transpose(M)
             Mhdata[path] = M[0,].flatten()
-        
-        
+               
     
         # Reshape the result to matrix like 
         Mhdata = np.reshape(Mhdata, (nc, nr))
@@ -225,9 +219,6 @@ def topomult(input_dem):
         
         ms_dir_ds = None
         
-#        import pdb
-#        pdb.set_trace()
-        
         # output format as netCDF4       
         tile_nc = pjoin(nc_folder, os.path.splitext(file_name)[0] + '_' + direction + '.nc')
         ncobj = Dataset(tile_nc, 'w', format='NETCDF4', clobber=True)
@@ -249,6 +240,6 @@ def topomult(input_dem):
    
 if __name__ == '__main__': 
     #dem = r'N:\climate_change\CHARS\B_Wind\Projects\Multipliers\validation\output_work\test_dem.img'
-    dem = '/nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output_work/test_dem399_00.IMG'
+    dem = '/nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output_work/small_dem_4_int.img'
     #dem = r'N:\climate_change\CHARS\B_Wind\Projects\Multipliers\validation\output_work\test_dem.asc'
     topomult(dem)

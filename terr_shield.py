@@ -73,8 +73,8 @@ class TileGrid(object):
         # get image size, format, projection
         self.x_dim = ds.RasterXSize
         self.y_dim = ds.RasterYSize
-        log.info('Input raster format is %s' % ds.GetDriver().ShortName + '/ %s' % ds.GetDriver().LongName)
-        log.info('Image size is %s' % self.x_dim + 'x %s' % self.y_dim)
+        log.info('The input land cover raster format is %s' % ds.GetDriver().ShortName + '/ %s' % ds.GetDriver().LongName)
+        log.info('Image size is %s' % str(self.x_dim) + 'x %s' % str(self.y_dim))
     
         # get georeference info
         geotransform = ds.GetGeoTransform()
@@ -82,14 +82,16 @@ class TileGrid(object):
         self.y_Upper = -geotransform[3]
         self.pixelWidth = geotransform[1]
         self.pixelHeight = -geotransform[5]
-        log.info('Top left corner X,Y: %s' % self.x_Left + ' %s' % self.y_Upper)
-        log.info('Resolution %s' % self.pixelWidth + 'x %s' % self.pixelHeight) 
+        log.info('Top left corner X,Y: %s' % str(self.x_Left) + ' %s' % str(self.y_Upper))
+        log.info('Resolution %s' % str(self.pixelWidth) + 'x %s' % str(self.pixelHeight)) 
         
         self.x_step = int(np.ceil(1.0/float(self.pixelWidth))) 
         self.y_step = int(np.ceil(1.0/float(self.pixelHeight)))
+        log.info('Tile size is %s' % str(self.x_step) + 'x %s' % str(self.y_step))
         self.upwind_length = upwind_length        
         self.x_buffer = int(upwind_length/self.pixelWidth)
-        self.y_buffer = self.x_buffer              
+        self.y_buffer = int(upwind_length/self.pixelHeight)
+        log.info('Tile buffer size is %s' % str(self.x_buffer) + 'x %s' % str(self.y_buffer))             
         
         self.tileGrid()         
          
@@ -701,6 +703,7 @@ def run(callback=None):
     TG = TileGrid(upwind_length, terrain_map)    
     tiles = getTiles(TG)
     
+    log.info('the number of tiles is %s' % str(len(tiles)))
 #    import pdb
 #    pdb.set_trace()
     #def progress(i):    
@@ -714,7 +717,7 @@ def run(callback=None):
     pp.barrier()      
     
     
-    log.info("Completed terrain multiplier calculation")    
+    log.info("Successfully completed wind multipliers calculation")    
     
     # figure out how long the script took to run
     stopTime = time.time()

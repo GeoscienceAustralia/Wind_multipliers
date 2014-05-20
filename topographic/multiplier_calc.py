@@ -23,9 +23,6 @@ def multiplier_calc(line, data_spacing):
     # initialise M as an array filled with 1
     # --------------------------------------------------------
     
-#    import pdb
-#    pdb.set_trace()
-    
     nrow = np.size(line)
     M = np.ones((nrow, 1), dtype=float)
 
