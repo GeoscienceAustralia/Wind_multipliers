@@ -45,103 +45,103 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for terrain.terrain</h1><pre>
-import sys
-import string
-import os
-import time
-import shutil
-import terrain_class2mz_orig
-import direction_filter
-import ConfigParser
-#import arcpy
+  <h1>Source code for terrain.terrain</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">string</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">terrain_class2mz_orig</span>
+<span class="kn">import</span> <span class="nn">direction_filter</span>
+<span class="kn">import</span> <span class="nn">ConfigParser</span>
+<span class="c">#import arcpy</span>
 
-"""
-.. module:: terrain.py
-   :synopsis: Derive the terrain multplier
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: terrain.py</span>
+<span class="sd">   :synopsis: Derive the terrain multplier</span>
 
-.. moduleauthor:: Tina Yang &lt;Tina.Yang@ga.gov.au&gt;
+<span class="sd">.. moduleauthor:: Tina Yang &lt;Tina.Yang@ga.gov.au&gt;</span>
 
-"""
+<span class="sd">&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="terrain"><a class="viewcode-back" href="../../sphinx_docs/terrain.html#terrain.terrain.terrain">[docs]</a>def terrain(root, loc_list, cyclone_area, arctoolbox):
-    """
-    Derives the terrain multplier
+<div class="viewcode-block" id="terrain"><a class="viewcode-back" href="../../sphinx_docs/terrain.html#terrain.terrain.terrain">[docs]</a><span class="k">def</span> <span class="nf">terrain</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">loc_list</span><span class="p">,</span> <span class="n">cyclone_area</span><span class="p">,</span> <span class="n">arctoolbox</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Derives the terrain multplier</span>
 
-    :param root:
-    :param loc_list: loc, input raster file format: loc + '_terrain_class.img'
-    :param cyclone_area: -yes or -no
-    :param arctoolbox:
+<span class="sd">    :param root:</span>
+<span class="sd">    :param loc_list: loc, input raster file format: loc + &#39;_terrain_class.img&#39;</span>
+<span class="sd">    :param cyclone_area: -yes or -no</span>
+<span class="sd">    :param arctoolbox:</span>
 
-    :returns: loc + '_mz_orig'
-    """
+<span class="sd">    :returns: loc + &#39;_mz_orig&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    # start timing
-    startTime = time.time()
+    <span class="c"># start timing</span>
+    <span class="n">startTime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
-    directory = root + "\\process\\terrain"
-    if os.path.exists(directory):
-        shutil.rmtree(directory)
-    os.makedirs(directory)
+    <span class="n">directory</span> <span class="o">=</span> <span class="n">root</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\\</span><span class="s">process</span><span class="se">\\</span><span class="s">terrain&quot;</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
 
-    output_folder = root + '\\output\\terrain'    
-    if os.path.exists(output_folder):
-        shutil.rmtree(output_folder)
-    os.makedirs(output_folder)
+    <span class="n">output_folder</span> <span class="o">=</span> <span class="n">root</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">output</span><span class="se">\\</span><span class="s">terrain&#39;</span>    
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">output_folder</span><span class="p">):</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">output_folder</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_folder</span><span class="p">)</span>
 
    
-    for loc in loc_list:
-        print loc
-        # the input terrain calssified image 
-        terrain = root + '\\input\\' + loc + "_terrain_class.img"
+    <span class="k">for</span> <span class="n">loc</span> <span class="ow">in</span> <span class="n">loc_list</span><span class="p">:</span>
+        <span class="k">print</span> <span class="n">loc</span>
+        <span class="c"># the input terrain calssified image </span>
+        <span class="n">terrain</span> <span class="o">=</span> <span class="n">root</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">input</span><span class="se">\\</span><span class="s">&#39;</span> <span class="o">+</span> <span class="n">loc</span> <span class="o">+</span> <span class="s">&quot;_terrain_class.img&quot;</span>
         
-        # produce the original terrain multipler from the input terrain classified image   
-        print '\nReclassfy the terrain classes into initial terrain multipliers ...'
-        terrain_class2mz_orig.terrain_class2mz_orig(terrain, loc, root, cyclone_area, arctoolbox)
+        <span class="c"># produce the original terrain multipler from the input terrain classified image   </span>
+        <span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">Reclassfy the terrain classes into initial terrain multipliers ...&#39;</span>
+        <span class="n">terrain_class2mz_orig</span><span class="o">.</span><span class="n">terrain_class2mz_orig</span><span class="p">(</span><span class="n">terrain</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">cyclone_area</span><span class="p">,</span> <span class="n">arctoolbox</span><span class="p">)</span>
 
-        # convoulution of the original terrain multipler into different directions
-        print '\nMoving average for each direction ...'
-        direction_filter.terrain_convo(loc, root)
+        <span class="c"># convoulution of the original terrain multipler into different directions</span>
+        <span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">Moving average for each direction ...&#39;</span>
+        <span class="n">direction_filter</span><span class="o">.</span><span class="n">terrain_convo</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">root</span><span class="p">)</span>
 
-    # if more than 1 tile, mosaic them into one   
-    if len(loc_list) &gt; 1:
+    <span class="c"># if more than 1 tile, mosaic them into one   </span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">loc_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         
-        print '\nmerge several tiles into one ...'
+        <span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">merge several tiles into one ...&#39;</span>
         
-        loc_name = loc_list[0][:-1]
+        <span class="n">loc_name</span> <span class="o">=</span> <span class="n">loc_list</span><span class="p">[</span><span class="mi">0</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
-        dire = ['w', 'e', 'n', 's', 'nw', 'ne', 'se', 'sw']
-        for one_dir in dire:
-            output_raster = loc_name + '_mz_' + one_dir + '.img'
-            input_rasters = []
-            for loc in loc_list:
-                input_rasters.append(output_folder + '\\' + loc + '_mz_' + one_dir + '.img')
-            arcpy.MosaicToNewRaster_management(input_rasters, output_folder, output_raster, "", "32_BIT_FLOAT","", "1", "LAST","FIRST")
+        <span class="n">dire</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;w&#39;</span><span class="p">,</span> <span class="s">&#39;e&#39;</span><span class="p">,</span> <span class="s">&#39;n&#39;</span><span class="p">,</span> <span class="s">&#39;s&#39;</span><span class="p">,</span> <span class="s">&#39;nw&#39;</span><span class="p">,</span> <span class="s">&#39;ne&#39;</span><span class="p">,</span> <span class="s">&#39;se&#39;</span><span class="p">,</span> <span class="s">&#39;sw&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">one_dir</span> <span class="ow">in</span> <span class="n">dire</span><span class="p">:</span>
+            <span class="n">output_raster</span> <span class="o">=</span> <span class="n">loc_name</span> <span class="o">+</span> <span class="s">&#39;_mz_&#39;</span> <span class="o">+</span> <span class="n">one_dir</span> <span class="o">+</span> <span class="s">&#39;.img&#39;</span>
+            <span class="n">input_rasters</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">loc</span> <span class="ow">in</span> <span class="n">loc_list</span><span class="p">:</span>
+                <span class="n">input_rasters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">output_folder</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">&#39;</span> <span class="o">+</span> <span class="n">loc</span> <span class="o">+</span> <span class="s">&#39;_mz_&#39;</span> <span class="o">+</span> <span class="n">one_dir</span> <span class="o">+</span> <span class="s">&#39;.img&#39;</span><span class="p">)</span>
+            <span class="n">arcpy</span><span class="o">.</span><span class="n">MosaicToNewRaster_management</span><span class="p">(</span><span class="n">input_rasters</span><span class="p">,</span> <span class="n">output_folder</span><span class="p">,</span> <span class="n">output_raster</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;32_BIT_FLOAT&quot;</span><span class="p">,</span><span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;1&quot;</span><span class="p">,</span> <span class="s">&quot;LAST&quot;</span><span class="p">,</span><span class="s">&quot;FIRST&quot;</span><span class="p">)</span>
 
-    print '\nfinish successfully'    
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">finish successfully&#39;</span>    
 
-    # figure out how long the script took to run
-    stopTime = time.time()
-    sec = stopTime - startTime
-    days = int(sec / 86400)
-    sec -= 86400*days
-    hrs = int(sec / 3600)
-    sec -= 3600*hrs
-    mins = int(sec / 60)
-    sec -= 60*mins
-    print 'The scipt took ', days, 'days, ', hrs, 'hours, ', mins, 'minutes ', '%.2f ' %sec, 'seconds'
+    <span class="c"># figure out how long the script took to run</span>
+    <span class="n">stopTime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">sec</span> <span class="o">=</span> <span class="n">stopTime</span> <span class="o">-</span> <span class="n">startTime</span>
+    <span class="n">days</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sec</span> <span class="o">/</span> <span class="mi">86400</span><span class="p">)</span>
+    <span class="n">sec</span> <span class="o">-=</span> <span class="mi">86400</span><span class="o">*</span><span class="n">days</span>
+    <span class="n">hrs</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sec</span> <span class="o">/</span> <span class="mi">3600</span><span class="p">)</span>
+    <span class="n">sec</span> <span class="o">-=</span> <span class="mi">3600</span><span class="o">*</span><span class="n">hrs</span>
+    <span class="n">mins</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sec</span> <span class="o">/</span> <span class="mi">60</span><span class="p">)</span>
+    <span class="n">sec</span> <span class="o">-=</span> <span class="mi">60</span><span class="o">*</span><span class="n">mins</span>
+    <span class="k">print</span> <span class="s">&#39;The scipt took &#39;</span><span class="p">,</span> <span class="n">days</span><span class="p">,</span> <span class="s">&#39;days, &#39;</span><span class="p">,</span> <span class="n">hrs</span><span class="p">,</span> <span class="s">&#39;hours, &#39;</span><span class="p">,</span> <span class="n">mins</span><span class="p">,</span> <span class="s">&#39;minutes &#39;</span><span class="p">,</span> <span class="s">&#39;</span><span class="si">%.2f</span><span class="s"> &#39;</span> <span class="o">%</span><span class="n">sec</span><span class="p">,</span> <span class="s">&#39;seconds&#39;</span>
 
 
-##if __name__ == '__main__':
-##    config = ConfigParser.RawConfigParser()
-##    config.read('terr_shield.cfg')
-##
-##    root = config.get('input_values', 'root')
-##    loc_list = config.get('input_values', 'loc_list').split()
-##    cyclone_area = config.get('input_values', 'cyclone_area')
-##    terrain(root, loc_list, cyclone_area)</div>
-</pre>
+<span class="c">##if __name__ == &#39;__main__&#39;:</span>
+<span class="c">##    config = ConfigParser.RawConfigParser()</span>
+<span class="c">##    config.read(&#39;terr_shield.cfg&#39;)</span>
+<span class="c">##</span>
+<span class="c">##    root = config.get(&#39;input_values&#39;, &#39;root&#39;)</span>
+<span class="c">##    loc_list = config.get(&#39;input_values&#39;, &#39;loc_list&#39;).split()</span>
+<span class="c">##    cyclone_area = config.get(&#39;input_values&#39;, &#39;cyclone_area&#39;)</span>
+<span class="c">##    terrain(root, loc_list, cyclone_area)</span></div>
+</pre></div>
 
           </div>
         </div>

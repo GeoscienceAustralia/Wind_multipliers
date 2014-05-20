@@ -45,64 +45,65 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for make_path</h1><pre>
-import numpy
+  <h1>Source code for make_path</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">numpy</span>
 
-"""
-.. module:: make_path.py
-   :synopsis: Returns a vector of array indices for a path
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: make_path.py</span>
+<span class="sd">   :synopsis: Returns a vector of array indices for a path</span>
 
-.. moduleauthor:: thomas - mar 2009
+<span class="sd">.. moduleauthor:: thomas - mar 2009</span>
 
-"""
+<span class="sd">&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="make_path"><a class="viewcode-back" href="../sphinx_docs/topographic.html#make_path.make_path">[docs]</a>def make_path(nr,nc,n,dir):
+<div class="viewcode-block" id="make_path"><a class="viewcode-back" href="../docs/topographic.html#make_path.make_path">[docs]</a><span class="k">def</span> <span class="nf">make_path</span><span class="p">(</span><span class="n">nr</span><span class="p">,</span><span class="n">nc</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="nb">dir</span><span class="p">):</span>
 
-    '''
+    <span class="sd">&#39;&#39;&#39;</span>
 
-    Returns a vector of array indices for a path starting at index n in a matrix of size nr by nc and proceeding
-    in direction dir, where dir is one of the 8 cardinal directions (n,s,e,w,ne,nw,se,sw).
-    Note that the array indices are all 1-d indices.
+<span class="sd">    Returns a vector of array indices for a path starting at index n in a matrix of size nr by nc and proceeding</span>
+<span class="sd">    in direction dir, where dir is one of the 8 cardinal directions (n,s,e,w,ne,nw,se,sw).</span>
+<span class="sd">    Note that the array indices are all 1-d indices.</span>
 
-    :param nr:
-    :param nc:
-    :param n:
-    :param dir: Direction of the path
-    :returns: array
-    '''
+<span class="sd">    :param nr:</span>
+<span class="sd">    :param nc:</span>
+<span class="sd">    :param n:</span>
+<span class="sd">    :param dir: Direction of the path</span>
+<span class="sd">    :returns: array</span>
+<span class="sd">    &#39;&#39;&#39;</span>
 
-    dir = dir.lower()
+    <span class="nb">dir</span> <span class="o">=</span> <span class="nb">dir</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
-    #first compute the i,j coordinates from the 1-d index n
-    i = numpy.mod(n,nr) + 1
-    j = (n+1 - i)/nr + 1
+    <span class="c">#first compute the i,j coordinates from the 1-d index n</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">nr</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">j</span> <span class="o">=</span> <span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span> <span class="o">-</span> <span class="n">i</span><span class="p">)</span><span class="o">/</span><span class="n">nr</span> <span class="o">+</span> <span class="mi">1</span>
 
-    # find the i and j increments according to
-    # the directions in which we traverse
+    <span class="c"># find the i and j increments according to</span>
+    <span class="c"># the directions in which we traverse</span>
 
-    if dir.find('n')&gt;=0:
-        i_incr = 1
-    elif dir.find('s')&gt;=0:
-        i_incr = -1
-    else:
-        i_incr = 0
+    <span class="k">if</span> <span class="nb">dir</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;n&#39;</span><span class="p">)</span><span class="o">&gt;=</span><span class="mi">0</span><span class="p">:</span>
+        <span class="n">i_incr</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">elif</span> <span class="nb">dir</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;s&#39;</span><span class="p">)</span><span class="o">&gt;=</span><span class="mi">0</span><span class="p">:</span>
+        <span class="n">i_incr</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">i_incr</span> <span class="o">=</span> <span class="mi">0</span>
 
-    if dir.find('w')&gt;=0:
-        j_incr = 1
-    elif dir.find('e')&gt;=0:
-        j_incr = -1
-    else:
-        j_incr = 0
+    <span class="k">if</span> <span class="nb">dir</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;w&#39;</span><span class="p">)</span><span class="o">&gt;=</span><span class="mi">0</span><span class="p">:</span>
+        <span class="n">j_incr</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">elif</span> <span class="nb">dir</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;e&#39;</span><span class="p">)</span><span class="o">&gt;=</span><span class="mi">0</span><span class="p">:</span>
+        <span class="n">j_incr</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">j_incr</span> <span class="o">=</span> <span class="mi">0</span>
 
-    # traverse, putting the positions in 1-index form
-    result = []
-    while ((i &lt;= nr and i &gt;= 1) and (j &lt;= nc and j &gt;= 1)):
-        l = i+(j-1)*nr-1
-        result.append(l)
-        i += i_incr
-        j += j_incr
+    <span class="c"># traverse, putting the positions in 1-index form</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">while</span> <span class="p">((</span><span class="n">i</span> <span class="o">&lt;=</span> <span class="n">nr</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">j</span> <span class="o">&lt;=</span> <span class="n">nc</span> <span class="ow">and</span> <span class="n">j</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">)):</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">nr</span><span class="o">-</span><span class="mi">1</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="n">i_incr</span>
+        <span class="n">j</span> <span class="o">+=</span> <span class="n">j_incr</span>
 
-    return result</pre></div>
+    <span class="k">return</span> <span class="n">result</span></div>
+</pre></div>
 
           </div>
         </div>

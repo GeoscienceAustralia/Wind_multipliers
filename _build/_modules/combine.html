@@ -45,168 +45,167 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for combine</h1><pre>
-#import sys, string, os, arcpy, time, shutil
-import value_lookup
+  <h1>Source code for combine</h1><div class="highlight"><pre>
+<span class="c">#import sys, string, os, arcpy, time, shutil</span>
+<span class="kn">import</span> <span class="nn">value_lookup</span>
 
 
-<div class="viewcode-block" id="combine"><a class="viewcode-back" href="../sphinx_docs/sheilding.html#combine.combine">[docs]</a>def combine(loc, root, ArcToolbox):
-    """
-    To Generate Shielding Multiplier. This tool will be used for each direction to
-    derive the shielding multipliers after moving averaging the shielding multiplier using direction_filter.py
-    It also will remove the conservatism. 
-    input: slope, reclassified aspect, shield origin in one direction
-    output: shielding multiplier in the dirction
-    """
+<div class="viewcode-block" id="combine"><a class="viewcode-back" href="../sphinx_docs/sheilding.html#combine.combine">[docs]</a><span class="k">def</span> <span class="nf">combine</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">ArcToolbox</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    To Generate Shielding Multiplier. This tool will be used for each direction to</span>
+<span class="sd">    derive the shielding multipliers after moving averaging the shielding multiplier using direction_filter.py</span>
+<span class="sd">    It also will remove the conservatism. </span>
+<span class="sd">    input: slope, reclassified aspect, shield origin in one direction</span>
+<span class="sd">    output: shielding multiplier in the dirction</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    import arcpy
+    <span class="kn">import</span> <span class="nn">arcpy</span>
 
-    arcpy.env.overwriteOutput = True
+    <span class="n">arcpy</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">overwriteOutput</span> <span class="o">=</span> <span class="bp">True</span>
 
-    # Check out any necessary licenses
-    arcpy.CheckOutExtension("spatial")
+    <span class="c"># Check out any necessary licenses</span>
+    <span class="n">arcpy</span><span class="o">.</span><span class="n">CheckOutExtension</span><span class="p">(</span><span class="s">&quot;spatial&quot;</span><span class="p">)</span>
 
-    # Load required toolboxes...
-    arcpy.AddToolbox(ArcToolbox + "/Spatial Analyst Tools.tbx")
+    <span class="c"># Load required toolboxes...</span>
+    <span class="n">arcpy</span><span class="o">.</span><span class="n">AddToolbox</span><span class="p">(</span><span class="n">ArcToolbox</span> <span class="o">+</span> <span class="s">&quot;/Spatial Analyst Tools.tbx&quot;</span><span class="p">)</span>
    
-    arcpy.env.workspace = root + '\\process\\shielding'
-    arcpy.env.scratchWorkspace = arcpy.env.workspace
+    <span class="n">arcpy</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">workspace</span> <span class="o">=</span> <span class="n">root</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">process</span><span class="se">\\</span><span class="s">shielding&#39;</span>
+    <span class="n">arcpy</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">scratchWorkspace</span> <span class="o">=</span> <span class="n">arcpy</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">workspace</span>
 
-    output_folder = root + "\\output\\shielding"
+    <span class="n">output_folder</span> <span class="o">=</span> <span class="n">root</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\\</span><span class="s">output</span><span class="se">\\</span><span class="s">shielding&quot;</span>
     
-    slope = loc + '_slope'
-    aspect = loc + '_aspect_r'
+    <span class="n">slope</span> <span class="o">=</span> <span class="n">loc</span> <span class="o">+</span> <span class="s">&#39;_slope&#39;</span>
+    <span class="n">aspect</span> <span class="o">=</span> <span class="n">loc</span> <span class="o">+</span> <span class="s">&#39;_aspect_r&#39;</span>
 
-    dire = ['w', 'e', 'n', 's', 'nw', 'ne', 'se', 'sw']
+    <span class="n">dire</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;w&#39;</span><span class="p">,</span> <span class="s">&#39;e&#39;</span><span class="p">,</span> <span class="s">&#39;n&#39;</span><span class="p">,</span> <span class="s">&#39;s&#39;</span><span class="p">,</span> <span class="s">&#39;nw&#39;</span><span class="p">,</span> <span class="s">&#39;ne&#39;</span><span class="p">,</span> <span class="s">&#39;se&#39;</span><span class="p">,</span> <span class="s">&#39;sw&#39;</span><span class="p">]</span>
 
-    #dire = ['e', 'ne']
+    <span class="c">#dire = [&#39;e&#39;, &#39;ne&#39;]</span>
 
-    for one_dir in dire:
+    <span class="k">for</span> <span class="n">one_dir</span> <span class="ow">in</span> <span class="n">dire</span><span class="p">:</span>
 
-        print one_dir
-        shield_orig = loc + '_shield_' + one_dir + '.img'
-        ms = output_folder + '\\' + loc + '_ms_' + one_dir + '.img'
+        <span class="k">print</span> <span class="n">one_dir</span>
+        <span class="n">shield_orig</span> <span class="o">=</span> <span class="n">loc</span> <span class="o">+</span> <span class="s">&#39;_shield_&#39;</span> <span class="o">+</span> <span class="n">one_dir</span> <span class="o">+</span> <span class="s">&#39;.img&#39;</span>
+        <span class="n">ms</span> <span class="o">=</span> <span class="n">output_folder</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">&#39;</span> <span class="o">+</span> <span class="n">loc</span> <span class="o">+</span> <span class="s">&#39;_ms_&#39;</span> <span class="o">+</span> <span class="n">one_dir</span> <span class="o">+</span> <span class="s">&#39;.img&#39;</span>
                              
-        combine_each(slope, aspect, shield_orig, ms, one_dir)
+        <span class="n">combine_each</span><span class="p">(</span><span class="n">slope</span><span class="p">,</span> <span class="n">aspect</span><span class="p">,</span> <span class="n">shield_orig</span><span class="p">,</span> <span class="n">ms</span><span class="p">,</span> <span class="n">one_dir</span><span class="p">)</span>
 
-        g_list = arcpy.ListRasters('g_g*')
-        for g_file in g_list:
-            arcpy.Delete_management(g_file)
+        <span class="n">g_list</span> <span class="o">=</span> <span class="n">arcpy</span><span class="o">.</span><span class="n">ListRasters</span><span class="p">(</span><span class="s">&#39;g_g*&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">g_file</span> <span class="ow">in</span> <span class="n">g_list</span><span class="p">:</span>
+            <span class="n">arcpy</span><span class="o">.</span><span class="n">Delete_management</span><span class="p">(</span><span class="n">g_file</span><span class="p">)</span>
 
-    arcpy.BuildPyramidsandStatistics_management(output_folder, "#", "BUILD_PYRAMIDS", "CALCULATE_STATISTICS")
+    <span class="n">arcpy</span><span class="o">.</span><span class="n">BuildPyramidsandStatistics_management</span><span class="p">(</span><span class="n">output_folder</span><span class="p">,</span> <span class="s">&quot;#&quot;</span><span class="p">,</span> <span class="s">&quot;BUILD_PYRAMIDS&quot;</span><span class="p">,</span> <span class="s">&quot;CALCULATE_STATISTICS&quot;</span><span class="p">)</span>
     
-    del arcpy
+    <span class="k">del</span> <span class="n">arcpy</span>
 
     
 </div>
-def combine_each(slope, aspect, shield_orig, ms, one_dir):
+<span class="k">def</span> <span class="nf">combine_each</span><span class="p">(</span><span class="n">slope</span><span class="p">,</span> <span class="n">aspect</span><span class="p">,</span> <span class="n">shield_orig</span><span class="p">,</span> <span class="n">ms</span><span class="p">,</span> <span class="n">one_dir</span><span class="p">):</span>
 
-    dire_aspect = value_lookup.dire_aspect
-    aspect_value = dire_aspect[one_dir]
+    <span class="n">dire_aspect</span> <span class="o">=</span> <span class="n">value_lookup</span><span class="o">.</span><span class="n">dire_aspect</span>
+    <span class="n">aspect_value</span> <span class="o">=</span> <span class="n">dire_aspect</span><span class="p">[</span><span class="n">one_dir</span><span class="p">]</span>
     
-    yes_dire = "Value = " + str(aspect_value)
-    not_dire = "Value &lt;&gt; " + str(aspect_value)
+    <span class="n">yes_dire</span> <span class="o">=</span> <span class="s">&quot;Value = &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">aspect_value</span><span class="p">)</span>
+    <span class="n">not_dire</span> <span class="o">=</span> <span class="s">&quot;Value &lt;&gt; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">aspect_value</span><span class="p">)</span>
 
-    Input_raster_or_constant_value_2 = "0.9"
+    <span class="n">Input_raster_or_constant_value_2</span> <span class="o">=</span> <span class="s">&quot;0.9&quot;</span>
 
-    # Local variables...
+    <span class="c"># Local variables...</span>
     
-    temp = "C:\\temp\\"
+    <span class="n">temp</span> <span class="o">=</span> <span class="s">&quot;C:</span><span class="se">\\</span><span class="s">temp</span><span class="se">\\</span><span class="s">&quot;</span>
     
-    if not os.path.exists(temp):
-        os.makedirs(temp)   
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">temp</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>   
    
-    xasp_n = temp + "xasp_n"
-    xslope_n = temp + "xslope_n"
-    xslope_n1 = temp + "xslope_n1"
-    xshield_n1 = temp + "xshield_n1"
-    xslope_n3 = temp + "xslope_n3"
-    xshield_n31 = temp + "xshield_n31"
-    xslope_temp = temp + "xslope_temp"
-    xslope_n2 = temp + "xslope_n2"
-    xslope_adjust = temp + "xslope_adjust"
-    xasp_o = temp + "xasp_o"
-    xshield_o = temp + "xshield_o"
-    xshield_merge = temp + "xshield_merge"
-    xshield_con1 = temp + "xshield_con1"
-    xshield_con2 = temp + "xshield_con2"
-    xshield_1 = temp + "xshield_1"
-    xshield_2 = temp + "xshield_2"
+    <span class="n">xasp_n</span> <span class="o">=</span> <span class="n">temp</span> <span class="o">+</span> <span class="s">&quot;xasp_n&quot;</span>
+    <span class="n">xslope_n</span> <span class="o">=</span> <span class="n">temp</span> <span class="o">+</span> <span class="s">&quot;xslope_n&quot;</span>
+    <span class="n">xslope_n1</span> <span class="o">=</span> <span class="n">temp</span> <span class="o">+</span> <span class="s">&quot;xslope_n1&quot;</span>
+    <span class="n">xshield_n1</span> <span class="o">=</span> <span class="n">temp</span> <span class="o">+</span> <span class="s">&quot;xshield_n1&quot;</span>
+    <span class="n">xslope_n3</span> <span class="o">=</span> <span class="n">temp</span> <span class="o">+</span> <span class="s">&quot;xslope_n3&quot;</span>
+    <span class="n">xshield_n31</span> <span class="o">=</span> <span class="n">temp</span> <span class="o">+</span> <span class="s">&quot;xshield_n31&quot;</span>
+    <span class="n">xslope_temp</span> <span class="o">=</span> <span class="n">temp</span> <span class="o">+</span> <span class="s">&quot;xslope_temp&quot;</span>
+    <span class="n">xslope_n2</span> <span class="o">=</span> <span class="n">temp</span> <span class="o">+</span> <span class="s">&quot;xslope_n2&quot;</span>
+    <span class="n">xslope_adjust</span> <span class="o">=</span> <span class="n">temp</span> <span class="o">+</span> <span class="s">&quot;xslope_adjust&quot;</span>
+    <span class="n">xasp_o</span> <span class="o">=</span> <span class="n">temp</span> <span class="o">+</span> <span class="s">&quot;xasp_o&quot;</span>
+    <span class="n">xshield_o</span> <span class="o">=</span> <span class="n">temp</span> <span class="o">+</span> <span class="s">&quot;xshield_o&quot;</span>
+    <span class="n">xshield_merge</span> <span class="o">=</span> <span class="n">temp</span> <span class="o">+</span> <span class="s">&quot;xshield_merge&quot;</span>
+    <span class="n">xshield_con1</span> <span class="o">=</span> <span class="n">temp</span> <span class="o">+</span> <span class="s">&quot;xshield_con1&quot;</span>
+    <span class="n">xshield_con2</span> <span class="o">=</span> <span class="n">temp</span> <span class="o">+</span> <span class="s">&quot;xshield_con2&quot;</span>
+    <span class="n">xshield_1</span> <span class="o">=</span> <span class="n">temp</span> <span class="o">+</span> <span class="s">&quot;xshield_1&quot;</span>
+    <span class="n">xshield_2</span> <span class="o">=</span> <span class="n">temp</span> <span class="o">+</span> <span class="s">&quot;xshield_2&quot;</span>
 
-##    import pdb
-##    pdb.set_trace()
+<span class="c">##    import pdb</span>
+<span class="c">##    pdb.set_trace()</span>
     
-    # Deal with aspect that is the same as the wind direction
-    arcpy.gp.ExtractByAttributes_sa(aspect, yes_dire, xasp_n)    
-    arcpy.gp.Con_sa(xasp_n, slope, xslope_n, "", "")
+    <span class="c"># Deal with aspect that is the same as the wind direction</span>
+    <span class="n">arcpy</span><span class="o">.</span><span class="n">gp</span><span class="o">.</span><span class="n">ExtractByAttributes_sa</span><span class="p">(</span><span class="n">aspect</span><span class="p">,</span> <span class="n">yes_dire</span><span class="p">,</span> <span class="n">xasp_n</span><span class="p">)</span>    
+    <span class="n">arcpy</span><span class="o">.</span><span class="n">gp</span><span class="o">.</span><span class="n">Con_sa</span><span class="p">(</span><span class="n">xasp_n</span><span class="p">,</span> <span class="n">slope</span><span class="p">,</span> <span class="n">xslope_n</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
 
-    # select pixel with slope value &gt; 1.8
-    arcpy.gp.ExtractByAttributes_sa(xslope_n, "value &gt; 1.8", xslope_n3)    
-    arcpy.gp.Reclassify_sa(xslope_n3, "Value", "1 1000 1", xshield_n31, "DATA")
+    <span class="c"># select pixel with slope value &gt; 1.8</span>
+    <span class="n">arcpy</span><span class="o">.</span><span class="n">gp</span><span class="o">.</span><span class="n">ExtractByAttributes_sa</span><span class="p">(</span><span class="n">xslope_n</span><span class="p">,</span> <span class="s">&quot;value &gt; 1.8&quot;</span><span class="p">,</span> <span class="n">xslope_n3</span><span class="p">)</span>    
+    <span class="n">arcpy</span><span class="o">.</span><span class="n">gp</span><span class="o">.</span><span class="n">Reclassify_sa</span><span class="p">(</span><span class="n">xslope_n3</span><span class="p">,</span> <span class="s">&quot;Value&quot;</span><span class="p">,</span> <span class="s">&quot;1 1000 1&quot;</span><span class="p">,</span> <span class="n">xshield_n31</span><span class="p">,</span> <span class="s">&quot;DATA&quot;</span><span class="p">)</span>
 
-    # select pixel with slope value &lt;= 5.71
-    arcpy.gp.ExtractByAttributes_sa(xslope_n, "value &lt;= 5.71", xslope_n1)
-    arcpy.gp.Con_sa(xslope_n1, shield_orig, xshield_n1, "", "")
+    <span class="c"># select pixel with slope value &lt;= 5.71</span>
+    <span class="n">arcpy</span><span class="o">.</span><span class="n">gp</span><span class="o">.</span><span class="n">ExtractByAttributes_sa</span><span class="p">(</span><span class="n">xslope_n</span><span class="p">,</span> <span class="s">&quot;value &lt;= 5.71&quot;</span><span class="p">,</span> <span class="n">xslope_n1</span><span class="p">)</span>
+    <span class="n">arcpy</span><span class="o">.</span><span class="n">gp</span><span class="o">.</span><span class="n">Con_sa</span><span class="p">(</span><span class="n">xslope_n1</span><span class="p">,</span> <span class="n">shield_orig</span><span class="p">,</span> <span class="n">xshield_n1</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
 
-    # select pixel with slope value &gt; 5.71 and value &lt;= 21.8
-    arcpy.gp.ExtractByAttributes_sa(xslope_n, "value &gt; 5.71", xslope_temp)
-    arcpy.gp.ExtractByAttributes_sa(xslope_temp, "value &lt;= 21.8", xslope_n2)
-    # interpolation 
-    expr = "((1 - " + shield_orig + ") * (" + xslope_n2 + " - 5.71) / (21.8 - 5.71)) + " + shield_orig
-    arcpy.gp.SingleOutputMapAlgebra_sa(expr, xslope_adjust)
+    <span class="c"># select pixel with slope value &gt; 5.71 and value &lt;= 21.8</span>
+    <span class="n">arcpy</span><span class="o">.</span><span class="n">gp</span><span class="o">.</span><span class="n">ExtractByAttributes_sa</span><span class="p">(</span><span class="n">xslope_n</span><span class="p">,</span> <span class="s">&quot;value &gt; 5.71&quot;</span><span class="p">,</span> <span class="n">xslope_temp</span><span class="p">)</span>
+    <span class="n">arcpy</span><span class="o">.</span><span class="n">gp</span><span class="o">.</span><span class="n">ExtractByAttributes_sa</span><span class="p">(</span><span class="n">xslope_temp</span><span class="p">,</span> <span class="s">&quot;value &lt;= 21.8&quot;</span><span class="p">,</span> <span class="n">xslope_n2</span><span class="p">)</span>
+    <span class="c"># interpolation </span>
+    <span class="n">expr</span> <span class="o">=</span> <span class="s">&quot;((1 - &quot;</span> <span class="o">+</span> <span class="n">shield_orig</span> <span class="o">+</span> <span class="s">&quot;) * (&quot;</span> <span class="o">+</span> <span class="n">xslope_n2</span> <span class="o">+</span> <span class="s">&quot; - 5.71) / (21.8 - 5.71)) + &quot;</span> <span class="o">+</span> <span class="n">shield_orig</span>
+    <span class="n">arcpy</span><span class="o">.</span><span class="n">gp</span><span class="o">.</span><span class="n">SingleOutputMapAlgebra_sa</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">xslope_adjust</span><span class="p">)</span>
 
-    # Deal with aspect that is not the same as the wind direction
-    arcpy.gp.ExtractByAttributes_sa(aspect, not_dire, xasp_o)
-    arcpy.gp.Con_sa(xasp_o, shield_orig, xshield_o, "", "")
+    <span class="c"># Deal with aspect that is not the same as the wind direction</span>
+    <span class="n">arcpy</span><span class="o">.</span><span class="n">gp</span><span class="o">.</span><span class="n">ExtractByAttributes_sa</span><span class="p">(</span><span class="n">aspect</span><span class="p">,</span> <span class="n">not_dire</span><span class="p">,</span> <span class="n">xasp_o</span><span class="p">)</span>
+    <span class="n">arcpy</span><span class="o">.</span><span class="n">gp</span><span class="o">.</span><span class="n">Con_sa</span><span class="p">(</span><span class="n">xasp_o</span><span class="p">,</span> <span class="n">shield_orig</span><span class="p">,</span> <span class="n">xshield_o</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
     
-    # merge above outputs to get a merged shield
-    expr2 = "merge(" + xshield_o + "," + xshield_n1 + "," + xslope_adjust + "," + xshield_n31 + ")"
-    arcpy.gp.SingleOutputMapAlgebra_sa(expr2, xshield_merge)
+    <span class="c"># merge above outputs to get a merged shield</span>
+    <span class="n">expr2</span> <span class="o">=</span> <span class="s">&quot;merge(&quot;</span> <span class="o">+</span> <span class="n">xshield_o</span> <span class="o">+</span> <span class="s">&quot;,&quot;</span> <span class="o">+</span> <span class="n">xshield_n1</span> <span class="o">+</span> <span class="s">&quot;,&quot;</span> <span class="o">+</span> <span class="n">xslope_adjust</span> <span class="o">+</span> <span class="s">&quot;,&quot;</span> <span class="o">+</span> <span class="n">xshield_n31</span> <span class="o">+</span> <span class="s">&quot;)&quot;</span>
+    <span class="n">arcpy</span><span class="o">.</span><span class="n">gp</span><span class="o">.</span><span class="n">SingleOutputMapAlgebra_sa</span><span class="p">(</span><span class="n">expr2</span><span class="p">,</span> <span class="n">xshield_merge</span><span class="p">)</span>
 
-    # Remove convertism, if value &gt;= 0.9, times itself, if value &lt; 0.9, times 0.9
-    arcpy.gp.ExtractByAttributes_sa(xshield_merge, "value &gt;= 0.9", xshield_con1)
-    arcpy.gp.Square_sa(xshield_con1, xshield_1)
-    arcpy.gp.ExtractByAttributes_sa(xshield_merge, "value &lt; 0.9", xshield_con2)
-    arcpy.gp.Times_sa(xshield_con2, Input_raster_or_constant_value_2, xshield_2)
+    <span class="c"># Remove convertism, if value &gt;= 0.9, times itself, if value &lt; 0.9, times 0.9</span>
+    <span class="n">arcpy</span><span class="o">.</span><span class="n">gp</span><span class="o">.</span><span class="n">ExtractByAttributes_sa</span><span class="p">(</span><span class="n">xshield_merge</span><span class="p">,</span> <span class="s">&quot;value &gt;= 0.9&quot;</span><span class="p">,</span> <span class="n">xshield_con1</span><span class="p">)</span>
+    <span class="n">arcpy</span><span class="o">.</span><span class="n">gp</span><span class="o">.</span><span class="n">Square_sa</span><span class="p">(</span><span class="n">xshield_con1</span><span class="p">,</span> <span class="n">xshield_1</span><span class="p">)</span>
+    <span class="n">arcpy</span><span class="o">.</span><span class="n">gp</span><span class="o">.</span><span class="n">ExtractByAttributes_sa</span><span class="p">(</span><span class="n">xshield_merge</span><span class="p">,</span> <span class="s">&quot;value &lt; 0.9&quot;</span><span class="p">,</span> <span class="n">xshield_con2</span><span class="p">)</span>
+    <span class="n">arcpy</span><span class="o">.</span><span class="n">gp</span><span class="o">.</span><span class="n">Times_sa</span><span class="p">(</span><span class="n">xshield_con2</span><span class="p">,</span> <span class="n">Input_raster_or_constant_value_2</span><span class="p">,</span> <span class="n">xshield_2</span><span class="p">)</span>
 
-    # merge the two into one
-    expr3 = "merge(" + xshield_1 + "," + xshield_2 + ")"
-    if arcpy.Exists(ms):
-        arcpy.Delete_management(ms)        
-    arcpy.gp.SingleOutputMapAlgebra_sa(expr3, ms)
+    <span class="c"># merge the two into one</span>
+    <span class="n">expr3</span> <span class="o">=</span> <span class="s">&quot;merge(&quot;</span> <span class="o">+</span> <span class="n">xshield_1</span> <span class="o">+</span> <span class="s">&quot;,&quot;</span> <span class="o">+</span> <span class="n">xshield_2</span> <span class="o">+</span> <span class="s">&quot;)&quot;</span>
+    <span class="k">if</span> <span class="n">arcpy</span><span class="o">.</span><span class="n">Exists</span><span class="p">(</span><span class="n">ms</span><span class="p">):</span>
+        <span class="n">arcpy</span><span class="o">.</span><span class="n">Delete_management</span><span class="p">(</span><span class="n">ms</span><span class="p">)</span>        
+    <span class="n">arcpy</span><span class="o">.</span><span class="n">gp</span><span class="o">.</span><span class="n">SingleOutputMapAlgebra_sa</span><span class="p">(</span><span class="n">expr3</span><span class="p">,</span> <span class="n">ms</span><span class="p">)</span>
 
 
                             
 
-##if __name__ == '__main__':
-##    # start timing
-##    startTime = time.time()
-##
-##    # set directory
-##    workspace = r'N:\climate_change\Workspaces\Tina\Multiplier\validation'
-##                             
-##    loc = 'act'
-##   
-##                             
-##    combine(loc, workspace)
-##
-##
-##    print 'finish successfully'
-##
-##    # figure out how long the script took to run
-##    stopTime = time.time()
-##    sec = stopTime - startTime
-##    days = int(sec / 86400)
-##    sec -= 86400*days
-##    hrs = int(sec / 3600)
-##    sec -= 3600*hrs
-##    mins = int(sec / 60)
-##    sec -= 60*mins
-##    print 'The scipt took ', days, 'days, ', hrs, 'hours, ', mins, 'minutes ', '%.2f ' %sec, 'seconds'
-##
-##                             
-
-</pre>
+<span class="c">##if __name__ == &#39;__main__&#39;:</span>
+<span class="c">##    # start timing</span>
+<span class="c">##    startTime = time.time()</span>
+<span class="c">##</span>
+<span class="c">##    # set directory</span>
+<span class="c">##    workspace = r&#39;N:\climate_change\Workspaces\Tina\Multiplier\validation&#39;</span>
+<span class="c">##                             </span>
+<span class="c">##    loc = &#39;act&#39;</span>
+<span class="c">##   </span>
+<span class="c">##                             </span>
+<span class="c">##    combine(loc, workspace)</span>
+<span class="c">##</span>
+<span class="c">##</span>
+<span class="c">##    print &#39;finish successfully&#39;</span>
+<span class="c">##</span>
+<span class="c">##    # figure out how long the script took to run</span>
+<span class="c">##    stopTime = time.time()</span>
+<span class="c">##    sec = stopTime - startTime</span>
+<span class="c">##    days = int(sec / 86400)</span>
+<span class="c">##    sec -= 86400*days</span>
+<span class="c">##    hrs = int(sec / 3600)</span>
+<span class="c">##    sec -= 3600*hrs</span>
+<span class="c">##    mins = int(sec / 60)</span>
+<span class="c">##    sec -= 60*mins</span>
+<span class="c">##    print &#39;The scipt took &#39;, days, &#39;days, &#39;, hrs, &#39;hours, &#39;, mins, &#39;minutes &#39;, &#39;%.2f &#39; %sec, &#39;seconds&#39;</span>
+<span class="c">##</span>
+<span class="c">##                             </span>
+</pre></div>
 
           </div>
         </div>

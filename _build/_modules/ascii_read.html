@@ -45,42 +45,42 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for ascii_read</h1><pre>
-import numpy
+  <h1>Source code for ascii_read</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">numpy</span>
 
-"""
-.. module:: ascii_read.py
-   :synopsis: Read input DEM stored in ../input
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: ascii_read.py</span>
+<span class="sd">   :synopsis: Read input DEM stored in ../input</span>
 
-.. moduleauthor:: Daniel Wild &lt;daniel.wild@ga.gov.au&gt;
-
-
-"""
+<span class="sd">.. moduleauthor:: Daniel Wild &lt;daniel.wild@ga.gov.au&gt;</span>
 
 
-<div class="viewcode-block" id="ElevationData"><a class="viewcode-back" href="../sphinx_docs/terrain.html#ascii_read.ElevationData">[docs]</a>class ElevationData(object):
-    """
-    TestCase classes that want to be parametrized should
-    inherit from this class.
+<span class="sd">&quot;&quot;&quot;</span>
 
-    """
-    def __init__(self, input_dem):
-        """
-        Test Class used to run a unit test comparison of expected against actual results outputted by topomult.py
 
-        """
-        with open(input_dem, 'r') as fid:
-            for i in xrange(0, 6):
-                line = fid.readline()
-                contents = line.split()
-                label = contents[0]
-                setattr(self, label, float(contents[1]))
+<div class="viewcode-block" id="ElevationData"><a class="viewcode-back" href="../docs/topographic.html#ascii_read.ElevationData">[docs]</a><span class="k">class</span> <span class="nc">ElevationData</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TestCase classes that want to be parametrized should</span>
+<span class="sd">    inherit from this class.</span>
 
-        self.data = numpy.genfromtxt(input_dem, skip_header=6)
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_dem</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Test Class used to run a unit test comparison of expected against actual results outputted by topomult.py</span>
 
-        self.data = self.data.conj().transpose()
-        numpy.putmask(self.data, self.data==self.NODATA_value, numpy.nan)</div>
-</pre>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">input_dem</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">):</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">fid</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+                <span class="n">contents</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="n">contents</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">contents</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">input_dem</span><span class="p">,</span> <span class="n">skip_header</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">putmask</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">==</span><span class="bp">self</span><span class="o">.</span><span class="n">NODATA_value</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span></div>
+</pre></div>
 
           </div>
         </div>

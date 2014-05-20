@@ -45,46 +45,47 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for tests_characterisation.run_all</h1><pre>
-from test_topographic import test_topo
-import unittest
+  <h1>Source code for tests_characterisation.run_all</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">test_topographic</span> <span class="kn">import</span> <span class="n">test_topo</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
 
-from parametrized_test_case import ParametrizedTestCase
-
-
-"""
-.. module:: run_all
-   :synopsis: Initiates Characterisation Test Suite for all Wind Multipliers
-
-.. moduleauthor:: Daniel Wild &lt;daniel.wild@ga.gov.au&gt;
+<span class="kn">from</span> <span class="nn">parametrized_test_case</span> <span class="kn">import</span> <span class="n">ParametrizedTestCase</span>
 
 
-"""
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: run_all</span>
+<span class="sd">   :synopsis: Initiates Characterisation Test Suite for all Wind Multipliers</span>
+
+<span class="sd">.. moduleauthor:: Daniel Wild &lt;daniel.wild@ga.gov.au&gt;</span>
 
 
-<div class="viewcode-block" id="run"><a class="viewcode-back" href="../../sphinx_docs/tests_characterisation.html#tests_characterisation.run_all.run">[docs]</a>def run():
-    """
-    Runs the selected test suite (defaults to small).
+<span class="sd">&quot;&quot;&quot;</span>
 
-    """
 
-    import argparse
+<div class="viewcode-block" id="run"><a class="viewcode-back" href="../../docs/tests_characterisation.html#tests_characterisation.run_all.run">[docs]</a><span class="k">def</span> <span class="nf">run</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Runs the selected test suite (defaults to small).</span>
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-s", "--size",
-                        help="Test size (small, medium, large)",
-                        choices=["small", "medium", "large"],
-                        default="small",
-                        type=str)
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    args = parser.parse_args()
+    <span class="kn">import</span> <span class="nn">argparse</span>
 
-    suite = unittest.TestSuite()
-    suite.addTest(ParametrizedTestCase.parametrize(test_topo.TestOutput, param=args.size))
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;-s&quot;</span><span class="p">,</span> <span class="s">&quot;--size&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s">&quot;Test size (small, medium, large)&quot;</span><span class="p">,</span>
+                        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;small&quot;</span><span class="p">,</span> <span class="s">&quot;medium&quot;</span><span class="p">,</span> <span class="s">&quot;large&quot;</span><span class="p">],</span>
+                        <span class="n">default</span><span class="o">=</span><span class="s">&quot;small&quot;</span><span class="p">,</span>
+                        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="n">suite</span> <span class="o">=</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestSuite</span><span class="p">()</span>
+    <span class="n">suite</span><span class="o">.</span><span class="n">addTest</span><span class="p">(</span><span class="n">ParametrizedTestCase</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="n">test_topo</span><span class="o">.</span><span class="n">TestOutput</span><span class="p">,</span> <span class="n">param</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">TextTestRunner</span><span class="p">(</span><span class="n">verbosity</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">suite</span><span class="p">)</span>
 </div>
-if __name__ == '__main__':
-    run()</pre>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">run</span><span class="p">()</span>
+</pre></div>
 
           </div>
         </div>

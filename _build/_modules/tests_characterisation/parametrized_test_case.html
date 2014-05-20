@@ -45,41 +45,39 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for tests_characterisation.parametrized_test_case</h1><pre>
-import unittest
+  <h1>Source code for tests_characterisation.parametrized_test_case</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">unittest</span>
 
-"""
-.. module:: parametrized_test_case.py
-   :synopsis: Module used to facilitate parametrized unit tests
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: parametrized_test_case.py</span>
+<span class="sd">   :synopsis: Module used to facilitate parametrized unit tests</span>
 
-.. moduleauthor:: Daniel Wild &lt;daniel.wild@ga.gov.au&gt;
-
-
-"""
+<span class="sd">.. moduleauthor:: Daniel Wild &lt;daniel.wild@ga.gov.au&gt;</span>
 
 
-<div class="viewcode-block" id="ParametrizedTestCase"><a class="viewcode-back" href="../../sphinx_docs/tests_characterisation.html#tests_characterisation.parametrized_test_case.ParametrizedTestCase">[docs]</a>class ParametrizedTestCase(unittest.TestCase):
-    """ TestCase classes that want to be parametrized should
-        inherit from this class.
-    """
-    def __init__(self, methodName='runTest', param=None):
-        super(ParametrizedTestCase, self).__init__(methodName)
-        self.param = param
+<span class="sd">&quot;&quot;&quot;</span>
 
-    @staticmethod
-<div class="viewcode-block" id="ParametrizedTestCase.parametrize"><a class="viewcode-back" href="../../sphinx_docs/tests_characterisation.html#tests_characterisation.parametrized_test_case.ParametrizedTestCase.parametrize">[docs]</a>    def parametrize(testcase_klass, param=None):
-        """ Create a suite containing all tests taken from the given
-            subclass, passing them the parameter 'param'.
-        """
-        testloader = unittest.TestLoader()
-        testnames = testloader.getTestCaseNames(testcase_klass)
-        suite = unittest.TestSuite()
-        for name in testnames:
-            suite.addTest(testcase_klass(name, param=param))
-        return suite
 
-</div></div>
-</pre>
+<div class="viewcode-block" id="ParametrizedTestCase"><a class="viewcode-back" href="../../docs/tests_characterisation.html#tests_characterisation.parametrized_test_case.ParametrizedTestCase">[docs]</a><span class="k">class</span> <span class="nc">ParametrizedTestCase</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; TestCase classes that want to be parametrized should</span>
+<span class="sd">        inherit from this class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">methodName</span><span class="o">=</span><span class="s">&#39;runTest&#39;</span><span class="p">,</span> <span class="n">param</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ParametrizedTestCase</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">methodName</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param</span> <span class="o">=</span> <span class="n">param</span>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="ParametrizedTestCase.parametrize"><a class="viewcode-back" href="../../docs/tests_characterisation.html#tests_characterisation.parametrized_test_case.ParametrizedTestCase.parametrize">[docs]</a>    <span class="k">def</span> <span class="nf">parametrize</span><span class="p">(</span><span class="n">testcase_klass</span><span class="p">,</span> <span class="n">param</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Create a suite containing all tests taken from the given</span>
+<span class="sd">            subclass, passing them the parameter &#39;param&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">testloader</span> <span class="o">=</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestLoader</span><span class="p">()</span>
+        <span class="n">testnames</span> <span class="o">=</span> <span class="n">testloader</span><span class="o">.</span><span class="n">getTestCaseNames</span><span class="p">(</span><span class="n">testcase_klass</span><span class="p">)</span>
+        <span class="n">suite</span> <span class="o">=</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestSuite</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">testnames</span><span class="p">:</span>
+            <span class="n">suite</span><span class="o">.</span><span class="n">addTest</span><span class="p">(</span><span class="n">testcase_klass</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">param</span><span class="o">=</span><span class="n">param</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">suite</span>
+</pre></div></div></div>
 
           </div>
         </div>

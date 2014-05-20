@@ -17,12 +17,25 @@ import sys, os
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.abspath('.'))
+sys.path.append('/usr/local/python-2.7.2/lib/python2.7')
+
 sys.path.append('/nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/wind_multiplier_git/Wind_multipliers/'
-                'topographic/py-files')
+                'topographic')
 sys.path.append('/nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/wind_multiplier_git/Wind_multipliers/'
                 'terrain')
 sys.path.append('/nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/wind_multiplier_git/Wind_multipliers/'
                 'shielding')
+
+
+
+# Use to ignore modules in order to run a successful build
+import mock
+
+MOCK_MODULES = ['netCDF4']
+for mod_name in MOCK_MODULES:
+    sys.modules[mod_name] = mock.Mock()
+
+
 
 # -- General configuration -----------------------------------------------------
 

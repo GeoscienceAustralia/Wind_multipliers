@@ -45,109 +45,110 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for tests_characterisation.read_file</h1><pre>
-#!/usr/bin/python2.6
-import numpy
-import sys
-from osgeo import gdal
-from osgeo.gdalconst import *
+  <h1>Source code for tests_characterisation.read_file</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/python2.6</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">gdal</span>
+<span class="kn">from</span> <span class="nn">osgeo.gdalconst</span> <span class="kn">import</span> <span class="o">*</span>
 
-"""
-.. module:: read_file.py
-   :synopsis: Module used to read input file, and convert data to numpy array
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: read_file.py</span>
+<span class="sd">   :synopsis: Module used to read input file, and convert data to numpy array</span>
 
-.. moduleauthor:: Daniel Wild &lt;daniel.wild@ga.gov.au&gt;
-
-
-"""
+<span class="sd">.. moduleauthor:: Daniel Wild &lt;daniel.wild@ga.gov.au&gt;</span>
 
 
-<div class="viewcode-block" id="readASC"><a class="viewcode-back" href="../../sphinx_docs/tests_characterisation.html#tests_characterisation.read_file.readASC">[docs]</a>def readASC(inputfile):
-    """
-    Reads .asc DEM into a GDALDataSet
+<span class="sd">&quot;&quot;&quot;</span>
 
-    :param inputfile: The path to an input file (DEM)
-    :returns: A numpy array
-    """
 
-    # debug - permit print whole numpy array
-    # numpy.set_printoptions(threshold=numpy.nan)
+<div class="viewcode-block" id="readASC"><a class="viewcode-back" href="../../docs/tests_characterisation.html#tests_characterisation.read_file.readASC">[docs]</a><span class="k">def</span> <span class="nf">readASC</span><span class="p">(</span><span class="n">inputfile</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads .asc DEM into a GDALDataSet</span>
 
-    inDs = gdal.Open(inputfile, GA_ReadOnly)
+<span class="sd">    :param inputfile: The path to an input file (DEM)</span>
+<span class="sd">    :returns: A numpy array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    return convertToNumpyArray(inDs)
+    <span class="c"># debug - permit print whole numpy array</span>
+    <span class="c"># numpy.set_printoptions(threshold=numpy.nan)</span>
 
-</div>
-<div class="viewcode-block" id="readNetCDF"><a class="viewcode-back" href="../../sphinx_docs/tests_characterisation.html#tests_characterisation.read_file.readNetCDF">[docs]</a>def readNetCDF(inputFile, ncVar):
-    """
-    Reads an NETCDF file into a GDALDataSet
+    <span class="n">inDs</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">inputfile</span><span class="p">,</span> <span class="n">GA_ReadOnly</span><span class="p">)</span>
 
-    :param inputFile: The path to an input file (NETCDF)
-    :param ncVar: The name of var to read from NETCDF file
-    :returns: A numpy array
-    """
-
-    # DEBUG - permit print whole numpy array
-    numpy.set_printoptions(threshold=numpy.nan)
-
-    # DEBUG - meaningful errors
-    gdal.UseExceptions()
-
-    inDs = gdal.Open('NETCDF:"'+ inputFile+'":'+ncVar)
-
-    return convertToNumpyArray(inDs)
+    <span class="k">return</span> <span class="n">convertToNumpyArray</span><span class="p">(</span><span class="n">inDs</span><span class="p">)</span>
 
 </div>
-<div class="viewcode-block" id="convertToNumpyArray"><a class="viewcode-back" href="../../sphinx_docs/tests_characterisation.html#tests_characterisation.read_file.convertToNumpyArray">[docs]</a>def convertToNumpyArray(gdalDataSet):
-    """
-    Reads GDALDataSet into a numpy array
+<div class="viewcode-block" id="readNetCDF"><a class="viewcode-back" href="../../docs/tests_characterisation.html#tests_characterisation.read_file.readNetCDF">[docs]</a><span class="k">def</span> <span class="nf">readNetCDF</span><span class="p">(</span><span class="n">inputFile</span><span class="p">,</span> <span class="n">ncVar</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads an NETCDF file into a GDALDataSet</span>
 
-    :param gdalDataSet: a GDAL DataSet to be converted to numpy.array
-    :returns: A numpy array
-    """
+<span class="sd">    :param inputFile: The path to an input file (NETCDF)</span>
+<span class="sd">    :param ncVar: The name of var to read from NETCDF file</span>
+<span class="sd">    :returns: A numpy array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    if gdalDataSet is None:
-        print 'Could not open %s'%inputFile
-        sys.exit(1)
+    <span class="c"># DEBUG - permit print whole numpy array</span>
+    <span class="n">numpy</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">threshold</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
 
-    # get raster size
-    rows = gdalDataSet.RasterYSize
-    cols = gdalDataSet.RasterXSize
+    <span class="c"># DEBUG - meaningful errors</span>
+    <span class="n">gdal</span><span class="o">.</span><span class="n">UseExceptions</span><span class="p">()</span>
 
-    # create empty numpy array
-    data = numpy.zeros((rows,cols),dtype=numpy.float)
+    <span class="n">inDs</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s">&#39;NETCDF:&quot;&#39;</span><span class="o">+</span> <span class="n">inputFile</span><span class="o">+</span><span class="s">&#39;&quot;:&#39;</span><span class="o">+</span><span class="n">ncVar</span><span class="p">)</span>
 
-    # get the bands and block sizes
-    inBand = gdalDataSet.GetRasterBand(1)
+    <span class="k">return</span> <span class="n">convertToNumpyArray</span><span class="p">(</span><span class="n">inDs</span><span class="p">)</span>
 
-    blockSizes = inBand.GetBlockSize()
-    xBlockSize = blockSizes[0]
-    yBlockSize = blockSizes[1]
+</div>
+<div class="viewcode-block" id="convertToNumpyArray"><a class="viewcode-back" href="../../docs/tests_characterisation.html#tests_characterisation.read_file.convertToNumpyArray">[docs]</a><span class="k">def</span> <span class="nf">convertToNumpyArray</span><span class="p">(</span><span class="n">gdalDataSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads GDALDataSet into a numpy array</span>
 
-    # loop through the rows
-    for i in range(0, rows, yBlockSize):
-        if i + yBlockSize &lt; rows:
-            numRows = yBlockSize
-        else:
-            numRows = rows - i
+<span class="sd">    :param gdalDataSet: a GDAL DataSet to be converted to numpy.array</span>
+<span class="sd">    :returns: A numpy array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-      # loop through the columns
-        for j in range(0, cols, xBlockSize):
-            if j + xBlockSize &lt; cols:
-                numCols = xBlockSize
-            else:
-                numCols = cols - j
+    <span class="k">if</span> <span class="n">gdalDataSet</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;Could not open </span><span class="si">%s</span><span class="s">&#39;</span><span class="o">%</span><span class="n">inputFile</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
-            # read the data in
-            dd = inBand.ReadAsArray(j, i, numCols, numRows).astype(numpy.float)
+    <span class="c"># get raster size</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">gdalDataSet</span><span class="o">.</span><span class="n">RasterYSize</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="n">gdalDataSet</span><span class="o">.</span><span class="n">RasterXSize</span>
 
-            # do the calculations
-            data[i:i+numRows, j:j+numCols] = dd
+    <span class="c"># create empty numpy array</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">rows</span><span class="p">,</span><span class="n">cols</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
 
-    # DEBUG
-    print data
+    <span class="c"># get the bands and block sizes</span>
+    <span class="n">inBand</span> <span class="o">=</span> <span class="n">gdalDataSet</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
-    return data</pre></div>
+    <span class="n">blockSizes</span> <span class="o">=</span> <span class="n">inBand</span><span class="o">.</span><span class="n">GetBlockSize</span><span class="p">()</span>
+    <span class="n">xBlockSize</span> <span class="o">=</span> <span class="n">blockSizes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">yBlockSize</span> <span class="o">=</span> <span class="n">blockSizes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c"># loop through the rows</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">yBlockSize</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">+</span> <span class="n">yBlockSize</span> <span class="o">&lt;</span> <span class="n">rows</span><span class="p">:</span>
+            <span class="n">numRows</span> <span class="o">=</span> <span class="n">yBlockSize</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">numRows</span> <span class="o">=</span> <span class="n">rows</span> <span class="o">-</span> <span class="n">i</span>
+
+      <span class="c"># loop through the columns</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">xBlockSize</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">j</span> <span class="o">+</span> <span class="n">xBlockSize</span> <span class="o">&lt;</span> <span class="n">cols</span><span class="p">:</span>
+                <span class="n">numCols</span> <span class="o">=</span> <span class="n">xBlockSize</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">numCols</span> <span class="o">=</span> <span class="n">cols</span> <span class="o">-</span> <span class="n">j</span>
+
+            <span class="c"># read the data in</span>
+            <span class="n">dd</span> <span class="o">=</span> <span class="n">inBand</span><span class="o">.</span><span class="n">ReadAsArray</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">numCols</span><span class="p">,</span> <span class="n">numRows</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+
+            <span class="c"># do the calculations</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">numRows</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="n">numCols</span><span class="p">]</span> <span class="o">=</span> <span class="n">dd</span>
+
+    <span class="c"># DEBUG</span>
+    <span class="k">print</span> <span class="n">data</span>
+
+    <span class="k">return</span> <span class="n">data</span></div>
+</pre></div>
 
           </div>
         </div>

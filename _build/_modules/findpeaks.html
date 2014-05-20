@@ -45,83 +45,83 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1>Source code for findpeaks</h1><pre>
-import numpy as np
+  <h1>Source code for findpeaks</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 
-"""
-.. module:: findpeaks.py
-   :synopsis: Generate the indices of the ridges in a data line
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: findpeaks.py</span>
+<span class="sd">   :synopsis: Generate the indices of the ridges in a data line</span>
 
 
-"""
+<span class="sd">&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="findpeaks"><a class="viewcode-back" href="../sphinx_docs/topographic.html#findpeaks.findpeaks">[docs]</a>def findpeaks(y):
-    '''
+<div class="viewcode-block" id="findpeaks"><a class="viewcode-back" href="../docs/topographic.html#findpeaks.findpeaks">[docs]</a><span class="k">def</span> <span class="nf">findpeaks</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
 
-    :param y:
-    '''
+<span class="sd">    :param y:</span>
+<span class="sd">    &#39;&#39;&#39;</span>
 
-    dy = np.diff(y)
-    if y.size == 0:
-        ind = []
-        return ind
+    <span class="n">dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">y</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">ind</span>
     
-    if y.size == 1:
-        ind = [0]
-        return ind
+    <span class="k">if</span> <span class="n">y</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">ind</span>
       
-    dy_z = np.array(np.where(dy == 0))
-    if dy.size == dy_z.size:
-        ind = []
-        return ind
+    <span class="n">dy_z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dy</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">dy</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">dy_z</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">ind</span>
 
-    dy_a1 = np.append(dy, [0])
-    dy_a2 = np.append([1], dy)
+    <span class="n">dy_a1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dy</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">dy_a2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="mi">1</span><span class="p">],</span> <span class="n">dy</span><span class="p">)</span>
     
-    ind_a1 = np.array((dy_a1 &lt;= 0).nonzero())
-    ind_a2 = np.array((dy_a2 &gt; 0).nonzero())
+    <span class="n">ind_a1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">dy_a1</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">nonzero</span><span class="p">())</span>
+    <span class="n">ind_a2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">dy_a2</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">nonzero</span><span class="p">())</span>
     
-    ind = np.intersect1d(ind_a1, ind_a2)
-    if len(ind) == 0:
-        return ind
+    <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">ind_a1</span><span class="p">,</span> <span class="n">ind_a2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ind</span>
     
-    if ind[0] == 0:
-        if dy[0] == 0:         # There is a plateau at the start
-            non_zero_ind = (dy != 0).nonzero()
+    <span class="k">if</span> <span class="n">ind</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">dy</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>         <span class="c"># There is a plateau at the start</span>
+            <span class="n">non_zero_ind</span> <span class="o">=</span> <span class="p">(</span><span class="n">dy</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()</span>
            
-            if dy[non_zero_ind[0][0]] &gt; 0:
-                # The plateau at the start is a valley, so remove it from the list
-                ind = ind[1:]
+            <span class="k">if</span> <span class="n">dy</span><span class="p">[</span><span class="n">non_zero_ind</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c"># The plateau at the start is a valley, so remove it from the list</span>
+                <span class="n">ind</span> <span class="o">=</span> <span class="n">ind</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
     
-    if ind[-1] == np.size(y):
-        if dy[-1] == 0:         # There is a plateau at the end
-            non_zero_ind = (dy != 0).nonzero()
-            if dy[non_zero_ind[0][-1]] &lt; 0: 
-               ind = ind[0:-2]   # The plateau at the end is a valley, so remove it from the list
+    <span class="k">if</span> <span class="n">ind</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">dy</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>         <span class="c"># There is a plateau at the end</span>
+            <span class="n">non_zero_ind</span> <span class="o">=</span> <span class="p">(</span><span class="n">dy</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">dy</span><span class="p">[</span><span class="n">non_zero_ind</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span> 
+               <span class="n">ind</span> <span class="o">=</span> <span class="n">ind</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>   <span class="c"># The plateau at the end is a valley, so remove it from the list</span>
 
-    # Get the values that are at the start of plateaus, or are peaks
-    ind_v = np.append([0], np.diff(ind))
-    ind = np.compress(ind_v != 1, ind)   
+    <span class="c"># Get the values that are at the start of plateaus, or are peaks</span>
+    <span class="n">ind_v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">ind</span><span class="p">))</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">ind_v</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ind</span><span class="p">)</span>   
 
-    return ind
+    <span class="k">return</span> <span class="n">ind</span>
 </div>
-<div class="viewcode-block" id="findvalleys"><a class="viewcode-back" href="../sphinx_docs/topographic.html#findpeaks.findvalleys">[docs]</a>def findvalleys(y):
-    '''
-    Generate the indices of the valleys in a data line
+<div class="viewcode-block" id="findvalleys"><a class="viewcode-back" href="../docs/topographic.html#findpeaks.findvalleys">[docs]</a><span class="k">def</span> <span class="nf">findvalleys</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Generate the indices of the valleys in a data line</span>
 
-    :param y:
-    '''
+<span class="sd">    :param y:</span>
+<span class="sd">    &#39;&#39;&#39;</span>
 
-    y = -y
+    <span class="n">y</span> <span class="o">=</span> <span class="o">-</span><span class="n">y</span>
 
-    yud = np.flipud(y)
-    yud = np.array(yud)
-    ind = findpeaks(yud)
-    ind = np.atleast_1d(ind)
-    valley = np.size(y) - ind - 1
-    valley = np.flipud(valley)
-    return valley</div>
-</pre>
+    <span class="n">yud</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flipud</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">yud</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">yud</span><span class="p">)</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="n">findpeaks</span><span class="p">(</span><span class="n">yud</span><span class="p">)</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
+    <span class="n">valley</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">-</span> <span class="n">ind</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">valley</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flipud</span><span class="p">(</span><span class="n">valley</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">valley</span></div>
+</pre></div>
 
           </div>
         </div>

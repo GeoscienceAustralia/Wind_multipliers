@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------------
 
     
-# Import system & process modules
+
 import sys, string, os, time, inspect, shutil, numpy as np, osgeo.gdal as gdal, logging as log
 import terrain.terrain
 import shielding.shielding
@@ -18,14 +18,19 @@ from _execute import execute
 from os.path import join as pjoin
 from functools import wraps
 
+"""
+.. module:: ter_shield.py
+   :synopsis: transfer the landsat classified image into shielding multiplier
+
+.. moduleauthor:: Daniel Wild <daniel.wild@ga.gov.au>
+
+
+"""
 
 class TileGrid(object):    
     """    
     Tiling to minimise MemoryErrors and enable parallelisation.
-    
-    Parameters:    
-    -----------        
-    
+
     :param gridLimit: :class:`dict` the domain where the hazard will                       
                         be calculated. The :class:`dict` should contain                       
                         the keys :attr:`xMin`, :attr:`xMax`,                       
@@ -36,7 +41,8 @@ class TileGrid(object):
     :param wf_lon: `numpy.ndarray` of longitudes of the wind field    
     :param wf_lat: `numpy.ndarray` of latitudes of the wind field    
     :param xstep: `int` size of the tile in the x-direction.    
-    :param ystep: `int` size of the tile in the y-direction.    
+    :param ystep: `int` size of the tile in the y-direction.
+
     
     """    
     
