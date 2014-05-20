@@ -25,11 +25,11 @@ def flModulePath(level=1):
     Get the path of the module <level> levels above this function
 
     Input: level - level in the stack of the module calling this function
-           (default = 1, function calling flModulePath)
+    (default = 1, function calling flModulePath)
     Output: path, basename and extension of the file containing the module
     Example: path, base, ext = flModulePath( )
-             Calling flModulePath() from "/foo/bar/baz.py" produces the result
-             "/foo/bar", "baz", ".py"
+    Calling flModulePath() from "/foo/bar/baz.py" produces the result
+    "/foo/bar", "baz", ".py"
     """
 
     filename = os.path.realpath(sys._getframe(level).f_code.co_filename)
@@ -44,7 +44,7 @@ def flModuleName(level=1):
     Get the name of the module <level> levels above this function
 
     Input: level - level in the stack of the module calling this function
-           (default = 1, function calling flModuleName)
+    (default = 1, function calling flModuleName)
     Output: module name (as str)
     Example: mymodule = flModuleName( )
     """
@@ -60,7 +60,7 @@ def flProgramVersion(level=None):
     If it is not defined, return an empty string.
 
     Input: level - level in the stack of the main script
-           (default = maximum level in the stack)
+    (default = maximum level in the stack)
     Output: version string (defined as the __version__ global variable)
 
     Example: my_program_version = flProgramVersion( )
@@ -150,8 +150,8 @@ def flConfigFile(extension='.ini', prefix='', level=None):
     extension replaced with extension, and optionally prefix inserted
     after the last path separator
     Example: configFile = flConfigFile('.ini')
-             Calling flConfigFile from /foo/bar/baz.py should
-             return /foo/bar/baz.ini
+    Calling flConfigFile from /foo/bar/baz.py should
+    return /foo/bar/baz.ini
     """
 
     if not level:
@@ -170,13 +170,13 @@ def flStartLog(logFile, logLevel, verbose=False, datestamp=False, newlog=True):
     Setting verbose=True will report all messages to STDOUT as well
 
     Input: logFile - full path to log file
-           logLevel - string specifiying one of the standard Python logging
-               levels ('NOTSET','DEBUG','INFO','WARNING','ERROR','CRITICAL')
-           verbose - boolean: True will echo all logging calls to STDOUT
-           datestamp - boolean: True will include a timestamp of the creation
-                       time in the filename
-           newlog - boolean: True will create a new log file each time this
-                    function is called. False will append to the existing file.
+    logLevel - string specifiying one of the standard Python logging
+    levels ('NOTSET','DEBUG','INFO','WARNING','ERROR','CRITICAL')
+    verbose - boolean: True will echo all logging calls to STDOUT
+    datestamp - boolean: True will include a timestamp of the creation
+    time in the filename
+    Newlog - boolean: True will create a new log file each time this
+    function is called. False will append to the existing file.
     Output: None
     Example: flStartLog('/home/user/log/app.log','INFO',verbose=True)
     """
@@ -249,7 +249,7 @@ def flModDate(filename, dateformat='%Y-%m-%d %H:%M:%S'):
     Return the update date of the input file
 
     Input: filename - file name (full path)
-           dateformat - (optional) format string for the date
+    dateformat - (optional) format string for the date
     Output: File modification date/time as a string
     Example: modDate = flModDate( 'C:/foo/bar.csv' , dateformat='%Y-%m-%dT%H:%M:%S' )
     """

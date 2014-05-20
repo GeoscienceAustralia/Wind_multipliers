@@ -90,10 +90,9 @@ If prefix is passed, this is preprended to the filename.</p>
 Output: Full path of calling function/module, with the source file&#8217;s
 extension replaced with extension, and optionally prefix inserted
 after the last path separator
-Example: configFile = flConfigFile(&#8216;.ini&#8217;)</p>
-<blockquote>
-<div>Calling flConfigFile from /foo/bar/baz.py should
-return /foo/bar/baz.ini</div></blockquote>
+Example: configFile = flConfigFile(&#8216;.ini&#8217;)
+Calling flConfigFile from /foo/bar/baz.py should
+return /foo/bar/baz.ini</p>
 </dd></dl>
 
 <dl class="function">
@@ -120,11 +119,9 @@ traceback.format_exc().splitlines()</p>
 <dt id="files.flModDate">
 <tt class="descclassname">files.</tt><tt class="descname">flModDate</tt><big>(</big><em>filename</em>, <em>dateformat='%Y-%m-%d %H:%M:%S'</em><big>)</big><a class="reference internal" href="../_modules/files.html#flModDate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#files.flModDate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the update date of the input file</p>
-<dl class="docutils">
-<dt>Input: filename - file name (full path)</dt>
-<dd>dateformat - (optional) format string for the date</dd>
-</dl>
-<p>Output: File modification date/time as a string
+<p>Input: filename - file name (full path)
+dateformat - (optional) format string for the date
+Output: File modification date/time as a string
 Example: modDate = flModDate( &#8216;C:/foo/bar.csv&#8217; , dateformat=&#8217;%Y-%m-%dT%H:%M:%S&#8217; )</p>
 </dd></dl>
 
@@ -132,11 +129,9 @@ Example: modDate = flModDate( &#8216;C:/foo/bar.csv&#8217; , dateformat=&#8217;%
 <dt id="files.flModuleName">
 <tt class="descclassname">files.</tt><tt class="descname">flModuleName</tt><big>(</big><em>level=1</em><big>)</big><a class="reference internal" href="../_modules/files.html#flModuleName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#files.flModuleName" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the name of the module &lt;level&gt; levels above this function</p>
-<dl class="docutils">
-<dt>Input: level - level in the stack of the module calling this function</dt>
-<dd>(default = 1, function calling flModuleName)</dd>
-</dl>
-<p>Output: module name (as str)
+<p>Input: level - level in the stack of the module calling this function
+(default = 1, function calling flModuleName)
+Output: module name (as str)
 Example: mymodule = flModuleName( )</p>
 </dd></dl>
 
@@ -144,15 +139,12 @@ Example: mymodule = flModuleName( )</p>
 <dt id="files.flModulePath">
 <tt class="descclassname">files.</tt><tt class="descname">flModulePath</tt><big>(</big><em>level=1</em><big>)</big><a class="reference internal" href="../_modules/files.html#flModulePath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#files.flModulePath" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the path of the module &lt;level&gt; levels above this function</p>
-<dl class="docutils">
-<dt>Input: level - level in the stack of the module calling this function</dt>
-<dd>(default = 1, function calling flModulePath)</dd>
-</dl>
-<p>Output: path, basename and extension of the file containing the module
-Example: path, base, ext = flModulePath( )</p>
-<blockquote>
-<div>Calling flModulePath() from &#8220;/foo/bar/baz.py&#8221; produces the result
-&#8220;/foo/bar&#8221;, &#8220;baz&#8221;, &#8221;.py&#8221;</div></blockquote>
+<p>Input: level - level in the stack of the module calling this function
+(default = 1, function calling flModulePath)
+Output: path, basename and extension of the file containing the module
+Example: path, base, ext = flModulePath( )
+Calling flModulePath() from &#8220;/foo/bar/baz.py&#8221; produces the result
+&#8220;/foo/bar&#8221;, &#8220;baz&#8221;, &#8221;.py&#8221;</p>
 </dd></dl>
 
 <dl class="function">
@@ -161,11 +153,9 @@ Example: path, base, ext = flModulePath( )</p>
 <dd><p>Function to return the __version__ string from the parent
 program, where it is defined.
 If it is not defined, return an empty string.</p>
-<dl class="docutils">
-<dt>Input: level - level in the stack of the main script</dt>
-<dd>(default = maximum level in the stack)</dd>
-</dl>
-<p>Output: version string (defined as the __version__ global variable)</p>
+<p>Input: level - level in the stack of the main script
+(default = maximum level in the stack)
+Output: version string (defined as the __version__ global variable)</p>
 <p>Example: my_program_version = flProgramVersion( )</p>
 </dd></dl>
 
@@ -183,23 +173,15 @@ Example: file_size = flSize( &#8216;C:/foo/bar.csv&#8217; )</p>
 <tt class="descclassname">files.</tt><tt class="descname">flStartLog</tt><big>(</big><em>logFile</em>, <em>logLevel</em>, <em>verbose=False</em>, <em>datestamp=False</em>, <em>newlog=True</em><big>)</big><a class="reference internal" href="../_modules/files.html#flStartLog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#files.flStartLog" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start logging to logFile all messages of logLevel and higher.
 Setting verbose=True will report all messages to STDOUT as well</p>
-<dl class="docutils">
-<dt>Input: logFile - full path to log file</dt>
-<dd><dl class="first docutils">
-<dt>logLevel - string specifiying one of the standard Python logging</dt>
-<dd>levels (&#8216;NOTSET&#8217;,&#8217;DEBUG&#8217;,&#8217;INFO&#8217;,&#8217;WARNING&#8217;,&#8217;ERROR&#8217;,&#8217;CRITICAL&#8217;)</dd>
-</dl>
-<p>verbose - boolean: True will echo all logging calls to STDOUT
-datestamp - boolean: True will include a timestamp of the creation</p>
-<blockquote>
-<div>time in the filename</div></blockquote>
-<dl class="last docutils">
-<dt>newlog - boolean: True will create a new log file each time this</dt>
-<dd>function is called. False will append to the existing file.</dd>
-</dl>
-</dd>
-</dl>
-<p>Output: None
+<p>Input: logFile - full path to log file
+logLevel - string specifiying one of the standard Python logging
+levels (&#8216;NOTSET&#8217;,&#8217;DEBUG&#8217;,&#8217;INFO&#8217;,&#8217;WARNING&#8217;,&#8217;ERROR&#8217;,&#8217;CRITICAL&#8217;)
+verbose - boolean: True will echo all logging calls to STDOUT
+datestamp - boolean: True will include a timestamp of the creation
+time in the filename
+Newlog - boolean: True will create a new log file each time this
+function is called. False will append to the existing file.
+Output: None
 Example: flStartLog(&#8216;/home/user/log/app.log&#8217;,&#8217;INFO&#8217;,verbose=True)</p>
 </dd></dl>
 
