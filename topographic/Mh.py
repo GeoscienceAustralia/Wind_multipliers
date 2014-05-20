@@ -60,13 +60,10 @@ def Mh(profile, ridge, valley, data_spacing):
 # initialise parameters
 # --------------------------------------------------------
     
-#    import pdb
-#    pdb.set_trace()
-    
     H_threshold = 10     # height threshold for Mh calculation
     Lu_threshold = data_spacing    # half distance threshold for Mh calculation
     
-    Z = 0            #building height
+    Z = 10            #building height
     nrow = np.size(profile)
     m = np.ones((nrow, 1), dtype=float)
     
