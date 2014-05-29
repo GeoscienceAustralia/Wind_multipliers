@@ -1,0 +1,275 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>blrb &mdash; Wind Multipliers v0.3 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Wind Multipliers v0.3 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Wind Multipliers v0.3 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for blrb</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/env python</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Author: Roger Edberg (roger.edberg@ga.gov.au)</span>
+<span class="sd">Functions for BiLinear Recursive Bisection (BLRB).</span>
+
+<span class="sd">All shape references here follow the numpy convention (nrows, ncols), which</span>
+<span class="sd">makes some of the code harder to follow.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span><span class="o">,</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">meta</span> <span class="kn">import</span> <span class="n">print_call</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&#39;root.&#39;</span> <span class="o">+</span> <span class="n">__name__</span><span class="p">)</span>
+
+<span class="n">DEFAULT_ORIGIN</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">DEFAULT_SHAPE</span>  <span class="o">=</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+
+<span class="nd">@print_call</span><span class="p">(</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">)</span>
+<div class="viewcode-block" id="bilinear"><a class="viewcode-back" href="../docs/shielding.html#blrb.bilinear">[docs]</a><span class="k">def</span> <span class="nf">bilinear</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">fUL</span><span class="p">,</span> <span class="n">fUR</span><span class="p">,</span> <span class="n">fLR</span><span class="p">,</span> <span class="n">fLL</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Bilinear interpolation of four scalar values.</span>
+
+<span class="sd">    :param shape:</span>
+<span class="sd">        Shape of interpolated grid (nrows, ncols).</span>
+
+<span class="sd">    :param fUL:</span>
+<span class="sd">        Data value at upper-left (NW) corner.</span>
+
+<span class="sd">    :param fUR:</span>
+<span class="sd">        Data value at upper-right (NE) corner.</span>
+
+<span class="sd">    :param fLR:</span>
+<span class="sd">        Data value at lower-right (SE) corner.</span>
+
+<span class="sd">    :param fLL:</span>
+<span class="sd">        Data value at lower-left (SW) corner.</span>
+
+<span class="sd">    :param dtype:</span>
+<span class="sd">        Data type (numpy I presume?).</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">        Array of data values interpolated between corners.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">s</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ogrid</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">:</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]]]</span>
+
+    <span class="n">s</span> <span class="o">/=</span> <span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">/=</span> <span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">s</span> <span class="o">*</span> <span class="p">(</span><span class="n">t</span><span class="o">*</span><span class="n">fLR</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="n">fLL</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">s</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">t</span><span class="o">*</span><span class="n">fUR</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="n">fUL</span><span class="p">)</span>
+
+</div>
+<span class="nd">@print_call</span><span class="p">(</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">)</span>
+<div class="viewcode-block" id="indices"><a class="viewcode-back" href="../docs/shielding.html#blrb.indices">[docs]</a><span class="k">def</span> <span class="nf">indices</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="n">DEFAULT_ORIGIN</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">DEFAULT_SHAPE</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate corner indices for a grid block.</span>
+
+<span class="sd">    :param origin:</span>
+<span class="sd">        Block origin (2-tuple).</span>
+
+<span class="sd">    :param shape:</span>
+<span class="sd">        Block shape (2-tuple: nrows, ncols).</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">        Corner indices: (xmin, xmax, ymin, ymax).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">origin</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">origin</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+</div>
+<span class="nd">@print_call</span><span class="p">(</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">)</span>
+<div class="viewcode-block" id="subdivide"><a class="viewcode-back" href="../docs/shielding.html#blrb.subdivide">[docs]</a><span class="k">def</span> <span class="nf">subdivide</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="n">DEFAULT_ORIGIN</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">DEFAULT_SHAPE</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate indices for grid sub-blocks.</span>
+
+<span class="sd">    :param origin:</span>
+<span class="sd">        Block origin (2-tuple).</span>
+
+<span class="sd">    :param shape:</span>
+<span class="sd">        Block shape (nrows, ncols).</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">        Dictionary containing sub-block corner indices:</span>
+<span class="sd">            { &#39;UL&#39;: &lt;list of 2-tuples&gt;,</span>
+<span class="sd">              &#39;UR&#39;: &lt;list of 2-tuples&gt;,</span>
+<span class="sd">              &#39;LL&#39;: &lt;list of 2-tuples&gt;,</span>
+<span class="sd">              &#39;LR&#39;: &lt;list of 2-tuples&gt; }</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">i0</span><span class="p">,</span> <span class="n">ie</span><span class="p">,</span> <span class="n">j0</span><span class="p">,</span> <span class="n">je</span> <span class="o">=</span> <span class="n">indices</span><span class="p">(</span><span class="n">origin</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span>
+    <span class="n">ic</span> <span class="o">=</span> <span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">jc</span> <span class="o">=</span> <span class="n">origin</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s">&#39;UL&#39;</span><span class="p">:</span> <span class="p">[</span> <span class="p">(</span><span class="n">i0</span><span class="p">,</span> <span class="n">j0</span><span class="p">),</span> <span class="p">(</span><span class="n">i0</span><span class="p">,</span> <span class="n">jc</span><span class="p">),</span> <span class="p">(</span><span class="n">ic</span><span class="p">,</span> <span class="n">j0</span><span class="p">),</span> <span class="p">(</span><span class="n">ic</span><span class="p">,</span> <span class="n">jc</span><span class="p">)</span> <span class="p">],</span>
+        <span class="s">&#39;LL&#39;</span><span class="p">:</span> <span class="p">[</span> <span class="p">(</span><span class="n">ic</span><span class="p">,</span> <span class="n">j0</span><span class="p">),</span> <span class="p">(</span><span class="n">ic</span><span class="p">,</span> <span class="n">jc</span><span class="p">),</span> <span class="p">(</span><span class="n">ie</span><span class="p">,</span> <span class="n">j0</span><span class="p">),</span> <span class="p">(</span><span class="n">ie</span><span class="p">,</span> <span class="n">jc</span><span class="p">)</span> <span class="p">],</span>
+        <span class="s">&#39;UR&#39;</span><span class="p">:</span> <span class="p">[</span> <span class="p">(</span><span class="n">i0</span><span class="p">,</span> <span class="n">jc</span><span class="p">),</span> <span class="p">(</span><span class="n">i0</span><span class="p">,</span> <span class="n">je</span><span class="p">),</span> <span class="p">(</span><span class="n">ic</span><span class="p">,</span> <span class="n">jc</span><span class="p">),</span> <span class="p">(</span><span class="n">ic</span><span class="p">,</span> <span class="n">je</span><span class="p">)</span> <span class="p">],</span>
+        <span class="s">&#39;LR&#39;</span><span class="p">:</span> <span class="p">[</span> <span class="p">(</span><span class="n">ic</span><span class="p">,</span> <span class="n">jc</span><span class="p">),</span> <span class="p">(</span><span class="n">ic</span><span class="p">,</span> <span class="n">je</span><span class="p">),</span> <span class="p">(</span><span class="n">ie</span><span class="p">,</span> <span class="n">jc</span><span class="p">),</span> <span class="p">(</span><span class="n">ie</span><span class="p">,</span> <span class="n">je</span><span class="p">)</span> <span class="p">],</span>
+    <span class="p">}</span>
+
+</div>
+<span class="nd">@print_call</span><span class="p">(</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">)</span>
+<div class="viewcode-block" id="interpolate_block"><a class="viewcode-back" href="../docs/shielding.html#blrb.interpolate_block">[docs]</a><span class="k">def</span> <span class="nf">interpolate_block</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="n">DEFAULT_ORIGIN</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">DEFAULT_SHAPE</span><span class="p">,</span> <span class="n">eval_func</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Interpolate a grid block.</span>
+
+<span class="sd">    :param origin:</span>
+<span class="sd">        Block origin (2-tuple).</span>
+
+<span class="sd">    :param shape:</span>
+<span class="sd">        Block shape (nrows, ncols).</span>
+
+<span class="sd">    :param eval_func:</span>
+<span class="sd">        Evaluator function.</span>
+<span class="sd">    :type eval_func:</span>
+<span class="sd">        callable; accepts grid indices i, j and returns a scalar value.</span>
+
+<span class="sd">    :param grid:</span>
+<span class="sd">        Grid array.</span>
+<span class="sd">    :type grid:</span>
+<span class="sd">        :py:class:`numpy.array`.</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">        Interpolated block array if grid argument is None. If grid argument</span>
+<span class="sd">        is supplied its elements are modified in place and this function</span>
+<span class="sd">        does not return a value.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span><span class="p">,</span> <span class="n">j0</span><span class="p">,</span> <span class="n">j1</span> <span class="o">=</span> <span class="n">indices</span><span class="p">(</span><span class="n">origin</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span>
+
+    <span class="n">fUL</span> <span class="o">=</span> <span class="n">eval_func</span><span class="p">(</span><span class="n">i0</span><span class="p">,</span> <span class="n">j0</span><span class="p">)</span>
+    <span class="n">fLL</span> <span class="o">=</span> <span class="n">eval_func</span><span class="p">(</span><span class="n">i1</span><span class="p">,</span> <span class="n">j0</span><span class="p">)</span>
+    <span class="n">fUR</span> <span class="o">=</span> <span class="n">eval_func</span><span class="p">(</span><span class="n">i0</span><span class="p">,</span> <span class="n">j1</span><span class="p">)</span>
+    <span class="n">fLR</span> <span class="o">=</span> <span class="n">eval_func</span><span class="p">(</span><span class="n">i1</span><span class="p">,</span> <span class="n">j1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">grid</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">bilinear</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">fUL</span><span class="p">,</span> <span class="n">fUR</span><span class="p">,</span> <span class="n">fLR</span><span class="p">,</span> <span class="n">fLL</span><span class="p">)</span>
+
+    <span class="n">grid</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">j0</span><span class="p">:</span><span class="n">j1</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">bilinear</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">fUL</span><span class="p">,</span> <span class="n">fUR</span><span class="p">,</span> <span class="n">fLR</span><span class="p">,</span> <span class="n">fLL</span><span class="p">)</span>
+
+</div>
+<span class="nd">@print_call</span><span class="p">(</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">)</span>
+<div class="viewcode-block" id="interpolate_grid"><a class="viewcode-back" href="../docs/shielding.html#blrb.interpolate_grid">[docs]</a><span class="k">def</span> <span class="nf">interpolate_grid</span><span class="p">(</span><span class="n">depth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="n">DEFAULT_ORIGIN</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">DEFAULT_SHAPE</span><span class="p">,</span> <span class="n">eval_func</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Interpolate a data grid.</span>
+
+<span class="sd">    :param depth:</span>
+<span class="sd">        Recursive bisection depth.</span>
+<span class="sd">    :type depth:</span>
+<span class="sd">        :py:class:`int`</span>
+
+<span class="sd">    :param origin:</span>
+<span class="sd">        Block origin,</span>
+<span class="sd">    :type origin:</span>
+<span class="sd">        :py:class:`tuple` of length 2.</span>
+
+<span class="sd">    :param shape:</span>
+<span class="sd">        Block shape.</span>
+<span class="sd">    :type shape:</span>
+<span class="sd">        :py:class:`tuple` of length 2 ``(nrows, ncols)``.</span>
+
+<span class="sd">    :param eval_func:</span>
+<span class="sd">        Evaluator function.</span>
+<span class="sd">    :type eval_func:</span>
+<span class="sd">        callable; accepts grid indices i, j and returns a scalar value.</span>
+
+<span class="sd">    :param grid:</span>
+<span class="sd">        Grid array.</span>
+<span class="sd">    :type grid:</span>
+<span class="sd">        :py:class:`numpy.array`.</span>
+
+<span class="sd">    :todo:</span>
+<span class="sd">        Move arguments ``eval_func`` and ``grid`` to positions 1 and 2, and remove</span>
+<span class="sd">        defaults (and the check that they are not ``None`` at the top of the function</span>
+<span class="sd">        body).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">eval_func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span>
+    <span class="k">assert</span> <span class="n">grid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span>
+
+    <span class="k">if</span> <span class="n">depth</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">interpolate_block</span><span class="p">(</span><span class="n">origin</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">eval_func</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">blocks</span> <span class="o">=</span> <span class="n">subdivide</span><span class="p">(</span><span class="n">origin</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">kUL</span><span class="p">,</span> <span class="n">kUR</span><span class="p">,</span> <span class="n">kLL</span><span class="p">,</span> <span class="n">kLR</span><span class="p">)</span> <span class="ow">in</span> <span class="n">blocks</span><span class="o">.</span><span class="n">itervalues</span><span class="p">():</span>
+            <span class="n">block_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">kLR</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">kUL</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">kLR</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">kUL</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">interpolate_grid</span><span class="p">(</span><span class="n">depth</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">kUL</span><span class="p">,</span> <span class="n">block_shape</span><span class="p">,</span> <span class="n">eval_func</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Wind Multipliers v0.3 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Geoscience Australia.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

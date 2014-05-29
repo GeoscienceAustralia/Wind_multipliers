@@ -46,8 +46,8 @@ def terrain(root, loc_list, cyclone_area, arctoolbox):
     for loc in loc_list:
         print loc
         # the input terrain calssified image 
-        terrain = root + '\\input\\' + loc + "_terrain_class.img"
-        
+        terrain = root + '\\input\\' + loc + "_terrain_class_projected.img"
+
         # produce the original terrain multipler from the input terrain classified image   
         print '\nReclassfy the terrain classes into initial terrain multipliers ...'
         terrain_class2mz_orig.terrain_class2mz_orig(terrain, loc, root, cyclone_area, arctoolbox)

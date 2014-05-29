@@ -7,6 +7,19 @@ sheilding
 Sheilding multi docs go here..
 
 
+__init__.py
+===========================================
+
+static output for now...
+
+
+_execute.py
+===========================================
+
+.. automodule:: _execute.py
+   :members:
+
+
 blrb.py
 ===========================================
 

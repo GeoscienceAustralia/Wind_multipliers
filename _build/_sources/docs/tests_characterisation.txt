@@ -2,17 +2,13 @@
 tests_characterisation
 **********************
 
-run_all.py
+__init__.py
 ===========================================
 
-Takes one param via command line: ``-s`` (test size/coverage).
 
-Options: "small", "medium", "large".
-
-Example usage: ``python run_all.py -s medium``
-     
-.. automodule:: tests_characterisation.run_all
+.. automodule:: __init__
    :members:
+
 
 
 misc.py
@@ -31,6 +27,25 @@ parametrized_test_case.py
    :members:
 
 
+run_all.py
+===========================================
+
+Takes one param via command line: ``-s`` (test size/coverage).
+
+Options: "small", "medium", "large".
+
+Example usage: ``python run_all.py -s medium``
+     
+.. automodule:: tests_characterisation.run_all
+   :members:
+
+
+read_file.py
+===========================================
+
+     
+.. automodule:: tests_characterisation.read_file
+   :members:
 
 
 test_terrain
@@ -44,15 +59,6 @@ test_topographic
 
 
 
-read_file.py
-===========================================
-
-     
-.. automodule:: tests_characterisation.read_file
-   :members:
-
-
-
 test_topo.py
 ===========================================
 
@@ -61,4 +67,8 @@ test_topo.py
    :members:
 
 
+test_shielding
+***************
+
+modules/functions will go here
 

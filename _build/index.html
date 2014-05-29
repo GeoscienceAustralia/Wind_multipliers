@@ -59,8 +59,8 @@ multipliers.</p>
 <p>Python 2.6, NumPy and SciPy are needed. ArcPy requiring ArcGIS 10
 license is also needed.</p>
 </div>
-<div class="section" id="terrain-sheilding-multipliers">
-<h2>Terrain &amp; Sheilding Multipliers<a class="headerlink" href="#terrain-sheilding-multipliers" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="terrain-shielding-multipliers">
+<h2>Terrain &amp; Shielding Multipliers<a class="headerlink" href="#terrain-shielding-multipliers" title="Permalink to this headline">¶</a></h2>
 <p>The script for deriving terrain and shielding multipliers is
 <strong>terr_shield.py</strong> that consists of two modules:</p>
 <ol class="arabic simple">
@@ -167,6 +167,7 @@ CMA: unable to get RDMA device list</pre>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="docs/topographic.html">topographic</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="docs/topographic.html#module-__init__">__init__.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="docs/topographic.html#module-ascii_read">ascii_read.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="docs/topographic.html#module-files">files.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="docs/topographic.html#module-findpeaks">findpeaks.py</a></li>
@@ -178,26 +179,35 @@ CMA: unable to get RDMA device list</pre>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="docs/terrain.html">terrain</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="docs/terrain.html#module-__init__">__init__.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="docs/terrain.html#module-terrain.terrain">terrain.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="docs/terrain.html#value-lookup-py">value_lookup.py</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="docs/sheilding.html">sheilding</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="docs/sheilding.html#blrb-py">blrb.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docs/shielding.html">shielding</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="docs/shielding.html#module-__init__">__init__.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="docs/shielding.html#module-_execute">_execute.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="docs/shielding.html#module-blrb">blrb.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="docs/shielding.html#module-meta">meta.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="docs/shielding.html#module-shielding">shielding.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="docs/shielding.html#module-value_lookup">value_lookup.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="docs/shielding.html#module-vincenty">vincenty.py</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="docs/tests_characterisation.html">tests_characterisation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="docs/tests_characterisation.html#run-all-py">run_all.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="docs/tests_characterisation.html#module-__init__">__init__.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="docs/tests_characterisation.html#module-tests_characterisation.misc">misc.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="docs/tests_characterisation.html#module-tests_characterisation.parametrized_test_case">parametrized_test_case.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="docs/tests_characterisation.html#run-all-py">run_all.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="docs/tests_characterisation.html#module-tests_characterisation.read_file">read_file.py</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="docs/tests_characterisation.html#test-terrain">test_terrain</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docs/tests_characterisation.html#test-topographic">test_topographic</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="docs/tests_characterisation.html#module-tests_characterisation.read_file">read_file.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="docs/tests_characterisation.html#module-tests_characterisation.test_topographic.test_topo">test_topo.py</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="docs/tests_characterisation.html#test-shielding">test_shielding</a></li>
 </ul>
 </div>
 </div>
@@ -222,7 +232,7 @@ CMA: unable to get RDMA device list</pre>
 <li><a class="reference internal" href="#">Wind Multipliers</a><ul>
 <li><a class="reference internal" href="#overview">Overview</a></li>
 <li><a class="reference internal" href="#dependencies">Dependencies</a></li>
-<li><a class="reference internal" href="#terrain-sheilding-multipliers">Terrain &amp; Sheilding Multipliers</a></li>
+<li><a class="reference internal" href="#terrain-shielding-multipliers">Terrain &amp; Shielding Multipliers</a></li>
 <li><a class="reference internal" href="#background">Background</a></li>
 <li><a class="reference internal" href="#file-structure">File Structure</a></li>
 <li><a class="reference internal" href="#notes">Notes</a></li>

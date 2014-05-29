@@ -42,7 +42,7 @@ class TestOutput(ParametrizedTestCase):
         args = ['mpirun',
                 '-mca', 'btl', '^openib',  # don't check for inifiniband
                 '-np', '8',
-                'python',  os.path.join(self.test_paths.TOPO_FILES_DIR, 'topomult.py'),
+                'python',  os.path.join(self.test_paths.TOPO_MULTI_DIR, 'topomult.py'),
                 '-i',  os.path.join(self.test_paths.TOPO_TEST_INPUT_DIR, 'dem.asc'),
                 '-o',  self.test_paths.TOPO_TEST_ACTUAL_OUTPUT_DIR]
 
@@ -79,6 +79,7 @@ class TestDummyOutput(ParametrizedTestCase):
         """
         **This is a placeholder function**, currently used to simulate comparison of NETCDF output.
         This test should be updated once NETCDF output is established for topomult.
+        Should also add loop for 8 directions.
        """
 
         self.test_paths = TestPaths()
@@ -90,7 +91,7 @@ class TestDummyOutput(ParametrizedTestCase):
         actualArray = read_file.readNetCDF(os.path.join(self.test_paths.TOPO_TEST_ACTUAL_OUTPUT_DIR,
                                                           'netcdf_test_file.nc'), "e150s35demsCl")
 
-        # ! allClose() will return False if NaN is detected
+        # Note: allClose() will return False if has NaN
         result = np.allclose(expectedArray, actualArray)
 
         self.assertTrue(result)

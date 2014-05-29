@@ -1,4 +1,4 @@
-#import sys, string, os, arcpy, time, shutil
+import sys, string, os, arcpy, time, shutil
 import value_lookup
 
 

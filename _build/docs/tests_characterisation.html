@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="Wind Multipliers v0.3 documentation" href="../index.html" />
-    <link rel="prev" title="sheilding" href="sheilding.html" /> 
+    <link rel="prev" title="shielding" href="shielding.html" /> 
   </head>
   <body>
     <div class="related">
@@ -36,7 +36,7 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="sheilding.html" title="sheilding"
+          <a href="shielding.html" title="shielding"
              accesskey="P">previous</a> |</li>
         <li><a href="../index.html">Wind Multipliers v0.3 documentation</a> &raquo;</li> 
       </ul>
@@ -49,17 +49,8 @@
             
   <div class="section" id="tests-characterisation">
 <h1>tests_characterisation<a class="headerlink" href="#tests-characterisation" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="run-all-py">
-<h2>run_all.py<a class="headerlink" href="#run-all-py" title="Permalink to this headline">¶</a></h2>
-<p>Takes one param via command line: <tt class="docutils literal"><span class="pre">-s</span></tt> (test size/coverage).</p>
-<p>Options: &#8220;small&#8221;, &#8220;medium&#8221;, &#8220;large&#8221;.</p>
-<p>Example usage: <tt class="docutils literal"><span class="pre">python</span> <span class="pre">run_all.py</span> <span class="pre">-s</span> <span class="pre">medium</span></tt></p>
-<span class="target" id="module-tests_characterisation.run_all"></span><dl class="function">
-<dt id="tests_characterisation.run_all.run">
-<tt class="descclassname">tests_characterisation.run_all.</tt><tt class="descname">run</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/tests_characterisation/run_all.html#run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tests_characterisation.run_all.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>Used to initiate testing across all multipliers using specified test size/coverage (defaults to small)</p>
-</dd></dl>
-
+<div class="section" id="module-__init__">
+<span id="init-py"></span><h2>__init__.py<a class="headerlink" href="#module-__init__" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-tests_characterisation.misc">
 <span id="misc-py"></span><h2>misc.py<a class="headerlink" href="#module-tests_characterisation.misc" title="Permalink to this headline">¶</a></h2>
@@ -113,13 +104,18 @@ subclass, passing them the parameter &#8216;param&#8217;.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="run-all-py">
+<h2>run_all.py<a class="headerlink" href="#run-all-py" title="Permalink to this headline">¶</a></h2>
+<p>Takes one param via command line: <tt class="docutils literal"><span class="pre">-s</span></tt> (test size/coverage).</p>
+<p>Options: &#8220;small&#8221;, &#8220;medium&#8221;, &#8220;large&#8221;.</p>
+<p>Example usage: <tt class="docutils literal"><span class="pre">python</span> <span class="pre">run_all.py</span> <span class="pre">-s</span> <span class="pre">medium</span></tt></p>
+<span class="target" id="module-tests_characterisation.run_all"></span><dl class="function">
+<dt id="tests_characterisation.run_all.run">
+<tt class="descclassname">tests_characterisation.run_all.</tt><tt class="descname">run</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/tests_characterisation/run_all.html#run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tests_characterisation.run_all.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to initiate testing across all multipliers using specified test size/coverage (defaults to small)</p>
+</dd></dl>
+
 </div>
-<div class="section" id="test-terrain">
-<h1>test_terrain<a class="headerlink" href="#test-terrain" title="Permalink to this headline">¶</a></h1>
-<p>modules/functions will go here</p>
-</div>
-<div class="section" id="test-topographic">
-<h1>test_topographic<a class="headerlink" href="#test-topographic" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="module-tests_characterisation.read_file">
 <span id="read-file-py"></span><h2>read_file.py<a class="headerlink" href="#module-tests_characterisation.read_file" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
@@ -140,13 +136,13 @@ subclass, passing them the parameter &#8216;param&#8217;.</p>
 
 <dl class="function">
 <dt id="tests_characterisation.read_file.readASC">
-<tt class="descclassname">tests_characterisation.read_file.</tt><tt class="descname">readASC</tt><big>(</big><em>inputfile</em><big>)</big><a class="reference internal" href="../_modules/tests_characterisation/read_file.html#readASC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tests_characterisation.read_file.readASC" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">tests_characterisation.read_file.</tt><tt class="descname">readASC</tt><big>(</big><em>inputFile</em><big>)</big><a class="reference internal" href="../_modules/tests_characterisation/read_file.html#readASC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tests_characterisation.read_file.readASC" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads .asc DEM into a GDALDataSet</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>inputfile</strong> &#8211; The path to an input file (DEM)</td>
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>inputFile</strong> &#8211; The path to an input file (DEM)</td>
 </tr>
 <tr class="field"><th class="field-name">Returns:</th><td class="field-body">A numpy array</td>
 </tr>
@@ -176,6 +172,13 @@ subclass, passing them the parameter &#8216;param&#8217;.</p>
 </dd></dl>
 
 </div>
+</div>
+<div class="section" id="test-terrain">
+<h1>test_terrain<a class="headerlink" href="#test-terrain" title="Permalink to this headline">¶</a></h1>
+<p>modules/functions will go here</p>
+</div>
+<div class="section" id="test-topographic">
+<h1>test_topographic<a class="headerlink" href="#test-topographic" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="module-tests_characterisation.test_topographic.test_topo">
 <span id="test-topo-py"></span><h2>test_topo.py<a class="headerlink" href="#module-tests_characterisation.test_topographic.test_topo" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
@@ -187,7 +190,8 @@ This test should be updated once NETCDF output is established for topomult.</p>
 <dt id="tests_characterisation.test_topographic.test_topo.TestDummyOutput.test_TopoOutputNC">
 <tt class="descname">test_TopoOutputNC</tt><big>(</big><big>)</big><a class="headerlink" href="#tests_characterisation.test_topographic.test_topo.TestDummyOutput.test_TopoOutputNC" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>This is a placeholder function</strong>, currently used to simulate comparison of NETCDF output.
-This test should be updated once NETCDF output is established for topomult.</p>
+This test should be updated once NETCDF output is established for topomult.
+Should also add loop for 8 directions.</p>
 </dd></dl>
 
 </dd></dl>
@@ -214,6 +218,10 @@ This test should be updated once NETCDF output is established for topomult.</p>
 
 </div>
 </div>
+<div class="section" id="test-shielding">
+<h1>test_shielding<a class="headerlink" href="#test-shielding" title="Permalink to this headline">¶</a></h1>
+<p>modules/functions will go here</p>
+</div>
 
 
           </div>
@@ -224,22 +232,24 @@ This test should be updated once NETCDF output is established for topomult.</p>
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">tests_characterisation</a><ul>
-<li><a class="reference internal" href="#run-all-py">run_all.py</a></li>
+<li><a class="reference internal" href="#module-__init__">__init__.py</a></li>
 <li><a class="reference internal" href="#module-tests_characterisation.misc">misc.py</a></li>
 <li><a class="reference internal" href="#module-tests_characterisation.parametrized_test_case">parametrized_test_case.py</a></li>
+<li><a class="reference internal" href="#run-all-py">run_all.py</a></li>
+<li><a class="reference internal" href="#module-tests_characterisation.read_file">read_file.py</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#test-terrain">test_terrain</a></li>
 <li><a class="reference internal" href="#test-topographic">test_topographic</a><ul>
-<li><a class="reference internal" href="#module-tests_characterisation.read_file">read_file.py</a></li>
 <li><a class="reference internal" href="#module-tests_characterisation.test_topographic.test_topo">test_topo.py</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#test-shielding">test_shielding</a></li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="sheilding.html"
-                        title="previous chapter">sheilding</a></p>
+  <p class="topless"><a href="shielding.html"
+                        title="previous chapter">shielding</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="../_sources/docs/tests_characterisation.txt"
@@ -272,7 +282,7 @@ This test should be updated once NETCDF output is established for topomult.</p>
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="sheilding.html" title="sheilding"
+          <a href="shielding.html" title="shielding"
              >previous</a> |</li>
         <li><a href="../index.html">Wind Multipliers v0.3 documentation</a> &raquo;</li> 
       </ul>

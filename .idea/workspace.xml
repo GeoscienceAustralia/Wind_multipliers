@@ -23,30 +23,12 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="terr_shield.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/previous_versions/python_arcgis/terr_shield.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="8" column="31" selection-start="410" selection-end="410" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1139">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="meta.py" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="meta.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/meta.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="3" column="0" selection-start="69" selection-end="69" vertical-scroll-proportion="0.0" vertical-offset="34" max-vertical-offset="1377">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="terrain.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/previous_versions/python_arcgis/terrain/terrain.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="36" column="32" selection-start="744" selection-end="744" vertical-scroll-proportion="0.0" vertical-offset="561" max-vertical-offset="1717">
+            <state line="11" column="7" selection-start="243" selection-end="243" vertical-scroll-proportion="0.22557297" vertical-offset="0" max-vertical-offset="1411">
               <folding>
-                <element signature="e#0#10#0" expanded="true" />
+                <element signature="e#70#90#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -55,19 +37,26 @@
       <file leaf-file-name="conf.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/conf.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="37" column="0" selection-start="1385" selection-end="1385" vertical-scroll-proportion="0.0" vertical-offset="391" max-vertical-offset="4097">
+            <state line="28" column="0" selection-start="1213" selection-end="1213" vertical-scroll-proportion="0.0" vertical-offset="476" max-vertical-offset="4097">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="combine.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/previous_versions/python_arcgis/shielding/combine.py">
+      <file leaf-file-name="ascii_read.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/topographic/ascii_read.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="107" column="59" selection-start="3483" selection-end="3539" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2822">
-              <folding>
-                <element signature="e#0#43#0" expanded="true" />
-              </folding>
+            <state line="36" column="0" selection-start="886" selection-end="886" vertical-scroll-proportion="0.0" vertical-offset="612" max-vertical-offset="714">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="blrb.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/shielding/blrb.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="27" column="0" selection-start="673" selection-end="673" vertical-scroll-proportion="0.0" vertical-offset="459" max-vertical-offset="3213">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -75,16 +64,16 @@
       <file leaf-file-name="mock.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/mock.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="40647">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="40664">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="shielding.py" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/previous_versions/python_arcgis/shielding/shielding.py">
+      <file leaf-file-name="meta.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/shielding/meta.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="73" column="0" selection-start="2660" selection-end="2660" vertical-scroll-proportion="0.40125787" vertical-offset="837" max-vertical-offset="1632">
+            <state line="31" column="0" selection-start="1076" selection-end="1076" vertical-scroll-proportion="0.0" vertical-offset="527" max-vertical-offset="1411">
               <folding />
             </state>
           </provider>
@@ -114,7 +103,6 @@
         <option value="$PROJECT_DIR$/terrain/terrain_class2mz_orig.py" />
         <option value="$PROJECT_DIR$/terrain/value_lookup.py" />
         <option value="$PROJECT_DIR$/shielding/combine.py" />
-        <option value="$PROJECT_DIR$/terrain/terrain.py" />
         <option value="$PROJECT_DIR$/terrain/direction_filter.py" />
         <option value="$PROJECT_DIR$/shielding/shielding.py" />
         <option value="$PROJECT_DIR$/../test_sphinx_pyversion/mock.py" />
@@ -128,6 +116,11 @@
         <option value="$PROJECT_DIR$/previous_versions/topo_python_parallel/topographic/py-files/ascii_read.py" />
         <option value="$PROJECT_DIR$/previous_versions/python_arcgis/shielding/shielding.py" />
         <option value="$PROJECT_DIR$/previous_versions/python_arcgis/shielding/combine.py" />
+        <option value="$PROJECT_DIR$/terrain/terrain.py" />
+        <option value="$PROJECT_DIR$/tests_characterisation/misc.py" />
+        <option value="$PROJECT_DIR$/tests_characterisation/run_all.py" />
+        <option value="$PROJECT_DIR$/tests_characterisation/test_topographic/test_topo.py" />
+        <option value="$PROJECT_DIR$/topographic/ascii_read.py" />
       </list>
     </option>
   </component>
@@ -179,6 +172,48 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="Wind_multipliers" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Wind_multipliers" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Wind_multipliers" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="topographic" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Wind_multipliers" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Wind_multipliers" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tests_characterisation" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Wind_multipliers" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Wind_multipliers" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="terrain" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -413,11 +448,11 @@
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32982457" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32982457" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -437,17 +472,156 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/shielding/blrb.py">
+    <entry file="file://$PROJECT_DIR$/meta.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="0" selection-start="245" selection-end="245" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3230">
+        <state line="11" column="7" selection-start="243" selection-end="243" vertical-scroll-proportion="0.0" vertical-offset="187" max-vertical-offset="1411">
+          <folding>
+            <element signature="e#70#90#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/conf.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="28" column="0" selection-start="1213" selection-end="1213" vertical-scroll-proportion="0.0" vertical-offset="476" max-vertical-offset="4097">
           <folding />
         </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/topographic/ascii_read.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="36" column="0" selection-start="886" selection-end="886" vertical-scroll-proportion="0.0" vertical-offset="612" max-vertical-offset="714">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/shielding/blrb.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="27" column="0" selection-start="673" selection-end="673" vertical-scroll-proportion="0.0" vertical-offset="459" max-vertical-offset="3213">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mock.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="40664">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/shielding/meta.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="31" column="0" selection-start="1076" selection-end="1076" vertical-scroll-proportion="0.0" vertical-offset="527" max-vertical-offset="1411">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/previous_versions/python_arcgis/terr_shield.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="8" column="31" selection-start="410" selection-end="410" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1190" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/meta.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="3" column="0" selection-start="69" selection-end="69" vertical-scroll-proportion="0.0" vertical-offset="51" max-vertical-offset="1411">
+          <folding>
+            <element signature="e#70#90#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/previous_versions/python_arcgis/terrain/terrain.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="36" column="32" selection-start="744" selection-end="744" vertical-scroll-proportion="0.0" vertical-offset="561" max-vertical-offset="1717" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/conf.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="37" column="0" selection-start="1385" selection-end="1385" vertical-scroll-proportion="0.0" vertical-offset="629" max-vertical-offset="4097">
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/previous_versions/python_arcgis/shielding/combine.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="107" column="59" selection-start="3483" selection-end="3539" vertical-scroll-proportion="0.0" vertical-offset="1819" max-vertical-offset="2822" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mock.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="40664">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/previous_versions/python_arcgis/shielding/shielding.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="73" column="0" selection-start="2660" selection-end="2660" vertical-scroll-proportion="0.0" vertical-offset="1241" max-vertical-offset="1717" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/terrain/terrain.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="32" column="19" selection-start="882" selection-end="882" vertical-scroll-proportion="0.0" vertical-offset="544" max-vertical-offset="8636">
+          <folding>
+            <element signature="e#405#457#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/previous_versions/python_arcgis/terr_shield.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="8" column="31" selection-start="410" selection-end="410" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1190" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/meta.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="3" column="0" selection-start="69" selection-end="69" vertical-scroll-proportion="0.0" vertical-offset="51" max-vertical-offset="1411">
+          <folding>
+            <element signature="e#70#90#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/previous_versions/python_arcgis/terrain/terrain.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="36" column="32" selection-start="744" selection-end="744" vertical-scroll-proportion="0.0" vertical-offset="561" max-vertical-offset="1717" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/conf.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="37" column="0" selection-start="1385" selection-end="1385" vertical-scroll-proportion="0.0" vertical-offset="391" max-vertical-offset="4097">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/previous_versions/python_arcgis/shielding/combine.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="107" column="59" selection-start="3483" selection-end="3539" vertical-scroll-proportion="0.0" vertical-offset="1819" max-vertical-offset="2822" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mock.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="40664">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/previous_versions/python_arcgis/shielding/shielding.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="73" column="0" selection-start="2660" selection-end="2660" vertical-scroll-proportion="0.0" vertical-offset="1241" max-vertical-offset="1632" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/shielding/blrb.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="8" column="0" selection-start="245" selection-end="245" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3230" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/meta.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="3" column="0" selection-start="69" selection-end="69" vertical-scroll-proportion="0.0" vertical-offset="51" max-vertical-offset="1411">
+          <folding>
+            <element signature="e#70#90#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -460,35 +634,22 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/files.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="29" column="46" selection-start="801" selection-end="801" vertical-scroll-proportion="0.0" vertical-offset="3227" max-vertical-offset="4981">
-          <folding />
-        </state>
+        <state line="29" column="46" selection-start="801" selection-end="801" vertical-scroll-proportion="0.0" vertical-offset="3227" max-vertical-offset="4981" />
       </provider>
     </entry>
     <entry file="file:////nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/wind_multiplier_git/Wind_multipliers/topographic/topomult.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="45" column="53" selection-start="1185" selection-end="1185" vertical-scroll-proportion="0.0" vertical-offset="765" max-vertical-offset="4420">
-          <folding />
-        </state>
+        <state line="45" column="53" selection-start="1185" selection-end="1185" vertical-scroll-proportion="0.0" vertical-offset="765" max-vertical-offset="4420" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/terr_shield.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="468" column="20" selection-start="19774" selection-end="19774" vertical-scroll-proportion="0.0" vertical-offset="7956" max-vertical-offset="12563">
-          <folding />
-        </state>
+        <state line="468" column="20" selection-start="19774" selection-end="19774" vertical-scroll-proportion="0.0" vertical-offset="7956" max-vertical-offset="12563" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Makefile">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2312" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/shielding/blrb.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="0" selection-start="245" selection-end="245" vertical-scroll-proportion="0.0" vertical-offset="1" max-vertical-offset="3230">
-          <folding />
-        </state>
       </provider>
     </entry>
     <entry file="file:////nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/wind_multiplier_git/Wind_multipliers/terr_shield.py">
@@ -498,9 +659,7 @@
     </entry>
     <entry file="file:////nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/wind_multiplier_git/Wind_multipliers/topographic/topomult.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="45" column="53" selection-start="1185" selection-end="1185" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="4420">
-          <folding />
-        </state>
+        <state line="45" column="53" selection-start="1185" selection-end="1185" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="4420" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/_gdal_tools.py">
@@ -510,63 +669,82 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/terr_shield.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="468" column="20" selection-start="19774" selection-end="19774" vertical-scroll-proportion="0.0" vertical-offset="7956" max-vertical-offset="12563">
-          <folding />
-        </state>
+        <state line="468" column="20" selection-start="19774" selection-end="19774" vertical-scroll-proportion="0.0" vertical-offset="7956" max-vertical-offset="12563" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/previous_versions/python_arcgis/shielding/dem_slope_aspect.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1445">
-          <folding />
-        </state>
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1445" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/files.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="19" selection-start="210" selection-end="210" vertical-scroll-proportion="0.06764168" vertical-offset="48" max-vertical-offset="4879">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/previous_versions/python_arcgis/terrain/terrain.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="36" column="32" selection-start="744" selection-end="744" vertical-scroll-proportion="0.0" vertical-offset="561" max-vertical-offset="1717">
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
-        </state>
+        <state line="11" column="19" selection-start="210" selection-end="210" vertical-scroll-proportion="0.06764168" vertical-offset="48" max-vertical-offset="4879" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/previous_versions/python_arcgis/terrain/direction_filter.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="7973">
-          <folding>
-            <element signature="e#0#12#0" expanded="true" />
-          </folding>
-        </state>
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="7973" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/previous_versions/topo_python_parallel/topographic/py-files/ascii_read.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="18" column="7" selection-start="284" selection-end="284" vertical-scroll-proportion="0.25411335" vertical-offset="167" max-vertical-offset="714">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/previous_versions/python_arcgis/terr_shield.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="31" selection-start="410" selection-end="410" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1139">
-          <folding />
-        </state>
+        <state line="18" column="7" selection-start="284" selection-end="284" vertical-scroll-proportion="0.25411335" vertical-offset="167" max-vertical-offset="714" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/previous_versions/python_arcgis/shielding/combine.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="107" column="59" selection-start="3483" selection-end="3539" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2822">
-          <folding>
-            <element signature="e#0#43#0" expanded="true" />
-          </folding>
+        <state line="107" column="59" selection-start="3483" selection-end="3539" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2822" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/previous_versions/python_arcgis/shielding/shielding.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="73" column="0" selection-start="2660" selection-end="2660" vertical-scroll-proportion="0.0" vertical-offset="803" max-vertical-offset="1632" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/previous_versions/python_arcgis/terrain/terrain.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="36" column="32" selection-start="744" selection-end="744" vertical-scroll-proportion="0.064150944" vertical-offset="425" max-vertical-offset="1581" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/previous_versions/python_arcgis/terr_shield.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="8" column="31" selection-start="410" selection-end="410" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1139" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests_characterisation/misc.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="35" column="0" selection-start="827" selection-end="827" vertical-scroll-proportion="0.0" vertical-offset="72" max-vertical-offset="901" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests_characterisation/run_all.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="33" column="40" selection-start="789" selection-end="789" vertical-scroll-proportion="0.0" vertical-offset="38" max-vertical-offset="867" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests_characterisation/test_topographic/test_topo.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="71" column="92" selection-start="2284" selection-end="2284" vertical-scroll-proportion="0.0" vertical-offset="803" max-vertical-offset="1632" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/shielding/meta.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="31" column="0" selection-start="1076" selection-end="1076" vertical-scroll-proportion="0.0" vertical-offset="255" max-vertical-offset="1377">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/topographic/ascii_read.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="36" column="0" selection-start="886" selection-end="886" vertical-scroll-proportion="0.0" vertical-offset="612" max-vertical-offset="714">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/conf.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="28" column="0" selection-start="1213" selection-end="1213" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="4097">
+          <folding />
         </state>
       </provider>
     </entry>
@@ -577,24 +755,35 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/terrain/terrain.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="21" column="0" selection-start="674" selection-end="674" vertical-scroll-proportion="0.42943305" vertical-offset="1" max-vertical-offset="8738">
+          <folding>
+            <element signature="e#405#457#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/shielding/blrb.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="27" column="0" selection-start="673" selection-end="673" vertical-scroll-proportion="0.0" vertical-offset="459" max-vertical-offset="3213">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/shielding/_execute.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="15" column="102" selection-start="741" selection-end="741" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1751">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/meta.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="3" column="0" selection-start="69" selection-end="69" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1411">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/conf.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="37" column="0" selection-start="1385" selection-end="1385" vertical-scroll-proportion="0.0" vertical-offset="391" max-vertical-offset="4097">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/previous_versions/python_arcgis/shielding/shielding.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="73" column="0" selection-start="2660" selection-end="2660" vertical-scroll-proportion="0.40125787" vertical-offset="837" max-vertical-offset="1632">
-          <folding />
+        <state line="11" column="7" selection-start="243" selection-end="243" vertical-scroll-proportion="0.22557297" vertical-offset="0" max-vertical-offset="1411">
+          <folding>
+            <element signature="e#70#90#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
