@@ -9,20 +9,19 @@
 
     
 # Import system & process modules
-import sys, string, os, time, shutil, logging as log
+import sys, string, os, time, logging as log
 import numexpr
 from scipy import ndimage, signal
 from os.path import join as pjoin
 import numpy as np
 from osgeo.gdalconst import *
 from netCDF4 import Dataset
-from vincenty import vinc_dist
-from blrb import interpolate_grid
-from osgeo import gdal, osr
-import value_lookup
+from osgeo import gdal
+from utilities import value_lookup
+from utilities.get_pixel_size_grid import get_pixel_size_grids, RADIANS_PER_DEGREE
 
 
-RADIANS_PER_DEGREE = 0.01745329251994329576923690768489
+#RADIANS_PER_DEGREE = 0.01745329251994329576923690768489
 
 def shield(terrain, input_dem):    
     # start timing
@@ -54,99 +53,6 @@ def shield(terrain, input_dem):
     log.info('The scipt took %3i ' % days + 'days, %2i ' % hrs + 'hours, %2i ' % mins + 'minutes %.2f ' %sec + 'seconds')
 
 
-class earth(object):
-
-    # Mean radius
-    RADIUS = 6371009.0  # (metres)
-
-    # WGS-84
-    #RADIUS = 6378135.0  # equatorial (metres)
-    #RADIUS = 6356752.0  # polar (metres)
-
-    # Length of Earth ellipsoid semi-major axis (metres)
-    SEMI_MAJOR_AXIS = 6378137.0
-
-    # WGS-84
-    A = 6378137.0           # equatorial radius (metres)
-    B = 6356752.3142        # polar radius (metres)
-    F = (A - B) / A         # flattening
-    ECC2 = 1.0 - B**2/A**2  # squared eccentricity
-
-    MEAN_RADIUS = (A*2 + B) / 3
-
-    # Earth ellipsoid eccentricity (dimensionless)
-    #ECCENTRICITY = 0.00669438
-    #ECC2 = math.pow(ECCENTRICITY, 2)
-
-    # Earth rotational angular velocity (radians/sec)
-    OMEGA = 0.000072722052
-
-
-def get_pixel_size(dataset, (x, y)):
-    """
-    Returns X & Y sizes in metres of specified pixel as a tuple.
-    N.B: Pixel ordinates are zero-based from top left
-    """
-    log.debug('(x, y) = (%f, %f)', x, y)
-    
-    spatial_reference = osr.SpatialReference()
-    spatial_reference.ImportFromWkt(dataset.GetProjection())
-    
-    geotransform = dataset.GetGeoTransform()
-    log.debug('geotransform = %s', geotransform)
-    
-    latlong_spatial_reference = spatial_reference.CloneGeogCS()
-    coord_transform_to_latlong = osr.CoordinateTransformation(spatial_reference, latlong_spatial_reference)
-
-    # Determine pixel centre and edges in georeferenced coordinates
-    xw = geotransform[0] + x * geotransform[1]
-    yn = geotransform[3] + y * geotransform[5] 
-    xc = geotransform[0] + (x + 0.5) * geotransform[1]
-    yc = geotransform[3] + (y + 0.5) * geotransform[5] 
-    xe = geotransform[0] + (x + 1.0) * geotransform[1]
-    ys = geotransform[3] + (y + 1.0) * geotransform[5] 
-    
-    log.debug('xw = %f, yn = %f, xc = %f, yc = %f, xe = %f, ys = %f', xw, yn, xc, yc, xe, ys)
-    
-    # Convert georeferenced coordinates to lat/lon for Vincenty
-    lon1, lat1, _z = coord_transform_to_latlong.TransformPoint(xw, yc, 0)
-    lon2, lat2, _z = coord_transform_to_latlong.TransformPoint(xe, yc, 0)
-    log.debug('For X size: (lon1, lat1) = (%f, %f), (lon2, lat2) = (%f, %f)', lon1, lat1, lon2, lat2)
-    x_size, _az_to, _az_from = vinc_dist(earth.F, earth.A, 
-                                         lat1 * RADIANS_PER_DEGREE, lon1 * RADIANS_PER_DEGREE, 
-                                         lat2 * RADIANS_PER_DEGREE, lon2 * RADIANS_PER_DEGREE)
-    
-    lon1, lat1, _z = coord_transform_to_latlong.TransformPoint(xc, yn, 0)
-    lon2, lat2, _z = coord_transform_to_latlong.TransformPoint(xc, ys, 0)
-    log.debug('For Y size: (lon1, lat1) = (%f, %f), (lon2, lat2) = (%f, %f)', lon1, lat1, lon2, lat2)
-    y_size, _az_to, _az_from = vinc_dist(earth.F, earth.A, 
-                                         lat1 * RADIANS_PER_DEGREE, lon1 * RADIANS_PER_DEGREE, 
-                                         lat2 * RADIANS_PER_DEGREE, lon2 * RADIANS_PER_DEGREE)
-    
-    log.debug('(x_size, y_size) = (%f, %f)', x_size, y_size)
-    return (x_size, y_size)
-
-
-def get_pixel_size_grids(dataset):
-    """ Returns two grids with interpolated X and Y pixel sizes for given datasets"""
-       
-    def get_pixel_x_size(x, y):
-        #return get_pixel_size(dataset, (x, y))[0]
-        return get_pixel_size(dataset, (x, y))[1]
-    
-    def get_pixel_y_size(x, y):
-        #return get_pixel_size(dataset, (x, y))[1]
-        return get_pixel_size(dataset, (x, y))[0]
-    
-    #x_size_grid = np.zeros((dataset.RasterXSize, dataset.RasterYSize)).astype(np.float32)
-    x_size_grid = np.zeros((dataset.RasterYSize, dataset.RasterXSize)).astype(np.float32)
-    interpolate_grid(depth=1, shape=x_size_grid.shape, eval_func=get_pixel_x_size, grid=x_size_grid)
-
-    #y_size_grid = np.zeros((dataset.RasterXSize, dataset.RasterYSize)).astype(np.float32)
-    y_size_grid = np.zeros((dataset.RasterYSize, dataset.RasterXSize)).astype(np.float32)
-    interpolate_grid(depth=1, shape=y_size_grid.shape, eval_func=get_pixel_y_size, grid=y_size_grid)
-    
-    return (x_size_grid, y_size_grid)
 
 
 def reclassify_aspect(data):
@@ -354,31 +260,7 @@ def combine(ms_orig_array, slope_array, aspect_array, one_dir):
     It also will remove the conservatism. 
     input: slope, reclassified aspect, shield origin in one direction
     output: shielding multiplier in the dirction
-    """
-    
-#    import pdb
-#    pdb.set_trace()
-#    
-#    slope_array = np.array([[0.2,0.4,4,5,13,11],
-#                              [7,14,3,1,8,6],
-#                              [1.8,9,4,7,2,18],
-#                              [2,5,15,12,7,8],
-#                              [3.6,8,3,1,5,2],
-#                              [2.8,9.6,4,15,1,3]])
-#    
-#    aspect_array = np.array([[1,2,3,4,5,5],
-#                              [7,5,3,1,8,6],
-#                              [7,7,4,7,2,7],
-#                              [2,5,7,7,7,8],
-#                              [7,8,3,1,5,2],
-#                              [7,7,4,7,1,3]])
-#    
-#    ms_orig_array = np.array([[0.2,0.4,0.4,0.5,0.98,0.85],
-#                              [0.7,0.94,0.3,0.1,0.8,0.9],
-#                              [0.8,0.9,0.4,0.77,0.2,0.98],
-#                              [0.2,0.5,0.85,0.2,0.7,0.8],
-#                              [0.6,0.8,0.9,0.89,0.5,0.2],
-#                              [0.8,0.96,0.4,0.85,0.9,0.3]])                          
+    """           
     
     dire_aspect = value_lookup.dire_aspect
     aspect_value = dire_aspect[one_dir]

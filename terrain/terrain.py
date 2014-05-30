@@ -10,7 +10,7 @@
 # Import system & process modules
 
 import sys, string, os, time, shutil, logging as log
-import value_lookup
+from utilities import value_lookup
 import numpy as np, osgeo.gdal as gdal
 from osgeo.gdalconst import *
 from netCDF4 import Dataset
@@ -23,8 +23,7 @@ def terrain(cyclone_area, temp_tile):
     startTime = time.time()
     
     # open the tile
-    temp_dataset = gdal.Open(temp_tile) 
-    #temp_dataset = temp_tile
+    temp_dataset = gdal.Open(temp_tile)
     
     # get image size, format, projection
     cols = temp_dataset.RasterXSize
@@ -72,9 +71,6 @@ def terrain(cyclone_area, temp_tile):
         # find output folder
         tile_folder = os.path.dirname(temp_tile)
         file_name = os.path.basename(temp_tile)
-        
-#        import pdb
-#        pdb.set_trace()
         
         # output format as ERDAS Imagine
         img_folder = pjoin(pjoin(tile_folder, 'terrain'), 'raster')

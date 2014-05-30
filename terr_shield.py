@@ -13,8 +13,8 @@ import shielding.shielding
 import topographic.topomult
 import ConfigParser
 from osgeo.gdalconst import *
-from files import flStartLog
-from _execute import execute
+from utilities.files import flStartLog
+from utilities._execute import execute
 from os.path import join as pjoin
 from functools import wraps
 
@@ -416,7 +416,7 @@ class Multipliers(object):
             else:
                 cyclone_area = None
                 
-            terrain.terrain.terrain(cyclone_area, terrain_resample)
+            #terrain.terrain.terrain(cyclone_area, terrain_resample)
         
             log.info('producing Shielding multipliers ...')
             shielding.shielding.shield(terrain_resample, temp_tile_dem)
@@ -678,7 +678,15 @@ def run(callback=None):
     #cmd_subfolder2 = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile( inspect.currentframe()))[0],"shielding")))
     cmd_subfolder2 = pjoin(cmd_folder,"shielding")    
     if cmd_subfolder2 not in sys.path:
-        sys.path.insert(0, cmd_subfolder2)        
+        sys.path.insert(0, cmd_subfolder2)
+
+    cmd_subfolder3 = pjoin(cmd_folder,"topographic")    
+    if cmd_subfolder3 not in sys.path:
+        sys.path.insert(0, cmd_subfolder2) 
+        
+    cmd_subfolder4 = pjoin(cmd_folder,"utilities")    
+    if cmd_subfolder4 not in sys.path:
+        sys.path.insert(0, cmd_subfolder2)
     
     config = ConfigParser.RawConfigParser()
     config.read(pjoin(cmd_folder, 'terr_shield.cfg'))
@@ -696,7 +704,7 @@ def run(callback=None):
     
     # set input map and output folder
     #terrain_map = pjoin(pjoin(root, 'input'), "lc_terrain_class.img")
-    terrain_map = pjoin(pjoin(root, 'input'), "lc_terrain_class.img")
+    terrain_map = pjoin(pjoin(root, 'input'), "lc_terrain_class_small.img")
     dem = pjoin(pjoin(root, 'input'), "dems1_whole.img")
     cyclone_area =  pjoin(pjoin(root, 'input'), "cyclone_dem_extent.img")
     
