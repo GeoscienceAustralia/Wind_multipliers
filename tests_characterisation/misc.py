@@ -26,7 +26,6 @@ class TestPaths:
         self.TEST_DIR = os.path.join(self.ROOT_DIR, 'tests_characterisation')
         self.BASE_TOPO_TEST_DIR = os.path.join(self.TEST_DIR, 'test_topographic')
         self.TOPO_MULTI_DIR = os.path.join(self.ROOT_DIR, 'topographic')
-        self.TOPO_FILES_DIR = os.path.join(self.TOPO_MULTI_DIR, 'py-files')
 
         # dynamic paths
         self.TOPO_TEST_DIR = None

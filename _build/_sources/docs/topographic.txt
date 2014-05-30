@@ -12,6 +12,14 @@ File structure:
 * ``test/`` # contains scenario testing to verify output and and enhancements from AS1170.2 standard
 
 
+__init__.py
+===========================================
+
+
+.. automodule:: __init__
+   :members:
+
+
 ascii_read.py
 ===========================================
 

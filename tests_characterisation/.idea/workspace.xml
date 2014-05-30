@@ -32,22 +32,40 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="read_output.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test_topographic/read_output.py">
+      <file leaf-file-name="run_all.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/run_all.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="76" column="24" selection-start="1885" selection-end="1885" vertical-scroll-proportion="0.0" vertical-offset="55" max-vertical-offset="2210">
+            <state line="36" column="4" selection-start="823" selection-end="823" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="850">
+              <folding>
+                <element signature="e#0#38#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="test_topo.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test_topographic/test_topo.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="49" column="0" selection-start="1402" selection-end="1402" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1615">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="files.py" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/../topographic/py-files/files.py">
+      <file leaf-file-name="misc.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/misc.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="98" column="8" selection-start="2571" selection-end="2571" vertical-scroll-proportion="0.2870929" vertical-offset="1428" max-vertical-offset="5321">
-              <folding>
-                <element signature="e#0#9#0" expanded="true" />
-              </folding>
+            <state line="18" column="0" selection-start="241" selection-end="241" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="952">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="read_file.py" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/read_file.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="63" column="0" selection-start="1388" selection-end="1388" vertical-scroll-proportion="0.5898673" vertical-offset="531" max-vertical-offset="1768">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -58,6 +76,15 @@
     <FindUsagesManager>
       <setting name="OPEN_NEW_TAB" value="false" />
     </FindUsagesManager>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="changedFiles">
+      <list>
+        <option value="$PROJECT_DIR$/run_all.py" />
+        <option value="$PROJECT_DIR$/misc.py" />
+        <option value="$PROJECT_DIR$/read_file.py" />
+      </list>
+    </option>
   </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="-8" />
@@ -91,7 +118,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -110,8 +136,23 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tests_characterisation" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tests_characterisation" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test_topographic" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -257,9 +298,8 @@
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18506752" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18506752" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -268,6 +308,7 @@
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -292,6 +333,13 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/parametrized_test_case.py">
       <provider selected="true" editor-type-id="text-editor">
+        <state line="21" column="0" selection-start="484" selection-end="484" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="782">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/parametrized_test_case.py">
+      <provider selected="true" editor-type-id="text-editor">
         <state line="21" column="0" selection-start="484" selection-end="484" vertical-scroll-proportion="0.0" vertical-offset="357" max-vertical-offset="782">
           <folding />
         </state>
@@ -304,26 +352,33 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../topographic/py-files/make_path.py">
+    <entry file="file://$PROJECT_DIR$/run_all.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="22" column="43" selection-start="681" selection-end="681" vertical-scroll-proportion="0.38480097" vertical-offset="55" max-vertical-offset="884">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test_topographic/read_output.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="76" column="24" selection-start="1885" selection-end="1885" vertical-scroll-proportion="0.0" vertical-offset="55" max-vertical-offset="2210">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../topographic/py-files/files.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="98" column="8" selection-start="2571" selection-end="2571" vertical-scroll-proportion="0.2870929" vertical-offset="1428" max-vertical-offset="5321">
+        <state line="36" column="4" selection-start="823" selection-end="823" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="850">
           <folding>
-            <element signature="e#0#9#0" expanded="true" />
+            <element signature="e#0#38#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test_topographic/test_topo.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="49" column="0" selection-start="1402" selection-end="1402" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1615">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/misc.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="18" column="0" selection-start="241" selection-end="241" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="952">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/read_file.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="63" column="0" selection-start="1388" selection-end="1388" vertical-scroll-proportion="0.5898673" vertical-offset="531" max-vertical-offset="1768">
+          <folding />
         </state>
       </provider>
     </entry>

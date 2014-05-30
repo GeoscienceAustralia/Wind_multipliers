@@ -14,18 +14,18 @@ from osgeo.gdalconst import *
 """
 
 
-def readASC(inputfile):
+def readASC(inputFile):
     """
     Reads .asc DEM into a GDALDataSet
 
-    :param inputfile: The path to an input file (DEM)
+    :param inputFile: The path to an input file (DEM)
     :returns: A numpy array
     """
 
     # debug - permit print whole numpy array
     # numpy.set_printoptions(threshold=numpy.nan)
 
-    inDs = gdal.Open(inputfile, GA_ReadOnly)
+    inDs = gdal.Open(inputFile, GA_ReadOnly)
 
     return convertToNumpyArray(inDs)
 
@@ -40,7 +40,7 @@ def readNetCDF(inputFile, ncVar):
     """
 
     # DEBUG - permit print whole numpy array
-    numpy.set_printoptions(threshold=numpy.nan)
+    #numpy.set_printoptions(threshold=numpy.nan)
 
     # DEBUG - meaningful errors
     gdal.UseExceptions()
@@ -59,7 +59,7 @@ def convertToNumpyArray(gdalDataSet):
     """
 
     if gdalDataSet is None:
-        print 'Could not open %s'%inputFile
+        print 'Could not open %s'%gdalDataSet
         sys.exit(1)
 
     # get raster size
@@ -97,6 +97,6 @@ def convertToNumpyArray(gdalDataSet):
             data[i:i+numRows, j:j+numCols] = dd
 
     # DEBUG
-    print data
+    #print data
 
     return data

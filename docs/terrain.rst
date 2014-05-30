@@ -1,17 +1,18 @@
 
 
+
 terrain
 ************
 
+__init__.py
+===========================================
 
-Terrain multi docs go here..
-
-
+.. automodule:: __init__
+   :members:
 
 
 terrain.py
 ===========================================
-
 
 .. automodule:: terrain.terrain
    :members:

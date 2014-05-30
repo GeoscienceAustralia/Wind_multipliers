@@ -1,0 +1,427 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>shielding &mdash; Wind Multipliers v0.3 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Wind Multipliers v0.3 documentation" href="../index.html" />
+    <link rel="next" title="tests_characterisation" href="tests_characterisation.html" />
+    <link rel="prev" title="terrain" href="terrain.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tests_characterisation.html" title="tests_characterisation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="terrain.html" title="terrain"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Wind Multipliers v0.3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="shielding">
+<h1>shielding<a class="headerlink" href="#shielding" title="Permalink to this headline">¶</a></h1>
+<p>Sheilding multi docs go here..</p>
+<div class="section" id="module-__init__">
+<span id="init-py"></span><h2>__init__.py<a class="headerlink" href="#module-__init__" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-_execute">
+<span id="execute-py"></span><h2>_execute.py<a class="headerlink" href="#module-_execute" title="Permalink to this headline">¶</a></h2>
+<p>Provides the function <a class="reference internal" href="#_execute.execute" title="_execute.execute"><tt class="xref py py-func docutils literal"><span class="pre">execute()</span></tt></a>. This needs to be defined in a separate file to avoid
+circular imports.</p>
+<dl class="function">
+<dt id="_execute.execute">
+<tt class="descclassname">_execute.</tt><tt class="descname">execute</tt><big>(</big><em>command_string=None</em>, <em>shell=True</em>, <em>cwd=None</em>, <em>env=None</em>, <em>stdout=-1</em>, <em>stderr=-1</em>, <em>preexec_fn=None</em>, <em>close_fds=False</em>, <em>bufsize=-1</em>, <em>debug=False</em><big>)</big><a class="reference internal" href="../_modules/_execute.html#execute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#_execute.execute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Executes a command as a subprocess.</p>
+<p>This function is a thin wrapper around <tt class="xref py py-func docutils literal"><span class="pre">subprocess.Popen()</span></tt> that gathers some extra information
+on the subprocess&#8217;s execution context and status.  All arguments except &#8216;debug&#8217; are passed through
+to <tt class="xref py py-func docutils literal"><span class="pre">subprocess.Popen()</span></tt> as-is.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>command_string</strong> &#8211; Commands to be executed.</li>
+<li><strong>shell</strong> &#8211; Execute via the shell</li>
+<li><strong>cwd</strong> &#8211; Working directory for the subprocess</li>
+<li><strong>env</strong> &#8211; Environment for the subprocess</li>
+<li><strong>stdout</strong> &#8211; stdout for the subprocess</li>
+<li><strong>stderr</strong> &#8211; stdout for the subprocess</li>
+<li><strong>close_fds</strong> &#8211; close open file descriptors before execution</li>
+<li><strong>bufsize</strong> &#8211; buffer size</li>
+<li><strong>debug</strong> &#8211; debug flag</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><dl class="docutils">
+<dt>Dictionary containing command, execution context and status:</dt>
+<dd><p class="first last">{ &#8216;command&#8217;: &lt;str&gt;,
+&#8216;returncode&#8217;: &lt;int&gt;,
+&#8216;pid&#8217;: &lt;int&gt;,
+&#8216;stdout&#8217;: &lt;stdout text&gt;,
+&#8216;stderr&#8217;: &lt;stderr text&gt;,
+&#8216;caller_ed&#8217;: &lt;caller working directory&gt;,
+&#8216;env&#8217;: &lt;execution environment&gt;,}</p>
+</dd>
+</dl>
+</p>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Seealso :</th><td class="field-body"><p class="first last"><tt class="xref py py-func docutils literal"><span class="pre">subprocess.Popen()</span></tt></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-blrb">
+<span id="blrb-py"></span><h2>blrb.py<a class="headerlink" href="#module-blrb" title="Permalink to this headline">¶</a></h2>
+<p>Author: Roger Edberg (<a class="reference external" href="mailto:roger&#46;edberg&#37;&#52;&#48;ga&#46;gov&#46;au">roger<span>&#46;</span>edberg<span>&#64;</span>ga<span>&#46;</span>gov<span>&#46;</span>au</a>)
+Functions for BiLinear Recursive Bisection (BLRB).</p>
+<p>All shape references here follow the numpy convention (nrows, ncols), which
+makes some of the code harder to follow.</p>
+<dl class="function">
+<dt id="blrb.bilinear">
+<tt class="descclassname">blrb.</tt><tt class="descname">bilinear</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/blrb.html#bilinear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#blrb.bilinear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bilinear interpolation of four scalar values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>shape</strong> &#8211; Shape of interpolated grid (nrows, ncols).</li>
+<li><strong>fUL</strong> &#8211; Data value at upper-left (NW) corner.</li>
+<li><strong>fUR</strong> &#8211; Data value at upper-right (NE) corner.</li>
+<li><strong>fLR</strong> &#8211; Data value at lower-right (SE) corner.</li>
+<li><strong>fLL</strong> &#8211; Data value at lower-left (SW) corner.</li>
+<li><strong>dtype</strong> &#8211; Data type (numpy I presume?).</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Array of data values interpolated between corners.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="blrb.indices">
+<tt class="descclassname">blrb.</tt><tt class="descname">indices</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/blrb.html#indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#blrb.indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate corner indices for a grid block.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>origin</strong> &#8211; Block origin (2-tuple).</li>
+<li><strong>shape</strong> &#8211; Block shape (2-tuple: nrows, ncols).</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Corner indices: (xmin, xmax, ymin, ymax).</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="blrb.interpolate_block">
+<tt class="descclassname">blrb.</tt><tt class="descname">interpolate_block</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/blrb.html#interpolate_block"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#blrb.interpolate_block" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate a grid block.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>origin</strong> &#8211; Block origin (2-tuple).</li>
+<li><strong>shape</strong> &#8211; Block shape (nrows, ncols).</li>
+<li><strong>eval_func</strong> (<em>callable; accepts grid indices i, j and returns a scalar value.</em>) &#8211; Evaluator function.</li>
+<li><strong>grid</strong> (<tt class="xref py py-class docutils literal"><span class="pre">numpy.array</span></tt>.) &#8211; Grid array.</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Interpolated block array if grid argument is None. If grid argument
+is supplied its elements are modified in place and this function
+does not return a value.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="blrb.interpolate_grid">
+<tt class="descclassname">blrb.</tt><tt class="descname">interpolate_grid</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/blrb.html#interpolate_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#blrb.interpolate_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate a data grid.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>depth</strong> (<tt class="xref py py-class docutils literal"><span class="pre">int</span></tt>) &#8211; Recursive bisection depth.</li>
+<li><strong>origin</strong> (<tt class="xref py py-class docutils literal"><span class="pre">tuple</span></tt> of length 2.) &#8211; Block origin,</li>
+<li><strong>shape</strong> (<tt class="xref py py-class docutils literal"><span class="pre">tuple</span></tt> of length 2 <tt class="docutils literal"><span class="pre">(nrows,</span> <span class="pre">ncols)</span></tt>.) &#8211; Block shape.</li>
+<li><strong>eval_func</strong> (<em>callable; accepts grid indices i, j and returns a scalar value.</em>) &#8211; Evaluator function.</li>
+<li><strong>grid</strong> (<tt class="xref py py-class docutils literal"><span class="pre">numpy.array</span></tt>.) &#8211; Grid array.</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Todo :</th><td class="field-body"><p class="first last">Move arguments <tt class="docutils literal"><span class="pre">eval_func</span></tt> and <tt class="docutils literal"><span class="pre">grid</span></tt> to positions 1 and 2, and remove
+defaults (and the check that they are not <tt class="xref docutils literal"><span class="pre">None</span></tt> at the top of the function
+body).</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="blrb.subdivide">
+<tt class="descclassname">blrb.</tt><tt class="descname">subdivide</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/blrb.html#subdivide"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#blrb.subdivide" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate indices for grid sub-blocks.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>origin</strong> &#8211; Block origin (2-tuple).</li>
+<li><strong>shape</strong> &#8211; Block shape (nrows, ncols).</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><dl class="docutils">
+<dt>Dictionary containing sub-block corner indices:</dt>
+<dd><dl class="first last docutils">
+<dt>{ &#8216;UL&#8217;: &lt;list of 2-tuples&gt;,</dt>
+<dd><p class="first last">&#8216;UR&#8217;: &lt;list of 2-tuples&gt;,
+&#8216;LL&#8217;: &lt;list of 2-tuples&gt;,
+&#8216;LR&#8217;: &lt;list of 2-tuples&gt; }</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-meta">
+<span id="meta-py"></span><h2>meta.py<a class="headerlink" href="#module-meta" title="Permalink to this headline">¶</a></h2>
+<p>Provides utilities for logging and meta programming to ULA3.</p>
+<dl class="class">
+<dt id="meta.Singleton">
+<em class="property">class </em><tt class="descclassname">meta.</tt><tt class="descname">Singleton</tt><a class="reference internal" href="../_modules/meta.html#Singleton"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#meta.Singleton" title="Permalink to this definition">¶</a></dt>
+<dd><p>Metaclass for Singletons.</p>
+<p>We could also keep the singletons in a dictionary in this class with keys of type
+class. I prefer, however, to keep them in the actual class.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="meta.create_arg_string">
+<tt class="descclassname">meta.</tt><tt class="descname">create_arg_string</tt><big>(</big><em>func</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/meta.html#create_arg_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#meta.create_arg_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs a string of the arguments passed to a function on a given invocation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>func</strong> &#8211; The function for which the string is to be constructed.</li>
+<li><strong>args</strong> &#8211; The positional arguments passed in the call to <tt class="docutils literal"><span class="pre">func</span></tt>.</li>
+<li><strong>kwargs</strong> &#8211; The keyword arguments passed in the call to <tt class="docutils literal"><span class="pre">func</span></tt>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="meta.print_call">
+<tt class="descclassname">meta.</tt><tt class="descname">print_call</tt><big>(</big><em>logger</em><big>)</big><a class="reference internal" href="../_modules/meta.html#print_call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#meta.print_call" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator which prints the call to a function, including all the arguments passed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>func</strong> &#8211; The function to be decorated.</li>
+<li><strong>logger</strong> &#8211; Callable which will be passed the string representation of the function call. Then no
+logging is performed (the decorated is simply returned.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-shielding">
+<span id="shielding-py"></span><h2>shielding.py<a class="headerlink" href="#module-shielding" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-value_lookup">
+<span id="value-lookup-py"></span><h2>value_lookup.py<a class="headerlink" href="#module-value_lookup" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-vincenty">
+<span id="vincenty-py"></span><h2>vincenty.py<a class="headerlink" href="#module-vincenty" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="vincenty.GreatCircle">
+<em class="property">class </em><tt class="descclassname">vincenty.</tt><tt class="descname">GreatCircle</tt><big>(</big><em>rmajor</em>, <em>rminor</em>, <em>lon1</em>, <em>lat1</em>, <em>lon2</em>, <em>lat2</em><big>)</big><a class="reference internal" href="../_modules/vincenty.html#GreatCircle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vincenty.GreatCircle" title="Permalink to this definition">¶</a></dt>
+<dd><p>formula for perfect sphere from Ed Williams&#8217; &#8216;Aviation Formulary&#8217;
+(<a class="reference external" href="http://williams.best.vwh.net/avform.htm">http://williams.best.vwh.net/avform.htm</a>)</p>
+<p>code for ellipsoid posted to GMT mailing list by Jim Leven in Dec 1999</p>
+<p>Contact: Jeff Whitaker &lt;<a class="reference external" href="mailto:jeffrey&#46;s&#46;whitaker&#37;&#52;&#48;noaa&#46;gov">jeffrey<span>&#46;</span>s<span>&#46;</span>whitaker<span>&#64;</span>noaa<span>&#46;</span>gov</a>&gt;</p>
+<dl class="method">
+<dt id="vincenty.GreatCircle.points">
+<tt class="descname">points</tt><big>(</big><em>npoints</em><big>)</big><a class="reference internal" href="../_modules/vincenty.html#GreatCircle.points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vincenty.GreatCircle.points" title="Permalink to this definition">¶</a></dt>
+<dd><p>compute arrays of npoints equally spaced
+intermediate points along the great circle.</p>
+<p>input parameter npoints is the number of points
+to compute.</p>
+<p>Returns lons, lats (lists with longitudes and latitudes
+of intermediate points in degrees).</p>
+<p>For example npoints=10 will return arrays lons,lats of 10
+equally spaced points along the great circle.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vincenty.vinc_dist">
+<tt class="descclassname">vincenty.</tt><tt class="descname">vinc_dist</tt><big>(</big><em>f</em>, <em>a</em>, <em>phi1</em>, <em>lembda1</em>, <em>phi2</em>, <em>lembda2</em><big>)</big><a class="reference internal" href="../_modules/vincenty.html#vinc_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vincenty.vinc_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the distance between two geographic points on the ellipsoid
+and the forward and reverse azimuths between these points.
+lats, longs and azimuths are in radians, distance in metres</p>
+<dl class="docutils">
+<dt>Arguments:</dt>
+<dd>f: flattening
+a: equatorial radius (metres)
+phi1: latitude of first point
+lembda1: longitude of first point
+phi2: latitude of second point
+lembda2: longitude of second point</dd>
+</dl>
+<p>Returns ( s, alpha12,  alpha21 ) as a tuple</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vincenty.vinc_pt">
+<tt class="descclassname">vincenty.</tt><tt class="descname">vinc_pt</tt><big>(</big><em>f</em>, <em>a</em>, <em>phi1</em>, <em>lembda1</em>, <em>alpha12</em>, <em>s</em><big>)</big><a class="reference internal" href="../_modules/vincenty.html#vinc_pt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vincenty.vinc_pt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the lat and long of projected point and reverse azimuth
+given a reference point and a distance and azimuth to project.
+lats, longs and azimuths are passed in decimal degrees</p>
+<p>Returns ( phi2,  lambda2,  alpha21 ) as a tuple</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">shielding</a><ul>
+<li><a class="reference internal" href="#module-__init__">__init__.py</a></li>
+<li><a class="reference internal" href="#module-_execute">_execute.py</a></li>
+<li><a class="reference internal" href="#module-blrb">blrb.py</a></li>
+<li><a class="reference internal" href="#module-meta">meta.py</a></li>
+<li><a class="reference internal" href="#module-shielding">shielding.py</a></li>
+<li><a class="reference internal" href="#module-value_lookup">value_lookup.py</a></li>
+<li><a class="reference internal" href="#module-vincenty">vincenty.py</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="terrain.html"
+                        title="previous chapter">terrain</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tests_characterisation.html"
+                        title="next chapter">tests_characterisation</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/docs/shielding.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tests_characterisation.html" title="tests_characterisation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="terrain.html" title="terrain"
+             >previous</a> |</li>
+        <li><a href="../index.html">Wind Multipliers v0.3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Geoscience Australia.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

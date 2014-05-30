@@ -31,6 +31,7 @@ def run():
 
     args = parser.parse_args()
 
+    # create a test suite to add all of our tests
     suite = unittest.TestSuite()
 
     # Uncomment for DEM output test

@@ -39,8 +39,9 @@ def shield(root, loc_list, ArcToolbox):
         # output as the ms_orig in ESRI Grid format,
         # it will need convoulution into different directions later by direction_filter.py
 
-        terrain = root + '\\input\\' + loc + "_terrain_class.img"
-        input_dem = root + '\\input\\' + loc + '_dem'
+        terrain = root + '\\input\\' + loc + "_terrain_class_projected.img"
+        #input_dem = root + '\\input\\' + loc + '_dem'
+        input_dem = root + '\\input\\' + 'gridmosaic_pr'
         #input_dem = root + '\\input\\' + loc_dem
       
 

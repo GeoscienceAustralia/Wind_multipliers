@@ -25,7 +25,7 @@ license is also needed.
 
 
 
-Terrain & Sheilding Multipliers
+Terrain & Shielding Multipliers
 ===========================================
 
 The script for deriving terrain and shielding multipliers is
@@ -146,7 +146,7 @@ Code Documentation
    
    docs/topographic
    docs/terrain
-   docs/sheilding
+   docs/shielding
    docs/tests_characterisation
      
 

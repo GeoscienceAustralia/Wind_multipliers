@@ -19,6 +19,14 @@ from scipy import signal
 
 
 def terrain(cyclone_area, temp_tile):
+
+    """
+    Performs core calculations to derive the terrain multiplier
+
+    :param cyclone_area: yes/no
+    :param temp_tile:
+    """
+
     # start timing
     startTime = time.time()
     
@@ -129,9 +137,10 @@ def terrain(cyclone_area, temp_tile):
 
 def terrain_class2mz_orig(cyclone_area, data):
     """
-    Purpose: transfer the landsat classied image into original terrain multplier
-    Input: loc, input raster file format: loc + '_terrain_class.img', cyclone_area -yes or -no
-    Output: loc + '_mz_orig'
+    Transfer the landsat classified image into original terrain multiplier
+
+    :param cyclone_area: yes/no
+    :returns: (numpy array) loc + '_mz_orig'
     """
        
 #    data = np.array([[2,4,4,5,13,11],
