@@ -141,24 +141,20 @@ def terrain_class2mz_orig(cyclone_area, data):
 
     :param cyclone_area: yes/no
     :returns: (numpy array) loc + '_mz_orig'
-    """
-       
-#    data = np.array([[2,4,4,5,13,11],
-#                      [7,14,3,1,8,6],
-#                      [1,9,4,7,2,18],
-#                      [2,5,15,12,7,8],
-#                      [3,8,3,1,5,2],
-#                      [2,9,4,15,1,3]])
-#    
-#    cycl = np.array([[1,0,0,0,0,0],
-#                              [0,0,0,1,0,0],
-#                              [0,0,0,0,0,0],
-#                              [0,0,0,0,0,0],
-#                              [0,0,0,1,0,0],
-#                              [0,0,0,0,1,0]])
-#                             
-#    cyclone_area = 'Yes'                             
-       
+    """                
+    
+    if cyclone_area <> None:
+        dataset = gdal.Open(cyclone_area)
+        cols = dataset.RasterXSize
+        rows = dataset.RasterYSize
+        band = dataset.GetRasterBand(1)     
+        cycl = band.ReadAsArray(0, 0, cols, rows)     
+        dataset = None
+     
+    return tc2mz_orig(cycl,data)  
+     
+ 
+def tc2mz_orig(cycl, data):
     
     mz_init = value_lookup.mz_init_non_cycl
     mz_init_cycl = value_lookup.mz_init_cycl 
@@ -167,23 +163,12 @@ def terrain_class2mz_orig(cyclone_area, data):
     
     # Reclassify the land classes into initial terrain multipliers 
     for i in mz_init.keys():
-        outdata[data == i] = mz_init[i]/1000.0
-    
-#    import pdb
-#    pdb.set_trace()
-    
-    if cyclone_area <> None:
-        dataset = gdal.Open(cyclone_area)
-        cols = dataset.RasterXSize
-        rows = dataset.RasterYSize
-        band = dataset.GetRasterBand(1)     
-        cycl = band.ReadAsArray(0, 0, cols, rows)
+        outdata[data == i] = mz_init[i]/1000.0     
+           
+    for i in mz_init_cycl.keys():
+        cycl_loc = np.where((data == i) & (cycl == 1))
+        outdata[cycl_loc] = mz_init_cycl[i]/1000.0              
         
-        for i in mz_init_cycl.keys():
-            cycl_loc = np.where((data == i) & (cycl == 1))
-            outdata[cycl_loc] = mz_init_cycl[i]/1000.0
-              
-        dataset = None
     return outdata
     
  
