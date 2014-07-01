@@ -1,9 +1,12 @@
+import sys
+import os.path
 import unittest
 import numpy as np
-from numpy.testing import assert_almost_equal
+from numpy.testing import assert_almost_equal, assert_allclose
 from matplotlib import pyplot
+from inspect import getfile, currentframe
 
-import topographic.multiplier_calc as multiplier_calc
+#import topographic.multiplier_calc as multiplier_calc
 
 from test_all_topo_engineered_data import test_slope, test_escarp, mh_engineered
 
@@ -16,8 +19,21 @@ class TestMultiplierCalc(unittest.TestCase):
         self.data_spacing = 25       
         
     def test_multiplier_calc(self):
+        cmd_folder = os.path.realpath(os.path.abspath(os.path.split(getfile(currentframe()))[0]))         
+        
+        parent = os.path.abspath(os.path.join(cmd_folder, os.pardir))
+        
+        grandparent = os.path.abspath(os.path.join(parent, os.pardir))
+                
+        if grandparent not in sys.path:
+            sys.path.insert(0, grandparent) 
+            
+        from topographic.multiplier_calc import multiplier_calc
+        
         test_line_total = np.empty(0)
         mh_engineered_total = np.empty(0)
+        
+        from topographic.multiplier_calc import multiplier_calc
         
         # get the test line and engineered mh total of 28 test cases               
         for i in range(1, len(test_slope)+1):
@@ -58,17 +74,19 @@ class TestMultiplierCalc(unittest.TestCase):
         pyplot.show()
 
         # get the computed mh from scripts using the test line total
-        mh_scripts = multiplier_calc.multiplier_calc(test_line_total, self.data_spacing) 
+        mh_scripts = multiplier_calc(test_line_total, self.data_spacing) 
 
         # get the selected points matching the tests
         mh_scripts_selection_total = np.empty(0)
-        for i in range(1, len(test_slope)+1):        
+        for i in range(1, len(test_slope)+1):  
+            
             mh_scripts_selection = np.concatenate([mh_scripts[0+181*(i-1)], mh_scripts[10+181*(i-1)], mh_scripts[20+181*(i-1)], mh_scripts[30+181*(i-1):33+181*(i-1)].flatten(),\
                                                mh_scripts[40+181*(i-1)], mh_scripts[44+181*(i-1):73+181*(i-1)].flatten(), mh_scripts[80+181*(i-1)], mh_scripts[100+181*(i-1)],\
                                                mh_scripts[120+181*(i-1)], mh_scripts[180+181*(i-1)]])
             mh_scripts_selection_total = np.concatenate([mh_scripts_selection_total.flatten(), mh_scripts_selection.flatten()])
-
-        assert_almost_equal(mh_engineered_total, mh_scripts_selection_total, decimal=2, err_msg='',verbose=True)
+       
+        #assert_almost_equal(mh_engineered_total, mh_scripts_selection_total, decimal=2, err_msg='',verbose=True)
+        assert_allclose(mh_scripts_selection_total, mh_engineered_total, rtol=0.04, atol=0, err_msg='',verbose=True)
 
 
 if __name__ == "__main__":

@@ -250,6 +250,13 @@ expect_escarpment_factor = dict([(1, 1.0),
                                  (2, 0.),                                
                                  (3, 0.)])   
                                  
-expect_results = dict([(1, [1, 300, 0.2, 0.33, 1.0]),
-                       (2, [2, 300, 0.2, 0, 0]),                                
-                       (3, [3, 300, 0.2, 0, 0])])                                  
+                                 
+# ideal results from Martin, ignoring the small hills                                 
+#expect_results = dict([(1, [1, 300, 0.2, 0.33, 1.0]),
+#                       (2, [2, 300, 0.2, 0, 0]),                                
+#                       (3, [3, 300, 0.2, 0, 0])])                                  
+                       
+# scripts derived results, including small hills
+expect_results = dict([(1, [2, 20, 300, 0.83, 0.2, 999, 0.17, 1.0, 1.25]),
+                       (2, [2, 20, 300, 0.83, 0.2, 999, 0, 1.0, 2.5]),                                
+                       (3, [3, 20, 120, 192, 0.83, 0.23, 0.21, 999, -0.06, 0, 1, 2.87, 2.5])]) 

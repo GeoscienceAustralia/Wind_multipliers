@@ -9,6 +9,7 @@ from netCDF4 import Dataset
 from osgeo.gdalconst import *
 
 from utilities.get_pixel_size_grid import get_pixel_size_grids
+from utilities.nctools import saveMultiplier, getLatLon
 
 import make_path       
 import multiplier_calc 
@@ -34,8 +35,17 @@ def topomult(input_dem):
     
     ds = gdal.Open(input_dem)    
     nc = ds.RasterXSize
-    nr = ds.RasterYSize
-    band = ds.GetRasterBand(1)     
+    nr = ds.RasterYSize    
+    
+    geotransform = ds.GetGeoTransform()
+    x_Left = geotransform[0]
+    y_Upper = -geotransform[3]
+    pixelWidth = geotransform[1]
+    pixelHeight = -geotransform[5]
+    
+    lon, lat = getLatLon(x_Left, y_Upper, pixelWidth, pixelHeight, nc, nr) 
+
+    band = ds.GetRasterBand(1)    
     elevation_array = band.ReadAsArray(0, 0, nc, nr)
     elevation_array_tran = np.transpose(elevation_array)        
     data =  elevation_array_tran.flatten()
@@ -118,16 +128,20 @@ def topomult(input_dem):
         
         # output format as netCDF4       
         tile_nc = pjoin(nc_folder, os.path.splitext(file_name)[0] + '_' + direction + '.nc')
-        ncobj = Dataset(tile_nc, 'w', format='NETCDF4', clobber=True)
-        # create the x and y dimensions
-        ncobj.createDimension('x', mhsmooth.shape[1])
-        ncobj.createDimension('y', mhsmooth.shape[0])
-        #create the variable (Shielding multpler ms in float)
-        nc_data = ncobj.createVariable('ms', np.dtype(float), ('x', 'y'))
-        # write data to variable
-        nc_data[:] = mhsmooth
-        #close the file
-        ncobj.close()
+        saveMultiplier('Mt', mhsmooth, lat, lon, tile_nc)        
+        
+        
+#        ncobj = Dataset(tile_nc, 'w', format='NETCDF4', clobber=True)
+#        # create the x and y dimensions
+#        ncobj.createDimension('x', mhsmooth.shape[1])
+#        ncobj.createDimension('y', mhsmooth.shape[0])
+#        #create the variable (Shielding multpler ms in float)
+#        nc_data = ncobj.createVariable('ms', np.dtype(float), ('x', 'y'))
+#        # write data to variable
+#        nc_data[:] = mhsmooth
+#        #close the file
+#        ncobj.close()
+        
         del mhsmooth
         
         log.info('Finished direction %s' % direction)

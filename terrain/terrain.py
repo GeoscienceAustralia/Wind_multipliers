@@ -11,6 +11,8 @@
 
 import sys, string, os, time, shutil, logging as log
 from utilities import value_lookup
+from utilities.nctools import saveMultiplier, getLatLon
+from utilities.get_pixel_size_grid import get_pixel_size_grids
 import numpy as np, osgeo.gdal as gdal
 from osgeo.gdalconst import *
 from netCDF4 import Dataset
@@ -42,9 +44,21 @@ def terrain(cyclone_area, temp_tile):
     
     # get georeference info
     geotransform = temp_dataset.GetGeoTransform()
-    pixelWidth = geotransform[1]    
-    band = temp_dataset.GetRasterBand(1)     
+    x_Left = geotransform[0]
+    y_Upper = -geotransform[3]
+    pixelWidth = geotransform[1]
+    pixelHeight = -geotransform[5]
+    
+    lon, lat = getLatLon(x_Left, y_Upper, pixelWidth, pixelHeight, cols, rows)
+    
+#    print lat
+#    print lon
+            
+    band = temp_dataset.GetRasterBand(1)      
     data = band.ReadAsArray(0, 0, cols, rows)
+    
+#    import pdb
+#    pdb.set_trace()
        
     # produce the original terrain multipler from the input terrain classified image   
     log.info('Reclassfy the terrain classes into initial terrain multipliers ...')
@@ -54,15 +68,20 @@ def terrain(cyclone_area, temp_tile):
     log.info('Moving average for each direction ...')
     # convolute for each direction
     dire = ['w', 'e', 'n', 's', 'nw', 'ne', 'se', 'sw']
+    #dire = ['w']
 
-
+    x_m_array, y_m_array = get_pixel_size_grids(temp_dataset)
+    pixelWidth = 0.5 * (np.mean(x_m_array) + np.mean(y_m_array))
+    
+    log.info('pixelWidth is %2i ' %pixelWidth)
+    print pixelWidth
 
     for one_dir in dire:
         log.info(one_dir)
         if one_dir in ['w', 'e', 'n', 's']:
-            filter_width = int(0.01/pixelWidth)- 1
+            filter_width = int(1000/pixelWidth)
         else:
-            filter_width = int(0.01/(pixelWidth*1.414))+ 1
+            filter_width = int(1000/(pixelWidth*1.414))
         
         if filter_width > reclassified_array.shape[0]:
             filter_width = reclassified_array.shape[0]
@@ -74,8 +93,29 @@ def terrain(cyclone_area, temp_tile):
 #        outdata = blur_image(reclassified_array, mask) 
         
         convo_dir = globals()['convo_' + one_dir]
-        outdata = convo_dir(reclassified_array, filter_width)  
-
+        outdata = convo_dir(reclassified_array, filter_width) 
+        
+#        import pdb
+#        pdb.set_trace()
+#        
+        
+##        outdata = np.array([[1.0243, 0.8976, 0.9875, 0.3875, 0.2874, 1.5784],
+##                   [0.8975, 0.2398, 0.9874, 1.0548, 0.9886, 1.0235],
+##                   [1.2345, 0.9635, 0.8457, 0.6857, 1.0035, 0.8976],
+##                   [0.8875, 0.9645, 0.3698, 0.8968, 1.0021, 1.3214],
+##                   [0.8547, 0.6987, 1.1215, 0.9887, 1.0225, 0.9865],
+##                   [0.7845, 0.2514, 0.9965, 0.3654, 0.5879, 1.0358]])
+##                   
+##        cols = 6
+##        rows = 6
+##        
+##        lat = lat[:6]
+##        lon = lon[:6]
+##        
+##        print lat
+##        print lon
+        
+        
         # find output folder
         tile_folder = os.path.dirname(temp_tile)
         file_name = os.path.basename(temp_tile)
@@ -84,7 +124,6 @@ def terrain(cyclone_area, temp_tile):
         img_folder = pjoin(pjoin(tile_folder, 'terrain'), 'raster')
         driver = gdal.GetDriverByName('HFA')
         output_dir = pjoin(img_folder, os.path.splitext(file_name)[0] + '_mz_' + one_dir + '.img')
-        #output_dir = pjoin(mz_folder, 'test_mz_' + one_dir + '.img')
         output_img = driver.Create(output_dir, cols, rows, 1, GDT_Float32)
         # georeference the image and set the projection
         output_geotransform = temp_dataset.GetGeoTransform()                                 
@@ -99,19 +138,30 @@ def terrain(cyclone_area, temp_tile):
         outBand.SetNoDataValue(-99)
         outBand.GetStatistics(0,1)
     
-        # output format as netCDF4
+        # output format as netCDF4        
         nc_folder = pjoin(pjoin(tile_folder, 'terrain'), 'netcdf')
         tile_nc = pjoin(nc_folder, os.path.splitext(file_name)[0] + '_mz_' + one_dir + '.nc')
-        ncobj = Dataset(tile_nc, 'w', format='NETCDF4', clobber=True)
-        # create the x and y dimensions
-        ncobj.createDimension('x', outdata.shape[1])
-        ncobj.createDimension('y', outdata.shape[0])
-        #create the variable (Terrain multpler mz in float)
-        nc_data = ncobj.createVariable('mz', np.dtype(float), ('x', 'y'))
-        # write data to variable
-        nc_data[:] = outdata
-        #close the file
-        ncobj.close()
+        log.info("Saving terrain multiplier in netCDF file")   
+        saveMultiplier('Mz', outdata, lat, lon, tile_nc)
+        
+        
+#        ncobj = Dataset(tile_nc, 'w', format='NETCDF3_CLASSIC', clobber=True)
+#        # create the x and y dimensions
+#        x_dim = ncobj.createDimension('x', outdata.shape[1])
+#        y_dim = ncobj.createDimension('y', outdata.shape[0])
+#        
+#        x = ncobj.createVariable('x', np.dtype(float), ('x',))
+#        y = ncobj.createVariable('y', np.dtype(float), ('y',))
+#        
+#        x[:] = lon
+#        y[:] = lat
+#        
+#        #create the variable (Terrain multpler mz in float)
+#        nc_data = ncobj.createVariable('mz', np.dtype(float), ('x', 'y'),  fill_value=-99)
+#        # write data to variable
+#        nc_data[:] = outdata
+#        #close the file
+#        ncobj.close()
         
     
         del outdata
@@ -142,6 +192,8 @@ def terrain_class2mz_orig(cyclone_area, data):
     :param cyclone_area: yes/no
     :returns: (numpy array) loc + '_mz_orig'
     """                
+    
+    cycl = np.zeros_like(data, np.float32)
     
     if cyclone_area <> None:
         dataset = gdal.Open(cyclone_area)

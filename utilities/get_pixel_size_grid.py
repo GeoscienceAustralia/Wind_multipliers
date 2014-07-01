@@ -91,8 +91,8 @@ def get_pixel_size(dataset, (x, y)):
 
 
 def get_pixel_size_grids(dataset):
-    """ Returns two grids with interpolated X and Y pixel sizes for given datasets"""
-       
+    """ Returns two grids with interpolated X and Y pixel sizes for given datasets"""   
+    
     def get_pixel_x_size(x, y):
         #return get_pixel_size(dataset, (x, y))[0]
         return get_pixel_size(dataset, (x, y))[1]

@@ -19,6 +19,7 @@ from netCDF4 import Dataset
 from osgeo import gdal
 from utilities import value_lookup
 from utilities.get_pixel_size_grid import get_pixel_size_grids, RADIANS_PER_DEGREE
+from utilities.nctools import saveMultiplier, getLatLon
 
 
 #RADIANS_PER_DEGREE = 0.01745329251994329576923690768489
@@ -171,6 +172,14 @@ def convo_combine(ms_orig, slope_array, aspect_array):
     cols = ms_orig_ds.RasterXSize
     rows = ms_orig_ds.RasterYSize
     
+    geotransform = ms_orig_ds.GetGeoTransform()
+    x_Left = geotransform[0]
+    y_Upper = -geotransform[3]
+    pixelWidth = geotransform[1]
+    pixelHeight = -geotransform[5]
+    
+    lon, lat = getLatLon(x_Left, y_Upper, pixelWidth, pixelHeight, cols, rows)
+    
     # get georeference info    
     band = ms_orig_ds.GetRasterBand(1)     
     data = band.ReadAsArray(0, 0, cols, rows)
@@ -197,7 +206,7 @@ def convo_combine(ms_orig, slope_array, aspect_array):
         output_dir = pjoin(raster_folder, os.path.splitext(file_name)[0] +  '_' + one_dir + '.img')
 
         if one_dir in ['w', 'e', 'n', 's']:
-            kernel_size = int(100.0/pixelWidth) - 1
+            kernel_size = int(100.0/pixelWidth)
         else:
             kernel_size = int(100.0/pixelWidth)
             
@@ -237,16 +246,20 @@ def convo_combine(ms_orig, slope_array, aspect_array):
         
         # output format as netCDF4       
         tile_nc = pjoin(nc_folder, os.path.splitext(file_name)[0] + '_' + one_dir + '.nc')
-        ncobj = Dataset(tile_nc, 'w', format='NETCDF4', clobber=True)
-        # create the x and y dimensions
-        ncobj.createDimension('x', result.shape[1])
-        ncobj.createDimension('y', result.shape[0])
-        #create the variable (Shielding multpler ms in float)
-        nc_data = ncobj.createVariable('ms', np.dtype(float), ('x', 'y'))
-        # write data to variable
-        nc_data[:] = result
-        #close the file
-        ncobj.close()
+        
+        log.info("Saving terrain multiplier in netCDF file")   
+        saveMultiplier('Ms', result, lat, lon, tile_nc)
+        
+#        ncobj = Dataset(tile_nc, 'w', format='NETCDF4', clobber=True)
+#        # create the x and y dimensions
+#        ncobj.createDimension('x', result.shape[1])
+#        ncobj.createDimension('y', result.shape[0])
+#        #create the variable (Shielding multpler ms in float)
+#        nc_data = ncobj.createVariable('ms', np.dtype(float), ('x', 'y'))
+#        # write data to variable
+#        nc_data[:] = result
+#        #close the file
+#        ncobj.close()
         del result
 
     ms_orig_ds = None

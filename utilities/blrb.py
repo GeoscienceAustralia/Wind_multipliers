@@ -171,7 +171,7 @@ def interpolate_grid(depth=0, origin=DEFAULT_ORIGIN, shape=DEFAULT_SHAPE, eval_f
         Move arguments ``eval_func`` and ``grid`` to positions 1 and 2, and remove
         defaults (and the check that they are not ``None`` at the top of the function
         body).
-    """
+    """        
     assert eval_func is not None
     assert grid is not None
 
