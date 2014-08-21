@@ -1,10 +1,16 @@
-# ---------------------------------------------------------------------------
-# Purpose: transfer the landsat classied image into shielding multplier
-# Input: loc, input raster file format: loc + '_terrain_class.img', dem
-# Output: loc + '_ms' in each direction
-# Created on 12 08 2011 by Tina Yang
-# ---------------------------------------------------------------------------
+"""
+:mod:`all_multipliers` -- Calculate terrain, shiedling and topographic multipliers 
+==================================================================================
 
+This module can be run in parallel using MPI if the 
+:term:`pypar` library is found and all_multipliers is run using the
+:term:`mpirun` command. For example, to run with 8 processors::    
+    
+    mpirun -n 8 python all_multipliers.py
+
+:moduleauthor: Tina Yang <tina.yang@ga.gov.au>
+
+"""
     
 
 import sys, string, os, time, inspect, shutil, numpy as np, osgeo.gdal as gdal, logging as log
@@ -15,55 +21,26 @@ import ConfigParser
 from osgeo.gdalconst import *
 from utilities.files import flStartLog
 from utilities._execute import execute
-from os.path import join as pjoin
+from os.path import join as pjoin, isdir
 from functools import wraps
 
-"""
-.. module:: ter_shield.py
-   :synopsis: transfer the landsat classified image into shielding multiplier
 
-.. moduleauthor:: Daniel Wild <daniel.wild@ga.gov.au>
-
-
-"""
 
 class TileGrid(object):    
     """    
     Tiling to minimise MemoryErrors and enable parallelisation.
-
-    :param gridLimit: :class:`dict` the domain where the hazard will                       
-                        be calculated. The :class:`dict` should contain                       
-                        the keys :attr:`xMin`, :attr:`xMax`,                       
-                        :attr:`yMin` and :attr:`yMax`. The *x* variable                       
-                        bounds the longitude and the *y* variable bounds                      
-                        the latitude.    
-    
-    :param wf_lon: `numpy.ndarray` of longitudes of the wind field    
-    :param wf_lat: `numpy.ndarray` of latitudes of the wind field    
-    :param xstep: `int` size of the tile in the x-direction.    
-    :param ystep: `int` size of the tile in the y-direction.
-
     
     """    
     
     def __init__(self, upwind_length, terrain_map):        
         """        
-        Initialise the tile grid for dividing up the domain                
+        Initialise the tile grid for dividing up the input landcover raster                
         
         Parameters:        
         -----------        
         
-        :param gridLimit: :class:`dict` describing the domain where the                           
-                            tracks will be generated.                          
-                            The :class:`dict` should contain the keys :attr:`xMin`,                          
-                            :attr:`xMax`, :attr:`yMin` and :attr:`yMax`. The *y*                          
-                            variable bounds the latitude and the *x* variable                           
-                            bounds the longitude.                
-                            
-        :param wf_lon: `numpy.ndarray` of longitudes in thw wind field.        
-        :param wf_lat: `numpy.ndarray` of latitudes of the wind field.        
-        :param xstep: `int` size of the tile in the x-direction.        
-        :param ystep: `int` size of the tile in the y-direction.        
+        :param upwind_length: `float` buffer size of a tile        
+        :param terrain_map: `file` the input landcover file.       
         
         """                        
             
@@ -91,17 +68,16 @@ class TileGrid(object):
         log.info('Top left corner X,Y: %s' % str(self.x_Left) + ' %s' % str(self.y_Upper))
         log.info('Resolution %s' % str(self.pixelWidth) + 'x %s' % str(self.pixelHeight)) 
         
+        # calculte the size of a tile and its buffer        
         self.x_step = int(np.ceil(1.0/float(self.pixelWidth))) 
         self.y_step = int(np.ceil(1.0/float(self.pixelHeight)))
-        log.info('Maximum tile size is %s' % str(self.x_step) + 'x %s' % str(self.y_step))
+        log.info('Maximum no. of cells per tile is %s' % str(self.x_step) + 'x %s' % str(self.y_step))
         self.upwind_length = upwind_length        
         self.x_buffer = int(upwind_length/self.pixelWidth)
         self.y_buffer = int(upwind_length/self.pixelHeight)
-        log.info('Tile buffer size is %s' % str(self.x_buffer) + 'x %s' % str(self.y_buffer))             
+        log.info('No. of cells in the buffer of each tile in x and y is %s' % str(self.x_buffer) + ', %s' % str(self.y_buffer))             
         
-#        import pdb
-#        pdb.set_trace()
-    
+   
         self.tileGrid()         
          
       
@@ -109,7 +85,9 @@ class TileGrid(object):
     def tileGrid(self):        
         """        
         Defines the indices required to subset a 2D array into smaller        
-        rectangular 2D arrays (of dimension x_step * y_step).          
+        rectangular 2D arrays (of dimension x_step * y_step plus buffer
+        size for each side if available).
+          
         """        
         
         subset_maxcols = int(np.ceil(self.x_dim/float(self.x_step)))        
@@ -132,7 +110,7 @@ class TileGrid(object):
                 
     def getGridLimit_buffer(self, k):        
         """        
-        Return the limits for tile `k`. x-indices correspond to the         
+        Return the limits with buffer for tile `k`. x-indices correspond to the         
         east-west coordinate, y-indices correspond to the north-south        
         coordinate.        
         
@@ -161,7 +139,7 @@ class TileGrid(object):
     
     def getGridLimit(self, k):        
         """        
-        Return the limits for tile `k`. x-indices correspond to the         
+        Return the limits without buffer for tile `k`. x-indices correspond to the         
         east-west coordinate, y-indices correspond to the north-south        
         coordinate.        
         
@@ -178,7 +156,9 @@ class TileGrid(object):
         :param y1: minimum y-index for tile `k`        
         :param y2: maximum y-index for tile `k`        
         
-        """        
+        """  
+       
+                
         if int(self.x_start[k]) != 0:
             x1 = int(self.x_start[k]+self.x_buffer)
         else:
@@ -189,22 +169,34 @@ class TileGrid(object):
         else:
             y1 = self.y_start[k]           
            
-        x2 = int(self.x_end[k] - self.x_buffer + 1)      
-        y2 = int(self.y_end[k] - self.y_buffer + 1)        
+        if int(self.x_end[k]) != self.x_dim:
+            x2 = int(self.x_end[k] - self.x_buffer + 1)
+        else:
+            x2 = self.x_end[k]
+            
+        if int(self.y_end[k]) != self.y_dim:
+            y2 = int(self.y_end[k] - self.y_buffer + 1)
+        else:
+            y2 = self.y_end[k]
+            
         
         return x1, x2, y1, y2    
         
     
     def getStartCord(self, k):        
         """        
-        Return the longitude and latitude values that lie within        
-        the modelled domain  
+        Return the starting longitude and latitude value of the tile without buffer  
+        
+        Parameters:        
+        -----------        
+        
+        :param k: `int` tile number        
                
         Returns:        
         --------        
         
-        :param lon: :class:`numpy.ndarray` containing longitude values                
-        :param lat: :class:`numpy.ndarray` containing latitude values        
+        :param tile_x_cord: `float` starting x coordinate of a tile without buffer              
+        :param tile_y_cord: `float` starting y coordinate of a tile without buffer     
         
         """ 
         limits = self.getGridLimit(k)
@@ -216,14 +208,17 @@ class TileGrid(object):
     
     def getTileName(self, k):        
         """        
-        Return the longitude and latitude values that lie within        
-        the modelled domain  
+        Return the name of a tile 
+        
+        Parameters:        
+        -----------        
+        
+        :param k: `int` tile number 
                
         Returns:        
         --------        
         
-        :param lon: :class:`numpy.ndarray` containing longitude values                
-        :param lat: :class:`numpy.ndarray` containing latitude values        
+        :param name: `string` name of a tile composing of starting coordinates                        
         
         """ 
         
@@ -232,41 +227,61 @@ class TileGrid(object):
         
         return name
         
-    # get the tile extent
+    
     def getTileExtent_buffer(self, k):
+        """        
+        Return the exntent for tile `k`. x corresponds to the         
+        east-west coordinate, y corresponds to the north-south        
+        coordinate.        
         
-#        tile_x_start = self.x_start[k] * self.pixelWidth + self.x_Left + 0.5*self.pixelWidth
-#        tile_y_start = - (self.y_start[k] * self.pixelHeight + self.y_Upper + 0.5*self.pixelHeight)
-#        tile_x_end = self.x_end[k] * self.pixelWidth + self.x_Left + 0.5*self.pixelWidth
-#        tile_y_end = - (self.y_end[k] * self.pixelHeight + self.y_Upper + 0.5*self.pixelHeight)
+        Parameters:        
+        -----------        
         
-#        tile_x_start = self.x_start[k] * self.pixelWidth + self.x_Left
-#        tile_y_start = - (self.y_start[k] * self.pixelHeight + self.y_Upper)
-#        tile_x_end = self.x_end[k] * self.pixelWidth + self.x_Left
-#        tile_y_end = - (self.y_end[k] * self.pixelHeight + self.y_Upper)
+        :param k: `int` tile number        
         
-#        tile_x_start = self.x_start[k] * self.pixelWidth + self.x_Left + 1.0*self.pixelWidth
-#        tile_y_start = - (self.y_start[k] * self.pixelHeight + self.y_Upper + 1.0*self.pixelHeight)
-#        tile_x_end = self.x_end[k] * self.pixelWidth + self.x_Left + 1.0*self.pixelWidth
-#        tile_y_end = - (self.y_end[k] * self.pixelHeight + self.y_Upper + 1.0*self.pixelHeight)
+        Returns:        
+        --------        
         
-#        tile_x_start = self.x_start[k] * self.pixelWidth + self.x_Left + 0.75*self.pixelWidth
-#        tile_y_start = - (self.y_start[k] * self.pixelHeight + self.y_Upper + 0.75*self.pixelHeight)
-#        tile_x_end = self.x_end[k] * self.pixelWidth + self.x_Left + 0.75*self.pixelWidth
-#        tile_y_end = - (self.y_end[k] * self.pixelHeight + self.y_Upper + 0.75*self.pixelHeight)
+        :param tile_x_start: minimum x-coordinate for tile `k`        
+        :param tile_y_start: minimum y-coordinate for tile `k`       
+        :param tile_x_end: maximum x-coordinate for tile `k`      
+        :param tile_y_end: maximum y-coordinate for tile `k` 
+        
+        """   
+      
+        limits = self.getGridLimit_buffer(k)
+        tile_x_start = self.x_Left + limits[0] * self.pixelWidth
+        tile_y_start = -(self.y_Upper + limits[2] * self.pixelHeight)
+        tile_x_end = self.x_Left + limits[1] * self.pixelWidth
+        tile_y_end = -(self.y_Upper + limits[3] * self.pixelHeight)  
 
         # gdal_translate extent
-        tile_x_start = self.x_start[k] * self.pixelWidth + self.x_Left
-        tile_y_start = - (self.y_start[k] * self.pixelHeight + self.y_Upper)
-        tile_x_end = self.x_end[k] * self.pixelWidth + self.x_Left + 1.0*self.pixelWidth
-        tile_y_end = - (self.y_end[k] * self.pixelHeight + self.y_Upper+ 1.0*self.pixelHeight)
+#        tile_x_start1 = self.x_start[k] * self.pixelWidth + self.x_Left
+#        tile_y_start1 = - (self.y_start[k] * self.pixelHeight + self.y_Upper)
+#        tile_x_end1 = self.x_end[k] * self.pixelWidth + self.x_Left + 1.0*self.pixelWidth
+#        tile_y_end1 = - (self.y_end[k] * self.pixelHeight + self.y_Upper+ 1.0*self.pixelHeight)  
         
         return tile_x_start, tile_y_start, tile_x_end, tile_y_end
 
 
 class Multipliers(object):
+    """    
+    Computing multipliers parallelly based on tiles.
+    
+    """    
     
     def __init__(self, tilegrid, sourceimg, dem, cyclone_area):
+        """        
+        Initialise the tile grid for dividing up the input landcover raster                
+        
+        Parameters:        
+        -----------        
+        
+        :param upwind_length: `float` buffer size of a tile        
+        :param terrain_map: `file` the input landcover file.       
+        
+        """                  
+        
         self.tilegrid = tilegrid
         self.input_img = sourceimg
         
@@ -302,6 +317,9 @@ class Multipliers(object):
     
     def multipliers_calculate(self, tile_info):
         
+#        import pdb
+#        pdb.set_trace()
+        
         tile_name = tile_info[0]
         tile_extents = tile_info[1]
         
@@ -325,7 +343,7 @@ class Multipliers(object):
             temp_tile
             )           
         
-        log.info('command_string = %s', command_string)        
+        log.info('Extract the working tile from the input landcover:\n %s', command_string)        
         result = execute(command_string=command_string)#        
         if result['stdout']:
             log.info(result['stdout'] + 'stdout from %s' % command_string + '\t')         
@@ -335,12 +353,19 @@ class Multipliers(object):
         
         # check the maximum value of the terrain map tile, if it greater than 0, go ahead                    
         temp_dataset = gdal.Open(temp_tile)
-        band = temp_dataset.GetRasterBand(1) 
-        stats = band.GetStatistics(0,1)
-        print stats
-        max_value = stats[1]
-                
-        if max_value > 0:
+        assert temp_dataset, 'Unable to open dataset %s' % temp_tile
+        band = temp_dataset.GetRasterBand(1)
+        checksum = band.Checksum()
+        log.info('This landcover tile checksum is %s ' % str(checksum))
+        print 'landcover checksum ' + str(checksum)         
+        #stats = band.GetStatistics(0,1)
+#        band.SetNoDataValue(0)
+#        stats = band.ComputeStatistics(0)
+#        print stats
+#        max_value = stats[1]
+#                
+#        if max_value > 0:
+        if checksum > 0:
             # create the temperal tile for DEM
             temp_tile_dem = pjoin(output_folder, tile_name + '_dem.img')            
             
@@ -356,7 +381,7 @@ class Multipliers(object):
                 temp_tile_dem
                 ) 
                 
-            log.info('command_string = %s', command_string)        
+            log.info('Extract the working tile from the input DEM:\n %s', command_string)        
             result = execute(command_string=command_string)#        
             if result['stdout']:
                 log.info(result['stdout'] + 'stdout from %s' % command_string + '\t')         
@@ -380,7 +405,7 @@ class Multipliers(object):
                 temp_tile_cyclone
                 )
                 
-            log.info('command_string = %s', command_string)        
+            log.info('Extract the working tile from the input cyclonic region:\n %s', command_string)        
             result = execute(command_string=command_string)#        
             if result['stdout']:
                 log.info(result['stdout'] + 'stdout from %s' % command_string + '\t')         
@@ -390,10 +415,14 @@ class Multipliers(object):
             
             # check the maximum value of the cyclone map tile, if it greater than 0, means cyclone area
             temp_dataset_cycl = gdal.Open(temp_tile_cyclone) 
-            band = temp_dataset_cycl.GetRasterBand(1) 
-            stats = band.GetStatistics(0,1)
-            max_value_cycl = stats[1] 
-            if max_value_cycl > 0:
+            band = temp_dataset_cycl.GetRasterBand(1)
+            checksum = band.Checksum()
+            log.info('This cyclonic region tile checksum is %s ' % str(checksum))
+            print 'cyclone checksum ' + str(checksum)
+#            stats = band.GetStatistics(0,1)
+#            max_value_cycl = stats[1] 
+#            if max_value_cycl > 0:
+            if checksum > 0:
                 cyclone_area = temp_tile_cyclone
             else:
                 cyclone_area = None
@@ -412,7 +441,7 @@ class Multipliers(object):
                 terrain_resample
                 )            
           
-            log.info('command_string = %s', command_string)        
+            log.info('Resample the landcover tile the same as the DEM tile:\n %s', command_string)        
             result = execute(command_string=command_string)#        
             if result['stdout']:
                 log.info(result['stdout'] + 'stdout from %s' % command_string + '\t')         
@@ -425,17 +454,18 @@ class Multipliers(object):
             terrain.terrain.terrain(cyclone_area, terrain_resample)
         
             log.info('producing Shielding multipliers ...')
-            #shielding.shielding.shield(terrain_resample, temp_tile_dem)
+            shielding.shielding.shield(terrain_resample, temp_tile_dem)
             
             log.info('producing Topographic multipliers ...')
-            #topographic.topomult.topomult(temp_tile_dem)
+            topographic.topomult.topomult(temp_tile_dem)
             
-            #os.remove(temp_tile_dem)
-            #os.remove(temp_tile)
-            #os.remove(terrain_resample)
-            #os.remove(temp_tile_cyclone)
-        else:   
+            os.remove(temp_tile_dem)
             os.remove(temp_tile)
+            os.remove(terrain_resample)
+            os.remove(temp_tile_cyclone)
+        else:
+            if os.path.exists(temp_tile):
+                os.remove(temp_tile)
         
         
         
@@ -528,6 +558,26 @@ def getTileInfo(tilegrid, tilenums):
 #    return tilename, tile_extents
     tile_info = [[tilegrid.getTileName(t), tilegrid.getTileExtent_buffer(t)] for t in tilenums]
     return tile_info
+
+def timer(f):    
+    """    
+    Basic timing functions for entire process    
+    """    
+    
+    @wraps(f)    
+    def wrap(*args, **kwargs):        
+        t1 = time.time()        
+        res = f(*args, **kwargs)                
+        
+        tottime = time.time() - t1        
+        msg = "%02d:%02d:%02d " % \
+          reduce(lambda ll, b : divmod(ll[0], b) + ll[1:],                        
+                        [(tottime,), 60, 60])        
+                        
+        log.info("Time for %s: %s"%(f.func_name, msg) )        
+        return res    
+        
+    return wrap
     
 
 def disableOnWorkers(f):    
@@ -552,13 +602,15 @@ def doOutputDirectoryCreation(root):
     :param str root: Name of root directory    
     :raises OSError: If the directory tree cannot be created.        
     
-    """  
+    """        
+    
     output = pjoin(root, 'output')
     
     log.info('Output will be stored under %s', output)    
     
     subdirs_1 = ['terrain', 'shielding', 'topographic'] 
-    subdirs_2 = ['raster', 'netcdf']               
+    #subdirs_2 = ['raster', 'netcdf']
+    subdirs_2 = ['netcdf']                
     
     if os.path.exists(output):
         shutil.rmtree(output)
@@ -566,7 +618,13 @@ def doOutputDirectoryCreation(root):
         os.makedirs(output)
     except OSError:            
         raise
-       
+     
+#    if not isdir(output):
+#        try:
+#            os.makedirs(output)
+#        except OSError:
+#            raise
+    
     for subdir in subdirs_1: 
         out_sub1 = pjoin(output, subdir)
         if os.path.exists(out_sub1):
@@ -575,6 +633,13 @@ def doOutputDirectoryCreation(root):
             os.makedirs(out_sub1)
         except OSError:            
             raise
+
+#        if not isdir(out_sub1):
+#            try:
+#                os.makedirs(out_sub1)
+#            except OSError:
+#                raise
+            
         for sub2 in subdirs_2:
             out_sub2 = pjoin(out_sub1, sub2)
             if os.path.exists(out_sub2):
@@ -583,7 +648,11 @@ def doOutputDirectoryCreation(root):
                 os.makedirs(out_sub2)
             except OSError:            
                 raise
-
+#            if not isdir(out_sub2):
+#                try:
+#                    os.makedirs(out_sub2)
+#                except OSError:
+#                    raise
 
 def balanced(iterable):
     """
@@ -630,6 +699,8 @@ def attemptParallel():
         # load pypar for everyone
 
         import pypar as pp
+        import atexit
+        atexit.register(pp.finalize)
 
     except ImportError:
 
@@ -652,7 +723,7 @@ def attemptParallel():
         pp = DummyPypar()
 
 
-
+@timer
 def run(callback=None):    
     """    
     Run the hazard calculations.    
@@ -665,9 +736,9 @@ def run(callback=None):
     
     """        
     
-    # start timing
-    startTime = time.time()
-    
+#    # start timing
+#    startTime = time.time()
+#    
 #    import pdb
 #    pdb.set_trace()
     
@@ -702,18 +773,26 @@ def run(callback=None):
     
     logfile = 'multipliers.log'    
     loglevel = 'INFO'
-    verbose = False    
-    
-    flStartLog(logfile, loglevel, verbose) 
+    verbose = False      
+     
     
     attemptParallel() 
     
+    if pp.size() > 1 and pp.rank() > 0:
+        logfile += '_' + str(pp.rank())
+        verbose = False
+    else:
+        pass
+   
+    flStartLog(logfile, loglevel, verbose)
+    
     # set input map and output folder
-    #terrain_map = pjoin(pjoin(root, 'input'), "lc_terrain_class.img")
-    #terrain_map = pjoin(pjoin(root, 'input'), "lc_terrain_class_small_Clip.img")
-    terrain_map = pjoin(pjoin(root, 'input'), "C1_terrain_class.img")
-    #terrain_map = pjoin(pjoin(root, 'input'), "test_terrain.img")
+    terrain_map = pjoin(pjoin(root, 'input'), "lc_terrain_class.img")
+    #terrain_map = pjoin(pjoin(root, 'input'), "Test250mLandCoverData.img")
     dem = pjoin(pjoin(root, 'input'), "dems1_whole.img")
+    #dem = pjoin(pjoin(root, 'input'), "Inset250cellSize.img")
+    #dem = pjoin(pjoin(root, 'input'), "ZeroBackground.img")
+    #cyclone_area =  pjoin(pjoin(root, 'input'), "cyclone_dem_extent.img")
     cyclone_area =  pjoin(pjoin(root, 'input'), "cyclone_dem_extent.img")
     
     doOutputDirectoryCreation(root)   
@@ -741,17 +820,17 @@ def run(callback=None):
     
     log.info("Successfully completed wind multipliers calculation")    
     
-    # figure out how long the script took to run
-    stopTime = time.time()
-    sec = stopTime - startTime
-    days = int(sec / 86400)
-    sec -= 86400*days
-    hrs = int(sec / 3600)
-    sec -= 3600*hrs
-    mins = int(sec / 60)
-    sec -= 60*mins
-    log.info('The scipt totally took %3i ' % days + 'days, %2i ' % hrs + 'hours, %2i ' % mins + 'minutes %.2f ' %sec + 'seconds')
-    print 'finish successfully at last!'
+#    # figure out how long the script took to run
+#    stopTime = time.time()
+#    sec = stopTime - startTime
+#    days = int(sec / 86400)
+#    sec -= 86400*days
+#    hrs = int(sec / 3600)
+#    sec -= 3600*hrs
+#    mins = int(sec / 60)
+#    sec -= 60*mins
+#    log.info('The scipt totally took %3i ' % days + 'days, %2i ' % hrs + 'hours, %2i ' % mins + 'minutes %.2f ' %sec + 'seconds')
+#    print 'finish successfully at last!'
 
 
     

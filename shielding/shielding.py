@@ -27,6 +27,9 @@ from utilities.nctools import saveMultiplier, getLatLon
 def shield(terrain, input_dem):    
     # start timing
     startTime = time.time()   
+    
+#    import pdb
+#    pdb.set_trace()
  
     log.info('Derive slope and reclassified aspect ...   ')
     slope_array, aspect_array = get_slope_aspect(input_dem)
@@ -77,6 +80,11 @@ def reclassify_aspect(data):
 
 def get_slope_aspect(input_dem):
     
+#    import pdb
+#    pdb.set_trace()
+   
+    np.seterr(divide='ignore')
+    
     ds = gdal.Open(input_dem)    
     cols = ds.RasterXSize
     rows = ds.RasterYSize
@@ -84,7 +92,9 @@ def get_slope_aspect(input_dem):
     pixel_x_size = abs(geotransform[1]) 
     pixel_y_size = abs(geotransform[5])
     band = ds.GetRasterBand(1)     
-    elevation_array = band.ReadAsArray(0, 0, cols, rows)   
+    elevation_array = band.ReadAsArray(0, 0, cols, rows)  
+    #elevation_array[np.where(elevation_array < -0.001)] = 0.0
+    elevation_array[np.where(elevation_array < -0.001)] = np.nan
    
     x_m_array, y_m_array = get_pixel_size_grids(ds)
     
@@ -114,6 +124,9 @@ def get_slope_aspect(input_dem):
     
    
 def terrain_class2ms_orig(terrain): 
+    
+#    import pdb
+#    pdb.set_trace()
 
     ms_folder = pjoin(os.path.dirname(terrain), 'shielding')
     file_name = os.path.basename(terrain)
@@ -131,13 +144,18 @@ def terrain_class2ms_orig(terrain):
     band = terrain_resample_ds.GetRasterBand(1)     
     data = band.ReadAsArray(0, 0, cols, rows)
     
+    
     ms_init = value_lookup.ms_init 
     
-    outdata = np.ones_like(data)
+    #outdata = np.ones_like(data)
+    #outdata = np.ones((rows, cols), np.float32)
+    outdata = np.ones_like(data, dtype = np.float32)
                 
     for i in [1, 3, 4, 5]:
         outdata[data == i] = ms_init[i]/100.0
       
+    outdata[np.where(data==0)] = np.nan
+    
     ms_orig = pjoin(ms_folder, os.path.splitext(file_name)[0] + '_ms.img')    
     ms_orig_ds = driver.Create(ms_orig, terrain_resample_ds.RasterXSize, terrain_resample_ds.RasterYSize, 1, GDT_Float32)
     ms_orig_ds.SetGeoTransform(terrain_resample_ds.GetGeoTransform())
@@ -165,6 +183,8 @@ def convo_combine(ms_orig, slope_array, aspect_array):
     input: ms_orig.img
     outputs: shield_east.img, shield_west.img, ..., shield_sw.img etc.
     """  
+#    import pdb
+#    pdb.set_trace()
     
     ms_orig_ds = gdal.Open(ms_orig)    
     
@@ -226,23 +246,23 @@ def convo_combine(ms_orig, slope_array, aspect_array):
         del outdata 
         
         # output format as ERDAS Imagine
-        driver = gdal.GetDriverByName('HFA')
-        ms_dir_ds = driver.Create(output_dir, ms_orig_ds.RasterXSize, ms_orig_ds.RasterYSize, 1, GDT_Float32)
-        
-        # georeference the image and set the projection                           
-        ms_dir_ds.SetGeoTransform(ms_orig_ds.GetGeoTransform())
-        ms_dir_ds.SetProjection(ms_orig_ds.GetProjection()) 
-        
-        outBand_ms_dir = ms_dir_ds.GetRasterBand(1)
-        outBand_ms_dir.WriteArray(result)       
-        
-        # flush data to disk, set the NoData value and calculate stats
-        outBand_ms_dir.FlushCache()
-        outBand_ms_dir.SetNoDataValue(-99)
-        #outBand_ms_dir.ComputeStatistics(1)
-        outBand_ms_dir.GetStatistics(0,1) 
-        
-        ms_dir_ds = None
+#        driver = gdal.GetDriverByName('HFA')
+#        ms_dir_ds = driver.Create(output_dir, ms_orig_ds.RasterXSize, ms_orig_ds.RasterYSize, 1, GDT_Float32)
+#        
+#        # georeference the image and set the projection                           
+#        ms_dir_ds.SetGeoTransform(ms_orig_ds.GetGeoTransform())
+#        ms_dir_ds.SetProjection(ms_orig_ds.GetProjection()) 
+#        
+#        outBand_ms_dir = ms_dir_ds.GetRasterBand(1)
+#        outBand_ms_dir.WriteArray(result)       
+#        
+#        # flush data to disk, set the NoData value and calculate stats
+#        outBand_ms_dir.FlushCache()
+#        outBand_ms_dir.SetNoDataValue(-99)
+#        #outBand_ms_dir.ComputeStatistics(1)
+#        outBand_ms_dir.GetStatistics(0,1) 
+#        
+#        ms_dir_ds = None
         
         # output format as netCDF4       
         tile_nc = pjoin(nc_folder, os.path.splitext(file_name)[0] + '_' + one_dir + '.nc')

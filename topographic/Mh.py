@@ -59,6 +59,12 @@ def Mh(profile, ridge, valley, data_spacing):
 # --------------------------------------------------------
 # initialise parameters
 # --------------------------------------------------------
+#    import pdb
+#    pdb.set_trace()    
+    
+#    print profile
+#    print profile[ridge]
+#    print profile[valley]
     
     H_threshold = 10     # height threshold for Mh calculation
     Lu_threshold = data_spacing    # half distance threshold for Mh calculation
@@ -66,6 +72,7 @@ def Mh(profile, ridge, valley, data_spacing):
     Z = 10            #building height
     nrow = np.size(profile)
     m = np.ones((nrow, 1), dtype=float)
+    #m[np.isnan(profile)] = np.nan
     
     H  = profile[ridge] - profile[valley]
     Lu = abs(ridge - valley) * data_spacing / 2
@@ -90,6 +97,7 @@ def Mh(profile, ridge, valley, data_spacing):
         # within the region of L2 up to the ridge
         if x >= 0 and x < L2:        
             m[k] = 1 + (H / (3.5 * (Z + L1))) * (1 - abs(x) / L2)
+            
             # --------------------------------------------------------
             # for larger slopes, you still use the formula to calculate M,
             # then re-value to 1.71 when it is larger. If use 1.71 for any slope
@@ -97,6 +105,7 @@ def Mh(profile, ridge, valley, data_spacing):
             # have 1.71 rather than a gradual increasing, peaks and decreasing
             # pattern.
             # --------------------------------------------------------
+            
             if m[k] > 1.71:
                 m[k] = 1.71
                 

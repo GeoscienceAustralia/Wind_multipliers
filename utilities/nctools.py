@@ -16,8 +16,19 @@ logger.addHandler(logging.NullHandler())
 ISO_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 
+
 def getLatLon(x_Left, y_Upper, pixelWidth, pixelHeight, cols, rows):    
+    """        
+    Return the longitude and latitude values that lie within        
+    the modelled domain  
+               
+    Returns:        
+    --------        
     
+    :param lon: :class:`numpy.ndarray` containing longitude values                
+    :param lat: :class:`numpy.ndarray` containing latitude values        
+    
+    """ 
     lon = np.array(cols)
     lat = np.array(rows)
     

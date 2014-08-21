@@ -23,8 +23,9 @@ def multiplier_calc(line, data_spacing):
     # initialise M as an array filled with 1
     # --------------------------------------------------------
     
+  
     nrow = np.size(line)
-    M = np.ones((nrow, 1), dtype=float)
+    M = np.ones((nrow, 1), dtype=float)    
 
     # take the largest integer of each element of the data line
     fwd_line = np.floor(line)
@@ -32,6 +33,9 @@ def multiplier_calc(line, data_spacing):
     # Get the indices of the ridges & valleys
     ridge_ind  = findpeaks(fwd_line)        # relative ind
     valley_ind = findvalleys(fwd_line)    # relative ind
+    
+#    print ridge_ind
+#    print valley_ind
 
     if np.size(ridge_ind) == 0: # the DEM is completely flat
         log.debug( "Flat line" )
@@ -50,5 +54,5 @@ def multiplier_calc(line, data_spacing):
             for i in range(0, np.size(ridge_ind)):
                 m = Mh.Mh(fwd_line, ridge_ind[i], valley_ind[i], data_spacing)
                 M = np.maximum(M, m)
-
+                
     return M

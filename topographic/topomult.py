@@ -25,8 +25,9 @@ def topomult(input_dem):
 
     :param input_dem: The path for input DEM
 
-    """    
-   
+    """      
+      
+    
    # find output folder
     mh_folder = pjoin(os.path.dirname(input_dem), 'topographic')
     file_name = os.path.basename(input_dem)
@@ -47,6 +48,8 @@ def topomult(input_dem):
 
     band = ds.GetRasterBand(1)    
     elevation_array = band.ReadAsArray(0, 0, nc, nr)
+    elevation_array[np.where(elevation_array < -0.001)] = np.nan
+    
     elevation_array_tran = np.transpose(elevation_array)        
     data =  elevation_array_tran.flatten()
     
@@ -69,6 +72,11 @@ def topomult(input_dem):
             data_spacing = cellsize
             
         Mhdata = np.ones(data.shape)
+        #Mhdata[np.isnan(data)] = np.nan
+        
+#        import pdb
+#        pdb.set_trace()
+        
         strt_idx = []    
         if direction.find('n') >= 0:
             strt_idx = np.append(strt_idx, list(range(0, nr * nc, nr)))
@@ -91,40 +99,47 @@ def topomult(input_dem):
             # path is a 1-d vector which gives the indices of the data    
             path = make_path.make_path(nr, nc, idx, direction)
             line = data[path]
+            line[np.isnan(line)] = 0.
             M = multiplier_calc.multiplier_calc(line, data_spacing)
               
             # write the line back to the data array
             M = np.transpose(M)
-            Mhdata[path] = M[0,].flatten()
-               
+#            M[np.isnan(line1)] = np.nan
+#            print line
+#            print M
+            Mhdata[path] = M[0,].flatten()  
     
         # Reshape the result to matrix like 
         Mhdata = np.reshape(Mhdata, (nc, nr))
         Mhdata = np.transpose(Mhdata)
         
+#        import pdb
+#        pdb.set_trace()
+        
         g = np.ones((3, 3))/9.
         mhsmooth = signal.convolve(Mhdata, g, mode='same')
+        mhsmooth[np.isnan(elevation_array)] = np.nan
         del Mhdata
                
         # output format as ERDAS Imagine
-        driver = gdal.GetDriverByName('HFA')
-        output_dir = pjoin(raster_folder, os.path.splitext(file_name)[0] +  '_' + direction + '.img')
-        ms_dir_ds = driver.Create(output_dir, ds.RasterXSize, ds.RasterYSize, 1, GDT_Float32)
-        
-        # georeference the image and set the projection                           
-        ms_dir_ds.SetGeoTransform(ds.GetGeoTransform())
-        ms_dir_ds.SetProjection(ds.GetProjection()) 
-        
-        outBand_ms_dir = ms_dir_ds.GetRasterBand(1)
-        outBand_ms_dir.WriteArray(mhsmooth)       
-        
-        # flush data to disk, set the NoData value and calculate stats
-        outBand_ms_dir.FlushCache()
-        outBand_ms_dir.SetNoDataValue(-99)
-        #outBand_ms_dir.ComputeStatistics(1)
-        outBand_ms_dir.GetStatistics(0,1) 
-        
-        ms_dir_ds = None
+#        driver = gdal.GetDriverByName('HFA')
+#        output_dir = pjoin(raster_folder, os.path.splitext(file_name)[0] +  '_' + direction + '.img')
+#        ms_dir_ds = driver.Create(output_dir, ds.RasterXSize, ds.RasterYSize, 1, GDT_Float32)
+#        
+#        # georeference the image and set the projection                           
+#        ms_dir_ds.SetGeoTransform(ds.GetGeoTransform())
+#        ms_dir_ds.SetProjection(ds.GetProjection()) 
+#        
+#        outBand_ms_dir = ms_dir_ds.GetRasterBand(1)
+#        outBand_ms_dir.WriteArray(mhsmooth)       
+#        
+#        # flush data to disk, set the NoData value and calculate stats
+#        outBand_ms_dir.FlushCache()
+#        outBand_ms_dir.SetNoDataValue(-99)
+#        #outBand_ms_dir.ComputeStatistics(1)
+#        outBand_ms_dir.GetStatistics(0,1) 
+#        
+#        ms_dir_ds = None
         
         # output format as netCDF4       
         tile_nc = pjoin(nc_folder, os.path.splitext(file_name)[0] + '_' + direction + '.nc')
@@ -151,6 +166,6 @@ def topomult(input_dem):
    
 if __name__ == '__main__': 
     #dem = r'N:\climate_change\CHARS\B_Wind\Projects\Multipliers\validation\output_work\test_dem.img'
-    dem = '/nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output_work/small_dem_4_int.img'
+    dem = '/nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output_work/test_wrong_dem.img'
     #dem = r'N:\climate_change\CHARS\B_Wind\Projects\Multipliers\validation\output_work\test_dem.asc'
     topomult(dem)

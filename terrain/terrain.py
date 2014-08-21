@@ -91,9 +91,12 @@ def terrain(cyclone_area, temp_tile):
 #        kern_dir = globals()['kern_' + one_dir]
 #        mask = kern_dir(filter_width)
 #        outdata = blur_image(reclassified_array, mask) 
+
+        reclassified_array[reclassified_array==0] = np.nan
         
         convo_dir = globals()['convo_' + one_dir]
         outdata = convo_dir(reclassified_array, filter_width) 
+        #outdata[outdata==0] = np.nan
         
 #        import pdb
 #        pdb.set_trace()
@@ -114,29 +117,28 @@ def terrain(cyclone_area, temp_tile):
 ##        
 ##        print lat
 ##        print lon
-        
-        
+                     
         # find output folder
         tile_folder = os.path.dirname(temp_tile)
         file_name = os.path.basename(temp_tile)
         
         # output format as ERDAS Imagine
-        img_folder = pjoin(pjoin(tile_folder, 'terrain'), 'raster')
-        driver = gdal.GetDriverByName('HFA')
-        output_dir = pjoin(img_folder, os.path.splitext(file_name)[0] + '_mz_' + one_dir + '.img')
-        output_img = driver.Create(output_dir, cols, rows, 1, GDT_Float32)
-        # georeference the image and set the projection
-        output_geotransform = temp_dataset.GetGeoTransform()                                 
-        output_img.SetGeoTransform(output_geotransform)
-        output_img.SetProjection(temp_dataset.GetProjection())
-        
-        outBand = output_img.GetRasterBand(1)
-        outBand.WriteArray(outdata, 0, 0)
-    
-        # flush data to disk, set the NoData value and calculate stats
-        outBand.FlushCache()
-        outBand.SetNoDataValue(-99)
-        outBand.GetStatistics(0,1)
+#        img_folder = pjoin(pjoin(tile_folder, 'terrain'), 'raster')
+#        driver = gdal.GetDriverByName('HFA')
+#        output_dir = pjoin(img_folder, os.path.splitext(file_name)[0] + '_mz_' + one_dir + '.img')
+#        output_img = driver.Create(output_dir, cols, rows, 1, GDT_Float32)
+#        # georeference the image and set the projection
+#        output_geotransform = temp_dataset.GetGeoTransform()                                 
+#        output_img.SetGeoTransform(output_geotransform)
+#        output_img.SetProjection(temp_dataset.GetProjection())
+#        
+#        outBand = output_img.GetRasterBand(1)
+#        outBand.WriteArray(outdata, 0, 0)
+#    
+#        # flush data to disk, set the NoData value and calculate stats
+#        outBand.FlushCache()
+#        outBand.SetNoDataValue(-99)
+#        outBand.GetStatistics(0,1)
     
         # output format as netCDF4        
         nc_folder = pjoin(pjoin(tile_folder, 'terrain'), 'netcdf')

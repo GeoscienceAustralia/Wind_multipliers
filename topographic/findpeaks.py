@@ -14,7 +14,9 @@ def findpeaks(y):
     :param y:
     :returns: numpy array
     '''
-
+#    import pdb
+#    pdb.set_trace()
+    
     dy = np.diff(y)
     if y.size == 0:
         ind = []
