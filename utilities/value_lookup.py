@@ -1,3 +1,11 @@
+"""
+:mod:`value_lookup` -- dictionaries relevant to terrain and shielding multipliers
+==================================================================================
+
+:moduleauthor: Tina Yang <tina.yang@ga.gov.au>
+
+""" 
+
 multiplier_type = ['terrain', 'shielding']
 
 

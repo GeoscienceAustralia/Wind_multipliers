@@ -13,7 +13,7 @@ This module can be run in parallel using MPI if the
 """
     
 
-import sys, string, os, time, inspect, shutil, numpy as np, osgeo.gdal as gdal, logging as log
+import sys, os, time, inspect, shutil, numpy as np, osgeo.gdal as gdal, logging as log
 import terrain.terrain
 import shielding.shielding
 import topographic.topomult
@@ -21,7 +21,7 @@ import ConfigParser
 from osgeo.gdalconst import *
 from utilities.files import flStartLog
 from utilities._execute import execute
-from os.path import join as pjoin, isdir
+from os.path import join as pjoin
 from functools import wraps
 
 
@@ -71,8 +71,7 @@ class TileGrid(object):
         # calculte the size of a tile and its buffer        
         self.x_step = int(np.ceil(1.0/float(self.pixelWidth))) 
         self.y_step = int(np.ceil(1.0/float(self.pixelHeight)))
-        log.info('Maximum no. of cells per tile is %s' % str(self.x_step) + 'x %s' % str(self.y_step))
-        self.upwind_length = upwind_length        
+        log.info('Maximum no. of cells per tile is %s' % str(self.x_step) + 'x %s' % str(self.y_step))     
         self.x_buffer = int(upwind_length/self.pixelWidth)
         self.y_buffer = int(upwind_length/self.pixelHeight)
         log.info('No. of cells in the buffer of each tile in x and y is %s' % str(self.x_buffer) + ', %s' % str(self.y_buffer))             
@@ -169,15 +168,15 @@ class TileGrid(object):
         else:
             y1 = self.y_start[k]           
            
-        if int(self.x_end[k]) != self.x_dim:
+        if int(self.x_end[k]) != (self.x_dim-1):
             x2 = int(self.x_end[k] - self.x_buffer + 1)
         else:
-            x2 = self.x_end[k]
+            x2 = self.x_dim
             
-        if int(self.y_end[k]) != self.y_dim:
+        if int(self.y_end[k]) != (self.y_dim-1):
             y2 = int(self.y_end[k] - self.y_buffer + 1)
         else:
-            y2 = self.y_end[k]
+            y2 = self.y_dim
             
         
         return x1, x2, y1, y2    
@@ -254,12 +253,6 @@ class TileGrid(object):
         tile_y_start = -(self.y_Upper + limits[2] * self.pixelHeight)
         tile_x_end = self.x_Left + limits[1] * self.pixelWidth
         tile_y_end = -(self.y_Upper + limits[3] * self.pixelHeight)  
-
-        # gdal_translate extent
-#        tile_x_start1 = self.x_start[k] * self.pixelWidth + self.x_Left
-#        tile_y_start1 = - (self.y_start[k] * self.pixelHeight + self.y_Upper)
-#        tile_x_end1 = self.x_end[k] * self.pixelWidth + self.x_Left + 1.0*self.pixelWidth
-#        tile_y_end1 = - (self.y_end[k] * self.pixelHeight + self.y_Upper+ 1.0*self.pixelHeight)  
         
         return tile_x_start, tile_y_start, tile_x_end, tile_y_end
 
@@ -269,56 +262,34 @@ class Multipliers(object):
     Computing multipliers parallelly based on tiles.
     
     """    
-    
-    def __init__(self, tilegrid, sourceimg, dem, cyclone_area):
+    def __init__(self, terrain_map, dem, cyclone_area):
         """        
         Initialise the tile grid for dividing up the input landcover raster                
         
         Parameters:        
         -----------        
+                
+        :param terrain_map: `file` the input landcover file. 
+        :param dem: `file` the input dem file. 
+        :param cyclone_area: `file` the input cyclone area file. 
         
-        :param upwind_length: `float` buffer size of a tile        
-        :param terrain_map: `file` the input landcover file.       
+        """
         
-        """                  
-        
-        self.tilegrid = tilegrid
-        self.input_img = sourceimg
-        
-        self.ds = gdal.Open(self.input_img, GA_ReadOnly)
-        if self.ds is None:
-            log.info('Could not open ' + self.input_img)
-            sys.exit(1)
-        
-        geotransform = self.ds.GetGeoTransform()
-        self.pixelWidth = geotransform[1]
-        self.pixelHeight = -geotransform[5]
-        
+        self.input_img = terrain_map
         self.dem = dem
-        self.dem_ds = gdal.Open(self.dem, GA_ReadOnly)
-        if self.dem_ds is None:
-            log.info('Could not open ' + self.dem)
-            sys.exit(1)
-        
-        geotransform_dem = self.dem_ds.GetGeoTransform()
-        self.pixelWidth_dem = geotransform_dem[1]
-        self.pixelHeight_dem = -geotransform_dem[5]
-    
         self.cyclone_area = cyclone_area
-        self.cyclone_ds = gdal.Open(self.cyclone_area, GA_ReadOnly)
-        if self.cyclone_ds is None:
-            log.info('Could not open ' + self.dem)
-            sys.exit(1)
-            
-        geotransform_dem = self.cyclone_ds.GetGeoTransform()
-        self.pixelWidth_cycl = geotransform_dem[1]
-        self.pixelHeight_cycl = -geotransform_dem[5]
         
     
     def multipliers_calculate(self, tile_info):
+        """        
+        Calculate the multiplier values for a specific tile                
         
-#        import pdb
-#        pdb.set_trace()
+        Parameters:        
+        -----------        
+                
+        :param tile_info: `tuple` the input tile info 
+        
+        """ 
         
         tile_name = tile_info[0]
         tile_extents = tile_info[1]
@@ -326,8 +297,8 @@ class Multipliers(object):
         # get the tile name without buffer using coordinates with 4 decimals         
         log.info('The working tile is  %s' % tile_name)
         
-        # create the temperal tile for terrain class
-        temp_tile = pjoin(output_folder, tile_name + '.img')
+        # extract the temporary tile from terrain class map
+        temp_tile = pjoin(output_folder, tile_name + '_input.img')
                                                              
         log.info('tile_extents = %s', tile_extents)
         
@@ -351,22 +322,16 @@ class Multipliers(object):
             log.error(result['stderr'] + 'stderr from %s' % command_string + '\t')
             raise Exception('%s failed' % command_string) 
         
-        # check the maximum value of the terrain map tile, if it greater than 0, go ahead                    
+        # check the checksum value of the terrain map tile, if it is greater than 0, go ahead                    
         temp_dataset = gdal.Open(temp_tile)
         assert temp_dataset, 'Unable to open dataset %s' % temp_tile
         band = temp_dataset.GetRasterBand(1)
         checksum = band.Checksum()
         log.info('This landcover tile checksum is %s ' % str(checksum))
-        print 'landcover checksum ' + str(checksum)         
-        #stats = band.GetStatistics(0,1)
-#        band.SetNoDataValue(0)
-#        stats = band.ComputeStatistics(0)
-#        print stats
-#        max_value = stats[1]
-#                
-#        if max_value > 0:
+        print 'landcover checksum ' + str(checksum)
+        
         if checksum > 0:
-            # create the temperal tile for DEM
+            # extract the temporary tile from DEM
             temp_tile_dem = pjoin(output_folder, tile_name + '_dem.img')            
             
             command_string = 'gdal_translate -projwin %f %f %f %f ' % (
@@ -389,9 +354,8 @@ class Multipliers(object):
                 log.error(result['stderr'] + 'stderr from %s' % command_string + '\t')
                 raise Exception('%s failed' % command_string) 
                        
-            
-            # create the temperal tile for Cyclone area
-            temp_tile_cyclone = pjoin(output_folder, tile_name + '_cycl.img')            
+            # extract the temporary tile from Cyclone area
+            temp_tile_cyclone = pjoin(output_folder, tile_name + '_cyc.img')            
            
             command_string = 'gdal_translate -projwin %f %f %f %f ' % (
                 tile_extents[0], tile_extents[1], tile_extents[2], tile_extents[3]
@@ -413,24 +377,22 @@ class Multipliers(object):
                 log.error(result['stderr'] + 'stderr from %s' % command_string + '\t')
                 raise Exception('%s failed' % command_string) 
             
-            # check the maximum value of the cyclone map tile, if it greater than 0, means cyclone area
+            # check the checksum value of the cyclone map tile, if it greater than 0, it is cyclone area
             temp_dataset_cycl = gdal.Open(temp_tile_cyclone) 
             band = temp_dataset_cycl.GetRasterBand(1)
             checksum = band.Checksum()
             log.info('This cyclonic region tile checksum is %s ' % str(checksum))
             print 'cyclone checksum ' + str(checksum)
-#            stats = band.GetStatistics(0,1)
-#            max_value_cycl = stats[1] 
-#            if max_value_cycl > 0:
+            
             if checksum > 0:
                 cyclone_area = temp_tile_cyclone
             else:
                 cyclone_area = None
             
-            #resmaple the terrain as DEM
+            #resample the terrain as DEM
             temp_dataset_DEM = gdal.Open(temp_tile_dem)
             
-            terrain_resample = pjoin(output_folder, tile_name + '_terr_resamp.img')
+            terrain_resample = pjoin(output_folder, tile_name + '_ter.img')
             
             command_string = 'gdal_translate -outsize %i %i' % (
                 temp_dataset_DEM.RasterXSize, temp_dataset_DEM.RasterYSize
@@ -471,11 +433,12 @@ class Multipliers(object):
         
     def paralleliseOnTiles(self, tiles, progressCallback=None):        
         """        
-        Iterate over tiles to calculate return period hazard levels        
+        Iterate over tiles to calculate the wind multipliers
+        
         Parameters:        
         -----------                
         
-        :param tileiter: `generator` that yields tuples of tile dimensions.        
+        :param tiles: `generator` that yields tuples of tile dimensions.        
         
         """      
 
@@ -536,7 +499,7 @@ def getTiles(tilegrid):
     
 def getTileInfo(tilegrid, tilenums):    
     """    
-    Generate a list of tuples of the x- and y- limits of a tile   
+    Generate a list of tuples of the name and extent of a tile   
     
     Parameters:    
     -----------    
@@ -548,16 +511,13 @@ def getTileInfo(tilegrid, tilenums):
     Returns:    
     --------        
     
-    :param tilelimits: list of tuples of tile imits    
+    :param tileinfo: list of tuples of tile names and extents    
     
-    """    
+    """        
     
-    #tilelimits_buffer = [tilegrid.getGridLimit_buffer(t) for t in tilenums]
-#    tilename = [tilegrid.getTileName(t) for t in tilenums]
-#    tile_extents = [tilegrid.getTileExtent_buffer(t) for t in tilenums]     
-#    return tilename, tile_extents
     tile_info = [[tilegrid.getTileName(t), tilegrid.getTileExtent_buffer(t)] for t in tilenums]
     return tile_info
+
 
 def timer(f):    
     """    
@@ -599,7 +559,7 @@ def doOutputDirectoryCreation(root):
     """    
     Create all the necessary output folders.        
     
-    :param str root: Name of root directory    
+    :param root: `string` Name of root directory    
     :raises OSError: If the directory tree cannot be created.        
     
     """        
@@ -609,7 +569,6 @@ def doOutputDirectoryCreation(root):
     log.info('Output will be stored under %s', output)    
     
     subdirs_1 = ['terrain', 'shielding', 'topographic'] 
-    #subdirs_2 = ['raster', 'netcdf']
     subdirs_2 = ['netcdf']                
     
     if os.path.exists(output):
@@ -618,12 +577,6 @@ def doOutputDirectoryCreation(root):
         os.makedirs(output)
     except OSError:            
         raise
-     
-#    if not isdir(output):
-#        try:
-#            os.makedirs(output)
-#        except OSError:
-#            raise
     
     for subdir in subdirs_1: 
         out_sub1 = pjoin(output, subdir)
@@ -633,12 +586,6 @@ def doOutputDirectoryCreation(root):
             os.makedirs(out_sub1)
         except OSError:            
             raise
-
-#        if not isdir(out_sub1):
-#            try:
-#                os.makedirs(out_sub1)
-#            except OSError:
-#                raise
             
         for sub2 in subdirs_2:
             out_sub2 = pjoin(out_sub1, sub2)
@@ -648,11 +595,7 @@ def doOutputDirectoryCreation(root):
                 os.makedirs(out_sub2)
             except OSError:            
                 raise
-#            if not isdir(out_sub2):
-#                try:
-#                    os.makedirs(out_sub2)
-#                except OSError:
-#                    raise
+
 
 def balanced(iterable):
     """
@@ -684,7 +627,6 @@ def balance(N):
         Nhi = Nlo + L    
     
     return Nlo, Nhi
-
 
 
 def attemptParallel():
@@ -726,33 +668,23 @@ def attemptParallel():
 @timer
 def run(callback=None):    
     """    
-    Run the hazard calculations.    
+    Run the wind multiplier calculations.    
     
     This will attempt to run the calculation in parallel by tiling the    
     domain, but also provides a sane fallback mechanism to execute     
-    in serial.    
-    
-    :param configFile: str    
+    in serial.  
     
     """        
-    
-#    # start timing
-#    startTime = time.time()
-#    
-#    import pdb
-#    pdb.set_trace()
     
     # add subfolders into path
     cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile( inspect.currentframe()))[0]))   
     if cmd_folder not in sys.path:
         sys.path.insert(0, cmd_folder)
-
-    #cmd_subfolder1 = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile( inspect.currentframe()))[0],"terrain")))
+    
     cmd_subfolder1 = pjoin(cmd_folder,"terrain")
     if cmd_subfolder1 not in sys.path:
         sys.path.insert(0, cmd_subfolder1)
 
-    #cmd_subfolder2 = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile( inspect.currentframe()))[0],"shielding")))
     cmd_subfolder2 = pjoin(cmd_folder,"shielding")    
     if cmd_subfolder2 not in sys.path:
         sys.path.insert(0, cmd_subfolder2)
@@ -786,54 +718,32 @@ def run(callback=None):
    
     flStartLog(logfile, loglevel, verbose)
     
-    # set input map and output folder
-    terrain_map = pjoin(pjoin(root, 'input'), "lc_terrain_class.img")
-    #terrain_map = pjoin(pjoin(root, 'input'), "Test250mLandCoverData.img")
+    # set input maps and output folder
+    terrain_map = pjoin(pjoin(root, 'input'), "lc_terrain_class_test_4.img")
+    #terrain_map = pjoin(pjoin(root, 'input'), "lc_terrain_class.img")
+    #terrain_map = pjoin(pjoin(root, 'input'), "TestLandCoverData.img")
     dem = pjoin(pjoin(root, 'input'), "dems1_whole.img")
-    #dem = pjoin(pjoin(root, 'input'), "Inset250cellSize.img")
+    #dem = pjoin(pjoin(root, 'input'), "TestDEMFlatTerrain.img")
     #dem = pjoin(pjoin(root, 'input'), "ZeroBackground.img")
-    #cyclone_area =  pjoin(pjoin(root, 'input'), "cyclone_dem_extent.img")
     cyclone_area =  pjoin(pjoin(root, 'input'), "cyclone_dem_extent.img")
     
-    doOutputDirectoryCreation(root)   
-    
+    doOutputDirectoryCreation(root)
     global output_folder
     output_folder = pjoin(root, 'output')
     
     log.info("get the tiles")    
     TG = TileGrid(upwind_length, terrain_map)    
-    tiles = getTiles(TG)
-    
+    tiles = getTiles(TG)    
     log.info('the number of tiles is %s' % str(len(tiles)))
-#    import pdb
-#    pdb.set_trace()
-    #def progress(i):    
-    #    callback(i, len(tiles))                 
     
-    pp.barrier()    
-    multiplier = Multipliers(TG, terrain_map, dem, cyclone_area)            
-                          
+    pp.barrier()
+    
+    multiplier = Multipliers(terrain_map, dem, cyclone_area)
     multiplier.paralleliseOnTiles(tiles)     
     
-    pp.barrier()      
+    pp.barrier() 
     
-    
-    log.info("Successfully completed wind multipliers calculation")    
-    
-#    # figure out how long the script took to run
-#    stopTime = time.time()
-#    sec = stopTime - startTime
-#    days = int(sec / 86400)
-#    sec -= 86400*days
-#    hrs = int(sec / 3600)
-#    sec -= 3600*hrs
-#    mins = int(sec / 60)
-#    sec -= 60*mins
-#    log.info('The scipt totally took %3i ' % days + 'days, %2i ' % hrs + 'hours, %2i ' % mins + 'minutes %.2f ' %sec + 'seconds')
-#    print 'finish successfully at last!'
-
-
-    
+    log.info("Successfully completed wind multipliers calculation")  
 
 
 if __name__ == '__main__':

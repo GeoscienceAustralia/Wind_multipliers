@@ -1,37 +1,45 @@
-# ---------------------------------------------------------------------------
-# Purpose: to derive the terrain multplier
-# Input: loc, input raster file format: loc + '_terrain_class.img'
-#        cyclone_area -yes or -no
-# Output: loc + '_mz_orig'
-# Created on 12 08 2011 by Tina Yang
-# ---------------------------------------------------------------------------
+"""
+:mod:`terrain` -- Calculate terrain multiplier
+==================================================================================
 
+This module is called by the module 
+:term:`all_multipliers` to calculate the terrain multiplier for an input tile
+for 8 directions and output as NetCDF format.
+
+References:
+    
+    Yang, T., Nadimpalli, K. & Cechet, R.P. 2014. Local wind assessment 
+    in Australia: computation methodology for wind multipliers. Record 2014/33. 
+    Geoscience Australia, Canberra.
+
+:moduleauthor: Tina Yang <tina.yang@ga.gov.au>
+
+""" 
     
 # Import system & process modules
-
-import sys, string, os, time, shutil, logging as log
+import os, logging as log
 from utilities import value_lookup
 from utilities.nctools import saveMultiplier, getLatLon
 from utilities.get_pixel_size_grid import get_pixel_size_grids
 import numpy as np, osgeo.gdal as gdal
-from osgeo.gdalconst import *
-from netCDF4 import Dataset
+#from osgeo.gdalconst import *
 from os.path import join as pjoin
-from scipy import signal
 
 
 def terrain(cyclone_area, temp_tile):
-
     """
     Performs core calculations to derive the terrain multiplier
-
-    :param cyclone_area: yes/no
-    :param temp_tile:
-    """
-
-    # start timing
-    startTime = time.time()
     
+    Parameters:        
+    ----------- 
+
+    :param cyclone_area: none or `file` the input tile of the cyclone area file. 
+    :param temp_tile:`file` the image file of the input tile of the land cover
+    
+    """
+#    import pdb
+#    pdb.set_trace()
+#    
     # open the tile
     temp_dataset = gdal.Open(temp_tile)
     
@@ -39,7 +47,8 @@ def terrain(cyclone_area, temp_tile):
     cols = temp_dataset.RasterXSize
     rows = temp_dataset.RasterYSize
     bands = temp_dataset.RasterCount
-    log.info('Input raster format is %s' % temp_dataset.GetDriver().ShortName + '/ %s' % temp_dataset.GetDriver().LongName)
+    log.info('Input raster format is %s' % temp_dataset.GetDriver().ShortName + 
+            '/ %s' % temp_dataset.GetDriver().LongName)
     log.info('Image size is %s' % cols + 'x %s' % rows + 'x %s' % bands)
     
     # get georeference info
@@ -49,151 +58,82 @@ def terrain(cyclone_area, temp_tile):
     pixelWidth = geotransform[1]
     pixelHeight = -geotransform[5]
     
+    # get the tile's longitude and latitude values used to save output in netcdf
     lon, lat = getLatLon(x_Left, y_Upper, pixelWidth, pixelHeight, cols, rows)
     
-#    print lat
-#    print lon
-            
+    # get the average grid size in metre of the tile
+    x_m_array, y_m_array = get_pixel_size_grids(temp_dataset)
+    pixelWidth = 0.5 * (np.mean(x_m_array) + np.mean(y_m_array))
+    log.info('pixelWidth is %2i ' %pixelWidth)
+    print pixelWidth    
+    
+    # produce the original terrain multiplier from the input terrain map   
+    log.info('Reclassfy the terrain classes into initial terrain multipliers ...')
     band = temp_dataset.GetRasterBand(1)      
     data = band.ReadAsArray(0, 0, cols, rows)
-    
-#    import pdb
-#    pdb.set_trace()
-       
-    # produce the original terrain multipler from the input terrain classified image   
-    log.info('Reclassfy the terrain classes into initial terrain multipliers ...')
     reclassified_array = terrain_class2mz_orig(cyclone_area, data)
+    # if the value is 0, it is nodata
+    reclassified_array[reclassified_array==0] = np.nan
 
     # convoulution of the original terrain multipler into different directions
     log.info('Moving average for each direction ...')
-    # convolute for each direction
-    dire = ['w', 'e', 'n', 's', 'nw', 'ne', 'se', 'sw']
-    #dire = ['w']
-
-    x_m_array, y_m_array = get_pixel_size_grids(temp_dataset)
-    pixelWidth = 0.5 * (np.mean(x_m_array) + np.mean(y_m_array))
+    #dire = ['w', 'e', 'n', 's', 'nw', 'ne', 'se', 'sw']  
+    dire = ['w'] 
     
-    log.info('pixelWidth is %2i ' %pixelWidth)
-    print pixelWidth
+    #set the terrain buffer used for convolution as per AS/NZ 1170.2 (2011)
+    terrain_buffer = 1000.    
 
     for one_dir in dire:
         log.info(one_dir)
         if one_dir in ['w', 'e', 'n', 's']:
-            filter_width = int(1000/pixelWidth)
+            filter_width = int(terrain_buffer/pixelWidth)
         else:
-            filter_width = int(1000/(pixelWidth*1.414))
+            filter_width = int(terrain_buffer/(pixelWidth*1.414))
         
+        # if the tile is smaller than the upwind buffer, all the tile is in buffer
         if filter_width > reclassified_array.shape[0]:
             filter_width = reclassified_array.shape[0]
         
         log.info('convolution filter width ' + str(filter_width))
         
-#        kern_dir = globals()['kern_' + one_dir]
-#        mask = kern_dir(filter_width)
-#        outdata = blur_image(reclassified_array, mask) 
-
-        reclassified_array[reclassified_array==0] = np.nan
-        
         convo_dir = globals()['convo_' + one_dir]
         outdata = convo_dir(reclassified_array, filter_width) 
-        #outdata[outdata==0] = np.nan
-        
-#        import pdb
-#        pdb.set_trace()
-#        
-        
-##        outdata = np.array([[1.0243, 0.8976, 0.9875, 0.3875, 0.2874, 1.5784],
-##                   [0.8975, 0.2398, 0.9874, 1.0548, 0.9886, 1.0235],
-##                   [1.2345, 0.9635, 0.8457, 0.6857, 1.0035, 0.8976],
-##                   [0.8875, 0.9645, 0.3698, 0.8968, 1.0021, 1.3214],
-##                   [0.8547, 0.6987, 1.1215, 0.9887, 1.0225, 0.9865],
-##                   [0.7845, 0.2514, 0.9965, 0.3654, 0.5879, 1.0358]])
-##                   
-##        cols = 6
-##        rows = 6
-##        
-##        lat = lat[:6]
-##        lon = lon[:6]
-##        
-##        print lat
-##        print lon
                      
         # find output folder
         tile_folder = os.path.dirname(temp_tile)
-        file_name = os.path.basename(temp_tile)
-        
-        # output format as ERDAS Imagine
-#        img_folder = pjoin(pjoin(tile_folder, 'terrain'), 'raster')
-#        driver = gdal.GetDriverByName('HFA')
-#        output_dir = pjoin(img_folder, os.path.splitext(file_name)[0] + '_mz_' + one_dir + '.img')
-#        output_img = driver.Create(output_dir, cols, rows, 1, GDT_Float32)
-#        # georeference the image and set the projection
-#        output_geotransform = temp_dataset.GetGeoTransform()                                 
-#        output_img.SetGeoTransform(output_geotransform)
-#        output_img.SetProjection(temp_dataset.GetProjection())
-#        
-#        outBand = output_img.GetRasterBand(1)
-#        outBand.WriteArray(outdata, 0, 0)
-#    
-#        # flush data to disk, set the NoData value and calculate stats
-#        outBand.FlushCache()
-#        outBand.SetNoDataValue(-99)
-#        outBand.GetStatistics(0,1)
+        file_name = os.path.basename(temp_tile)        
     
         # output format as netCDF4        
         nc_folder = pjoin(pjoin(tile_folder, 'terrain'), 'netcdf')
         tile_nc = pjoin(nc_folder, os.path.splitext(file_name)[0] + '_mz_' + one_dir + '.nc')
         log.info("Saving terrain multiplier in netCDF file")   
-        saveMultiplier('Mz', outdata, lat, lon, tile_nc)
-        
-        
-#        ncobj = Dataset(tile_nc, 'w', format='NETCDF3_CLASSIC', clobber=True)
-#        # create the x and y dimensions
-#        x_dim = ncobj.createDimension('x', outdata.shape[1])
-#        y_dim = ncobj.createDimension('y', outdata.shape[0])
-#        
-#        x = ncobj.createVariable('x', np.dtype(float), ('x',))
-#        y = ncobj.createVariable('y', np.dtype(float), ('y',))
-#        
-#        x[:] = lon
-#        y[:] = lat
-#        
-#        #create the variable (Terrain multpler mz in float)
-#        nc_data = ncobj.createVariable('mz', np.dtype(float), ('x', 'y'),  fill_value=-99)
-#        # write data to variable
-#        nc_data[:] = outdata
-#        #close the file
-#        ncobj.close()
-        
+        saveMultiplier('Mz', outdata, lat, lon, tile_nc)        
     
         del outdata
         
-        output_img = None
-        
     temp_dataset = None
     
-    log.info('finish terrain multiplier computation for this tile successfully')    
-
-    # figure out how long the script took to run
-    stopTime = time.time()
-    sec = stopTime - startTime
-    days = int(sec / 86400)
-    sec -= 86400*days
-    hrs = int(sec / 3600)
-    sec -= 3600*hrs
-    mins = int(sec / 60)
-    sec -= 60*mins
-    log.info('The scipt took %3i ' % days + 'days, %2i ' % hrs + 'hours, %2i ' % mins + 'minutes %.2f ' %sec + 'seconds')
-
+    log.info('finish terrain multiplier computation for this tile successfully') 
 
 
 def terrain_class2mz_orig(cyclone_area, data):
     """
     Transfer the landsat classified image into original terrain multiplier
+    
+    Parameters:        
+    ----------- 
 
-    :param cyclone_area: yes/no
-    :returns: (numpy array) loc + '_mz_orig'
+    :param cyclone_area: none or `file` the input tile of the cyclone area file
+    :param data: :class:`numpy.ndarray` the input terrain class values
+    
+    Returns:        
+    --------  
+        
+    :returns: :class:`numpy.ndarray` the initial terrain multiplier value
     """                
+    
+    # if the cyclone_area is empty, the cyclone value is 0
+    # otherwise, the cyclone value is taken from the cyclone area file passed
     
     cycl = np.zeros_like(data, np.float32)
     
@@ -209,6 +149,20 @@ def terrain_class2mz_orig(cyclone_area, data):
      
  
 def tc2mz_orig(cycl, data):
+    """
+    Transfer the landsat classified image into original terrain multiplier
+    
+    Parameters:        
+    ----------- 
+
+    :param cycl: :class:`numpy.ndarray` the cyclone value of the tile
+    :param data: :class:`numpy.ndarray` the input terrain class values
+    
+    Returns:        
+    --------  
+        
+    :outdata: :class:`numpy.ndarray` the initial terrain multiplier value
+    """   
     
     mz_init = value_lookup.mz_init_non_cycl
     mz_init_cycl = value_lookup.mz_init_cycl 
@@ -225,99 +179,29 @@ def tc2mz_orig(cycl, data):
         
     return outdata
     
- 
-#def init_kern_diag(size):
-#    """
-#    Returns a mean kernel for convolutions, with dimensions
-#    (2*size+1, 2*size+1), it is north east direction
-#    """    
-#    
-#    kernel = np.zeros((2*size+1, 2*size+1))
-#    kernel[size, size] = 1.0
-#    
-#    for i in range(0, size + 1):
-#        kernel[size-i, size + i] = 1.0
-#        
-##    kernel[size-3:size, size+1] = 1.0
-##    kernel[size-2:size, size+2] = 1.0
-##    kernel[size-1, size+3] = 1.0    
-#    
-#    return kernel / kernel.sum()
-#
-#
-#def init_kern(size):
-#    """
-#    Returns a mean kernel for convolutions, with dimensions
-#    (2*size+1, 2*size+1), it is south direction
-#    """       
-#    kernel = np.zeros((2*size+1, 2*size+1))
-#    
-#    for i in range(0, size+1):
-#        kernel[i+size, size] = 1.0
-#    
-#    return kernel / kernel.sum()
-#
-#
-#def kern_w(size):
-###    print np.rot90(init_kern(size), 3)    
-#    return np.rot90(init_kern(size), 3)
-#
-#
-#def kern_e(size):
-#    print np.rot90(init_kern(size), 1)    
-#    return np.rot90(init_kern(size), 1)    
-#
-#
-#def kern_n(size):
-###    print np.rot90(init_kern(size), 2)    
-#    return np.rot90(init_kern(size), 2)
-#
-#
-#def kern_s(size):
-###    print init_kern(size)    
-#    return init_kern(size)
-#
-#
-#def kern_ne(size):
-#    print init_kern_diag(size)    
-#    return init_kern_diag(size)
-#
-#
-#def kern_nw(size):
-###    print np.fliplr(init_kern_diag(size))    
-#    return np.fliplr(init_kern_diag(size))
-#
-#
-#def kern_sw(size):
-###    print np.flipud(np.fliplr(init_kern_diag(size)))    
-#    return np.flipud(np.fliplr(init_kern_diag(size)))
-#
-#
-#def kern_se(size):
-###    print np.flipud(init_kern_diag(size))    
-#    return np.flipud(init_kern_diag(size))
-#
-#
-#def blur_image(im, kernel, mode='same'):
-#    """
-#    Blurs the image by convolving with a kernel (e.g. mean or gaussian) of typical
-#    size n. The optional keyword argument ny allows for a different size in the
-#    y direction.
-#    """     
-#    improc = signal.convolve(im, kernel, mode=mode)
-#    return(improc)
-   
-## calculate the west direction
+    
 def convo_w(data, filter_width): 
-#    import pdb
-#    pdb.set_trace()
+    """
+    Convolute the initial terrain multplier to final one for west direction
+    
+    Parameters:        
+    ----------- 
+
+    :param data: :class:`numpy.ndarray` the initial terrain multiplier values
+    :param filter_width: :`int` the number of cells within upwind buffer 
+    
+    Returns:        
+    --------  
+        
+    :outdata: :class:`numpy.ndarray` the final terrain multiplier value
+    """   
     
     outdata = np.zeros_like(data, np.float32)
     rows = data.shape[0]
     cols = data.shape[1]    
     
-    for i in range(rows):        
-    # calculate average for each pixel    
+    # calculate average for each pixel 
+    for i in range(rows):
         for jj in range(cols):            
             neighbour_sum = 0   
             # for pixels whose west neighbour amount is less than defined value.
@@ -337,14 +221,28 @@ def convo_w(data, filter_width):
     return outdata
 
 
-## calculate the east direction
-def convo_e(data, filter_width):    
+def convo_e(data, filter_width):  
+    """
+    Convolute the initial terrain multplier to final one for east direction
+    
+    Parameters:        
+    ----------- 
+
+    :param data: :class:`numpy.ndarray` the initial terrain multiplier values
+    :param filter_width: :`int` the number of cells within upwind buffer 
+    
+    Returns:        
+    --------  
+        
+    :outdata: :class:`numpy.ndarray` the final terrain multiplier value
+    """   
+    
     outdata = np.zeros_like(data, np.float32)
     rows = data.shape[0]
     cols = data.shape[1]
     
-    for i in range(rows):         
-    # calculate average for each pixel    
+    # calculate average for each pixel
+    for i in range(rows):
         for jj in range(cols):            
             neighbour_sum = 0   
             # for pixels whose east neighbour amount is less than defined value.
@@ -364,14 +262,28 @@ def convo_e(data, filter_width):
     return outdata
 
 
-## calculate the north direction
 def convo_n(data, filter_width):
+    """
+    Convolute the initial terrain multplier to final one for north direction
+    
+    Parameters:        
+    ----------- 
+
+    :param data: :class:`numpy.ndarray` the initial terrain multiplier values
+    :param filter_width: :`int` the number of cells within upwind buffer 
+    
+    Returns:        
+    --------  
+        
+    :outdata: :class:`numpy.ndarray` the final terrain multiplier value
+    """   
+    
     outdata = np.zeros_like(data, np.float32)
     rows = data.shape[0]
     cols = data.shape[1]
     
-    for i in range(cols):        
-    # calculate average for each pixel    
+    # calculate average for each pixel 
+    for i in range(cols):  
         for jj in range(rows):            
             neighbour_sum = 0   
             # for pixels whose north neighbour amount is less than defined value.
@@ -390,14 +302,29 @@ def convo_n(data, filter_width):
     return outdata
 
 
-## calculate the south direction
+
 def convo_s(data, filter_width):
+    """
+    Convolute the initial terrain multplier to final one for south direction
+    
+    Parameters:        
+    ----------- 
+
+    :param data: :class:`numpy.ndarray` the initial terrain multiplier values
+    :param filter_width: :`int` the number of cells within upwind buffer 
+    
+    Returns:        
+    --------  
+        
+    :outdata: :class:`numpy.ndarray` the final terrain multiplier value
+    """   
+    
     outdata = np.zeros_like(data, np.float32)
     rows = data.shape[0]
     cols = data.shape[1]
     
-    for i in range(cols):        
-    # calculate average for each pixel    
+    # calculate average for each pixel     
+    for i in range(cols):      
         for jj in range(rows):            
             neighbour_sum = 0   
             # for pixels whose south neighbour amount is less than defined value.
@@ -417,14 +344,29 @@ def convo_s(data, filter_width):
     return outdata
 
 
-## calculate the north west direction
+
 def convo_nw(data, filter_width):
+    """
+    Convolute the initial terrain multplier to final one for north-west direction
+    
+    Parameters:        
+    ----------- 
+
+    :param data: :class:`numpy.ndarray` the initial terrain multiplier values
+    :param filter_width: :`int` the number of cells within upwind buffer 
+    
+    Returns:        
+    --------  
+        
+    :outdata: :class:`numpy.ndarray` the final terrain multiplier value
+    """   
+    
     outdata = np.zeros_like(data, np.float32)
     rows = data.shape[0]
     cols = data.shape[1]
     
-    for i in range(rows):        
-    # calculate average for each pixel    
+    # calculate average for each pixel
+    for i in range(rows): 
         for jj in range(cols):            
             neighbour_sum = 0   
             # for pixels whose north west neighbour amount is less than defined value.
@@ -444,14 +386,28 @@ def convo_nw(data, filter_width):
     return outdata
 
 
-## calculate the north east direction
 def convo_ne(data, filter_width):
+    """
+    Convolute the initial terrain multplier to final one for north direction
+    
+    Parameters:        
+    ----------- 
+
+    :param data: :class:`numpy.ndarray` the initial terrain multiplier values
+    :param filter_width: :`int` the number of cells within upwind buffer 
+    
+    Returns:        
+    --------  
+        
+    :outdata: :class:`numpy.ndarray` the final terrain multiplier value
+    """   
+    
     outdata = np.zeros_like(data, np.float32)
     rows = data.shape[0]
     cols = data.shape[1]
    
-    for i in range(rows):        
-    # calculate average for each pixel    
+    # calculate average for each pixel   
+    for i in range(rows): 
         for jj in range(cols):            
             neighbour_sum = 0   
             # for pixels whose north east neighbour amount is less than defined value.
@@ -471,14 +427,28 @@ def convo_ne(data, filter_width):
     return outdata
 
 
-## calculate the south west direction
 def convo_sw(data, filter_width):
+    """
+    Convolute the initial terrain multplier to final one for south-west direction
+    
+    Parameters:        
+    ----------- 
+
+    :param data: :class:`numpy.ndarray` the initial terrain multiplier values
+    :param filter_width: :`int` the number of cells within upwind buffer 
+    
+    Returns:        
+    --------  
+        
+    :outdata: :class:`numpy.ndarray` the final terrain multiplier value
+    """   
+    
     outdata = np.zeros_like(data, np.float32)
     rows = data.shape[0]
     cols = data.shape[1]
     
-    for i in range(rows):        
-    # calculate average for each pixel    
+    # calculate average for each pixel     
+    for i in range(rows):  
         for jj in range(cols):            
             neighbour_sum = 0   
             # for pixels whose south west neighbour amount is less than defined value.
@@ -498,14 +468,28 @@ def convo_sw(data, filter_width):
     return outdata
 
 
-## calculate the south east direction
 def convo_se(data, filter_width):
+    """
+    Convolute the initial terrain multplier to final one for south-east direction
+    
+    Parameters:        
+    ----------- 
+
+    :param data: :class:`numpy.ndarray` the initial terrain multiplier values
+    :param filter_width: :`int` the number of cells within upwind buffer 
+    
+    Returns:        
+    --------  
+        
+    :outdata: :class:`numpy.ndarray` the final terrain multiplier value
+    """   
+    
     outdata = np.zeros_like(data, np.float32)
     rows = data.shape[0]
     cols = data.shape[1]
     
-    for i in range(rows):        
-    # calculate average for each pixel    
+    # calculate average for each pixel 
+    for i in range(rows):
         for jj in range(cols):            
             neighbour_sum = 0   
             # for pixels whose south east neighbour amount is less than defined value.
@@ -525,18 +509,6 @@ def convo_se(data, filter_width):
     return outdata
 
 
-##if __name__ == '__main__':
-##    config = ConfigParser.RawConfigParser()
-##    config.read('terr_shield.cfg')
-##
-##    root = config.get('input_values', 'root')
-##    loc_list = config.get('input_values', 'loc_list').split()
-##    cyclone_area = config.get('input_values', 'cyclone_area')
-##    terrain(root, loc_list, cyclone_area)
-
-#
-#if __name__ == '__main__':
-#    print kern_w(4)
 
 if __name__ == '__main__':
     cyclone = r'N:\climate_change\CHARS\B_Wind\Projects\Multipliers\validation\output_work\test_cycl_stat.img'

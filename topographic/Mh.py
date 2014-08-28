@@ -1,23 +1,30 @@
+"""
+:mod:`Mh` -- Calculate the topographic multipliers
+==================================================================================
+
+This module is called by the module :term:`multiplier_calc` 
+"""
+
 import numpy as np
-
-"""
-.. module:: Mh.py
-   :synopsis: Multiplier calculations
-
-"""
-
-
 
 def escarpment_factor(profile, ridge, valley, data_spacing):
     """
     Calculate escarpment factor
+    
+    Parameters:        
+    ----------- 
 
-    :param profile:
-    :param ridge:
-    :param valley:
-    :param data_spacing:
-    :returns: escarpment factor (may be float || int)
+    :param profile: :class:`numpy.ndarray` the elevation of a line
+    :param ridge: :class:`numpy.ndarray` the indices of the ridges of a line
+    :param valley: :class:`numpy.ndarray` the indices of the valleys of a line
+    :param data_spacing: `float` the distance between neighbour points of a line
+    
+    Returns:        
+    -------- 
+    
+    :escarp_factor:  `float` the escarpment factor
     """
+    
     max_escarp = 3
     min_escarp = 0.5
     nrow = np.size(profile)
@@ -45,26 +52,29 @@ def escarpment_factor(profile, ridge, valley, data_spacing):
         escarp_factor = 1
 
     return escarp_factor
+    
 
 def Mh(profile, ridge, valley, data_spacing):
-    '''
-    Calculate M
-
-    :param profile:
-    :param ridge:
-    :param valley:
-    :param data_spacing:
-    :returns: numpy array
-    '''
-# --------------------------------------------------------
-# initialise parameters
-# --------------------------------------------------------
-#    import pdb
-#    pdb.set_trace()    
+    """
+    Calculate topographic multiplier
     
-#    print profile
-#    print profile[ridge]
-#    print profile[valley]
+    Parameters:        
+    ----------- 
+
+    :param profile: :class:`numpy.ndarray` the elevation of a line
+    :param ridge: :class:`numpy.ndarray` the indices of the ridges of a line
+    :param valley: :class:`numpy.ndarray` the indices of the valleys of a line
+    :param data_spacing: `float` the distance between neighbour points of a line
+    
+    Returns:        
+    -------- 
+    
+    :m: :class:`numpy.ndarray` the topogrpahic multiplier of the line
+    """
+   
+    # --------------------------------------------------------
+    # initialise parameters
+    # --------------------------------------------------------
     
     H_threshold = 10     # height threshold for Mh calculation
     Lu_threshold = data_spacing    # half distance threshold for Mh calculation
@@ -72,7 +82,6 @@ def Mh(profile, ridge, valley, data_spacing):
     Z = 10            #building height
     nrow = np.size(profile)
     m = np.ones((nrow, 1), dtype=float)
-    #m[np.isnan(profile)] = np.nan
     
     H  = profile[ridge] - profile[valley]
     Lu = abs(ridge - valley) * data_spacing / 2

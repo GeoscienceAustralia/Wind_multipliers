@@ -1,10 +1,11 @@
-#!/usr/bin/env python
 """
-Author: Roger Edberg (roger.edberg@ga.gov.au)
-Functions for BiLinear Recursive Bisection (BLRB).
+:mod:`blrb` -- Functions for BiLinear Recursive Bisection (BLRB).
 
 All shape references here follow the numpy convention (nrows, ncols), which
 makes some of the code harder to follow.
+==================================================================================
+
+:moduleauthor: Roger Edberg (roger.edberg@ga.gov.au)
 """
 
 import numpy, logging

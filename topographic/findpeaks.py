@@ -1,22 +1,27 @@
+"""
+:mod:`findpeaks` -- Generate the indices of the ridges in a data line
+==================================================================================
+
+This module is called by the module :term:`multiplier_calc` 
+"""
+
 import numpy as np
 
-"""
-.. module:: findpeaks.py
-   :synopsis: Generate the indices of the ridges in a data line
-
-
-"""
-
 def findpeaks(y):
-    '''
+    """
     Generate the indices of the peaks in a data line
-
-    :param y:
-    :returns: numpy array
-    '''
-#    import pdb
-#    pdb.set_trace()
     
+    Parameters:        
+    ----------- 
+
+    :param y: :class:`numpy.ndarray` the elevation of a line
+    
+    Returns:        
+    -------- 
+    
+    :ind:  :class:`numpy.ndarray` the index values of the ridges in the line
+    """
+
     dy = np.diff(y)
     if y.size == 0:
         ind = []
@@ -61,13 +66,21 @@ def findpeaks(y):
 
     return ind
 
-def findvalleys(y):
-    '''
-    Generate the indices of the valleys in a data line
 
-    :param y:
-    :returns: numpy array
-    '''
+def findvalleys(y):
+    """
+    Generate the indices of the valleys in a data line
+    
+    Parameters:        
+    ----------- 
+
+    :param y: :class:`numpy.ndarray` the elevation of a line
+    
+    Returns:        
+    -------- 
+    
+    :ind:  :class:`numpy.ndarray` the index values of the valleys in the line
+    """
 
     y = -y
 

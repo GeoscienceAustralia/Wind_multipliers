@@ -1,12 +1,32 @@
+"""
+:mod:`topomult` -- Calculate topographic multiplier
+==================================================================================
+
+This module is called by the module 
+:term:`all_multipliers` to calculate the topographic multiplier for an input tile
+for 8 directions and output as NetCDF format.
+
+References:
+    
+    Yang, T., Nadimpalli, K. & Cechet, R.P. 2014. Local wind assessment 
+    in Australia: computation methodology for wind multipliers. Record 2014/33. 
+    Geoscience Australia, Canberra.
+
+:moduleauthor: Tina Yang <tina.yang@ga.gov.au> 
+               Histroical authors: Xunguo Lin, Chris Thomas, 
+                                   Wenping Jiang, Craig Arthur 
+                 
+
+""" 
+
 import os
-from os.path import join as pjoin, exists
+from os.path import join as pjoin
 import numpy as np
 import math
 import logging as log
 from scipy import signal
-from osgeo import gdal, osr
-from netCDF4 import Dataset
-from osgeo.gdalconst import *
+from osgeo import gdal
+#from osgeo.gdalconst import *
 
 from utilities.get_pixel_size_grid import get_pixel_size_grids
 from utilities.nctools import saveMultiplier, getLatLon
@@ -14,7 +34,7 @@ from utilities.nctools import saveMultiplier, getLatLon
 import make_path       
 import multiplier_calc 
 
-__version__ = '0.4 - intergarate with terrian ans shileding multiplier for tiling and parallelisation'
+__version__ = '0.4 - intergarate with terrian and shileding multiplier for tiling and parallelisation'
 
 
 
@@ -23,15 +43,12 @@ def topomult(input_dem):
     """
     Executes core topographic multiplier functionality
 
-    :param input_dem: The path for input DEM
-
-    """      
-      
+    :param input_dem:`file` the input tile of the DEM
+    """ 
     
    # find output folder
     mh_folder = pjoin(os.path.dirname(input_dem), 'topographic')
     file_name = os.path.basename(input_dem)
-    raster_folder = pjoin(mh_folder, 'raster')
     nc_folder = pjoin(mh_folder, 'netcdf')        
     
     ds = gdal.Open(input_dem)    
@@ -72,10 +89,6 @@ def topomult(input_dem):
             data_spacing = cellsize
             
         Mhdata = np.ones(data.shape)
-        #Mhdata[np.isnan(data)] = np.nan
-        
-#        import pdb
-#        pdb.set_trace()
         
         strt_idx = []    
         if direction.find('n') >= 0:
@@ -104,59 +117,21 @@ def topomult(input_dem):
               
             # write the line back to the data array
             M = np.transpose(M)
-#            M[np.isnan(line1)] = np.nan
-#            print line
-#            print M
             Mhdata[path] = M[0,].flatten()  
     
         # Reshape the result to matrix like 
         Mhdata = np.reshape(Mhdata, (nc, nr))
         Mhdata = np.transpose(Mhdata)
         
-#        import pdb
-#        pdb.set_trace()
-        
+        # smooth
         g = np.ones((3, 3))/9.
         mhsmooth = signal.convolve(Mhdata, g, mode='same')
         mhsmooth[np.isnan(elevation_array)] = np.nan
         del Mhdata
-               
-        # output format as ERDAS Imagine
-#        driver = gdal.GetDriverByName('HFA')
-#        output_dir = pjoin(raster_folder, os.path.splitext(file_name)[0] +  '_' + direction + '.img')
-#        ms_dir_ds = driver.Create(output_dir, ds.RasterXSize, ds.RasterYSize, 1, GDT_Float32)
-#        
-#        # georeference the image and set the projection                           
-#        ms_dir_ds.SetGeoTransform(ds.GetGeoTransform())
-#        ms_dir_ds.SetProjection(ds.GetProjection()) 
-#        
-#        outBand_ms_dir = ms_dir_ds.GetRasterBand(1)
-#        outBand_ms_dir.WriteArray(mhsmooth)       
-#        
-#        # flush data to disk, set the NoData value and calculate stats
-#        outBand_ms_dir.FlushCache()
-#        outBand_ms_dir.SetNoDataValue(-99)
-#        #outBand_ms_dir.ComputeStatistics(1)
-#        outBand_ms_dir.GetStatistics(0,1) 
-#        
-#        ms_dir_ds = None
         
         # output format as netCDF4       
         tile_nc = pjoin(nc_folder, os.path.splitext(file_name)[0] + '_' + direction + '.nc')
-        saveMultiplier('Mt', mhsmooth, lat, lon, tile_nc)        
-        
-        
-#        ncobj = Dataset(tile_nc, 'w', format='NETCDF4', clobber=True)
-#        # create the x and y dimensions
-#        ncobj.createDimension('x', mhsmooth.shape[1])
-#        ncobj.createDimension('y', mhsmooth.shape[0])
-#        #create the variable (Shielding multpler ms in float)
-#        nc_data = ncobj.createVariable('ms', np.dtype(float), ('x', 'y'))
-#        # write data to variable
-#        nc_data[:] = mhsmooth
-#        #close the file
-#        ncobj.close()
-        
+        saveMultiplier('Mt', mhsmooth, lat, lon, tile_nc) 
         del mhsmooth
         
         log.info('Finished direction %s' % direction)
@@ -165,7 +140,5 @@ def topomult(input_dem):
 
    
 if __name__ == '__main__': 
-    #dem = r'N:\climate_change\CHARS\B_Wind\Projects\Multipliers\validation\output_work\test_dem.img'
-    dem = '/nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output_work/test_wrong_dem.img'
-    #dem = r'N:\climate_change\CHARS\B_Wind\Projects\Multipliers\validation\output_work\test_dem.asc'
+    dem = r'/nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output_work/test_wrong_dem.img'
     topomult(dem)

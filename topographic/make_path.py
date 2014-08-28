@@ -1,27 +1,33 @@
+"""
+:mod:`makepath` -- Returns a vector of array indices for a path
+==================================================================================
+
+This module is called by the module :term:`topomult` 
+
+:moduleauthor:: thomas - mar 2009
+
+"""
 import numpy
 
-"""
-.. module:: make_path.py
-   :synopsis: Returns a vector of array indices for a path
-
-.. moduleauthor:: thomas - mar 2009
-
-"""
-
 def make_path(nr,nc,n,dir):
-
-    '''
-
+    """
     Returns a vector of array indices for a path starting at index n in a matrix of size nr by nc and proceeding
     in direction dir, where dir is one of the 8 cardinal directions (n,s,e,w,ne,nw,se,sw).
     Note that the array indices are all 1-d indices.
-
-    :param nr:
-    :param nc:
-    :param n:
-    :param dir: Direction of the path
-    :returns: array
-    '''
+    
+    Parameters:        
+    ----------- 
+    
+    :param nr: `int` number of rows of the input DEM
+    :param nc: `int` number of columns of the input DEM
+    :param n: `int` starting index 
+    :param dir: `string` firection of the path
+    
+    Returns:        
+    -------- 
+    
+    :result:  :class:`numpy.ndarray` the indices of a path
+    """
 
     dir = dir.lower()
 

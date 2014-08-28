@@ -1,28 +1,36 @@
+"""
+:mod:`multiplier_calc` -- Computes the topographic multipliers for a data line
+==================================================================================
+
+This module is called by the module :term:`topomult`
+"""
+
 import logging as log
 import numpy as np
 import Mh            # calculate Mh using the simpler formula modified by C.Thomas 2009        
 from findpeaks import findpeaks, findvalleys     # get the indices of the ridges in a data line
 
-"""
-.. module:: multiplier_calc.py
-   :synopsis: Computes the multipliers for a data line
-
-"""
-
 
 def multiplier_calc(line, data_spacing):
     """
     Computes the multipliers for a data line
+    
+    Parameters:        
+    ----------- 
 
-    :param line:
-    :param data_spacing:
+    :param line: :class:`numpy.ndarray` the elevation of a line
+    :param data_spacing: `float` the distance between the neighour points
     :returns: numpy array
+    
+    Returns:        
+    -------- 
+    
+    :M:  :class:`numpy.ndarray` the topographic values of the line
     """
 
     # --------------------------------------------------------
     # initialise M as an array filled with 1
-    # --------------------------------------------------------
-    
+    # --------------------------------------------------------    
   
     nrow = np.size(line)
     M = np.ones((nrow, 1), dtype=float)    
@@ -33,9 +41,6 @@ def multiplier_calc(line, data_spacing):
     # Get the indices of the ridges & valleys
     ridge_ind  = findpeaks(fwd_line)        # relative ind
     valley_ind = findvalleys(fwd_line)    # relative ind
-    
-#    print ridge_ind
-#    print valley_ind
 
     if np.size(ridge_ind) == 0: # the DEM is completely flat
         log.debug( "Flat line" )

@@ -1,10 +1,11 @@
 """
-Provides the function :py:func:`execute`. This needs to be defined in a separate file to avoid
-circular imports.
+:mod:`_execute` -- Provides the function :py:func:`execute`. 
+This needs to be defined in a separate file to avoid circular imports.
+==================================================================================
+
 """
 import  os, subprocess, time, pdb, pprint
 
-#def execute(command_string=None, shell=True, cwd='C:\Python26\ArcGIS10.0\Lib\site-packages\osgeo', env=None,
 def execute(command_string=None, shell=True, cwd=None, env=None,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             preexec_fn=None, close_fds=False, bufsize=-1,

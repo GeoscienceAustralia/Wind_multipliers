@@ -1,10 +1,10 @@
-# -*- coding: utf-8 -*-
 """
-Created on Tue May 27 16:44:04 2014
+:mod:`get_pixel_size_grid` -- calculate the image pixel size in meter
+==================================================================================
 
-@author: u89076
-"""
+:moduleauthor: Alex Ip
 
+""" 
 
 import numpy as np
 import logging as log
@@ -18,6 +18,10 @@ RADIANS_PER_DEGREE = 0.01745329251994329576923690768489
 
 
 class earth(object):
+    """    
+    Values relevant to earth.
+    
+    """  
 
     # Mean radius
     RADIUS = 6371009.0  # (metres)
@@ -49,6 +53,17 @@ def get_pixel_size(dataset, (x, y)):
     """
     Returns X & Y sizes in metres of specified pixel as a tuple.
     N.B: Pixel ordinates are zero-based from top left
+    
+    Parameters:        
+    ----------- 
+   
+    :param dataset: `file` the input dataset
+    :param (x, y): `tuple` the input (x, y) point
+    
+    Returns:        
+    --------  
+        
+    :(x_size, y_size): tuple of `float` the grid size at the input (x, y) point
     """
     log.debug('(x, y) = (%f, %f)', x, y)
     
@@ -91,7 +106,19 @@ def get_pixel_size(dataset, (x, y)):
 
 
 def get_pixel_size_grids(dataset):
-    """ Returns two grids with interpolated X and Y pixel sizes for given datasets"""   
+    """ 
+    Returns two grids with interpolated X and Y pixel sizes for given datasets
+    
+    Parameters:        
+    ----------- 
+   
+    :param dataset: `file` the input dataset
+    
+    Returns:        
+    --------  
+        
+    :(x_size_grid, y_size_grid): tuple of :class:`numpy.ndarray` grid sizes for input dataset
+    """   
     
     def get_pixel_x_size(x, y):
         #return get_pixel_size(dataset, (x, y))[0]
