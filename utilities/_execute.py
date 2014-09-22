@@ -1,10 +1,15 @@
 """
-:mod:`_execute` -- Provides the function :py:func:`execute`. 
+:mod:`_execute` -- Provides the function :py:func:`execute`.
 This needs to be defined in a separate file to avoid circular imports.
-==================================================================================
+===============================================================================
 
 """
-import  os, subprocess, time, pdb, pprint
+import os
+import subprocess
+import time
+import pdb
+import pprint
+
 
 def execute(command_string=None, shell=True, cwd=None, env=None,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE,
@@ -13,8 +18,9 @@ def execute(command_string=None, shell=True, cwd=None, env=None,
     """
     Executes a command as a subprocess.
 
-    This function is a thin wrapper around :py:func:`subprocess.Popen` that gathers some extra information
-    on the subprocess's execution context and status.  All arguments except 'debug' are passed through
+    This function is a thin wrapper around :py:func:`subprocess.Popen` that
+    gathers some extra information on the subprocess's execution context and
+    status.  All arguments except 'debug' are passed through
     to :py:func:`subprocess.Popen` as-is.
 
     :param command_string:
@@ -62,29 +68,29 @@ def execute(command_string=None, shell=True, cwd=None, env=None,
     parent_wd = os.getcwd()
 
     p = subprocess.Popen(
-            command_string,
-            shell = shell,
-            cwd = cwd,
-            env = env,
-            stdout = stdout,
-            stderr = stderr,
-            bufsize = bufsize,
-            close_fds = close_fds,
-            preexec_fn = preexec_fn,
-        )
+        command_string,
+        shell=shell,
+        cwd=cwd,
+        env=env,
+        stdout=stdout,
+        stderr=stderr,
+        bufsize=bufsize,
+        close_fds=close_fds,
+        preexec_fn=preexec_fn,
+    )
     start_time = time.time()
     out, err = p.communicate()
     result = {
-                 'command': command_string,
-                 'returncode': p.returncode,
-                 'pid': p.pid,
-                 'stdout': out,
-                 'stderr': err,
-                 'parent_wd': parent_wd,
-                 'cwd': cwd,
-                 'env': env,
-                 'elapsed_time': time.time() - start_time,
-             }
+        'command': command_string,
+        'returncode': p.returncode,
+        'pid': p.pid,
+        'stdout': out,
+        'stderr': err,
+        'parent_wd': parent_wd,
+        'cwd': cwd,
+        'env': env,
+        'elapsed_time': time.time() - start_time,
+    }
 
     if debug:
         print '\n*** DEBUG ***'
@@ -94,5 +100,5 @@ def execute(command_string=None, shell=True, cwd=None, env=None,
 
     return result
 
-    #if debug and p.returncode:
+    # if debug and p.returncode:
     #    pdb.set_trace()

@@ -7,13 +7,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>files &mdash; Wind Multipliers v0.3 documentation</title>
+    <title>files &mdash; WindMultipliers v1.0 documentation</title>
     <link rel="stylesheet" href="../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.3',
+        VERSION:     '1.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,7 +22,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="Wind Multipliers v0.3 documentation" href="../index.html" />
+    <link rel="top" title="WindMultipliers v1.0 documentation" href="../index.html" />
     <link rel="up" title="Module code" href="index.html" /> 
   </head>
   <body>
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">Wind Multipliers v0.3 documentation</a> &raquo;</li>
+        <li><a href="../index.html">WindMultipliers v1.0 documentation</a> &raquo;</li>
           <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -77,7 +77,7 @@
 <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">__builtins__</span><span class="p">,</span> <span class="s">&quot;WindowsError&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">):</span>
         <span class="k">class</span> <span class="nc">WindowsError</span><span class="p">(</span><span class="ne">OSError</span><span class="p">):</span> <span class="k">pass</span>
 
-<div class="viewcode-block" id="flModulePath"><a class="viewcode-back" href="../docs/topographic.html#files.flModulePath">[docs]</a><span class="k">def</span> <span class="nf">flModulePath</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="flModulePath"><a class="viewcode-back" href="../docs/utilities.html#files.flModulePath">[docs]</a><span class="k">def</span> <span class="nf">flModulePath</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the path of the module &lt;level&gt; levels above this function</span>
 
@@ -98,7 +98,7 @@
     <span class="k">return</span> <span class="n">path</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">ext</span>
 
 </div>
-<div class="viewcode-block" id="flModuleName"><a class="viewcode-back" href="../docs/topographic.html#files.flModuleName">[docs]</a><span class="k">def</span> <span class="nf">flModuleName</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="flModuleName"><a class="viewcode-back" href="../docs/utilities.html#files.flModuleName">[docs]</a><span class="k">def</span> <span class="nf">flModuleName</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the name of the module &lt;level&gt; levels above this function</span>
 
@@ -111,7 +111,7 @@
     <span class="k">return</span> <span class="n">package</span>
 
 </div>
-<div class="viewcode-block" id="flProgramVersion"><a class="viewcode-back" href="../docs/topographic.html#files.flProgramVersion">[docs]</a><span class="k">def</span> <span class="nf">flProgramVersion</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="flProgramVersion"><a class="viewcode-back" href="../docs/utilities.html#files.flProgramVersion">[docs]</a><span class="k">def</span> <span class="nf">flProgramVersion</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function to return the __version__ string from the parent</span>
 <span class="sd">    program, where it is defined.</span>
@@ -151,7 +151,7 @@
         <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="n">delimiter</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="s">&#39;%&#39;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="flGetStat"><a class="viewcode-back" href="../docs/topographic.html#files.flGetStat">[docs]</a><span class="k">def</span> <span class="nf">flGetStat</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">CHUNK</span><span class="o">=</span><span class="mi">2</span> <span class="o">**</span> <span class="mi">16</span><span class="p">):</span>
+<div class="viewcode-block" id="flGetStat"><a class="viewcode-back" href="../docs/utilities.html#files.flGetStat">[docs]</a><span class="k">def</span> <span class="nf">flGetStat</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">CHUNK</span><span class="o">=</span><span class="mi">2</span> <span class="o">**</span> <span class="mi">16</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get basic statistics of filename - namely directory, name (excluding</span>
 <span class="sd">    base path), md5sum and the last modified date. Useful for checking</span>
@@ -194,7 +194,7 @@
     <span class="k">return</span> <span class="n">directory</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">md5sum</span><span class="p">,</span> <span class="n">moddate</span>
 
 </div>
-<div class="viewcode-block" id="flConfigFile"><a class="viewcode-back" href="../docs/topographic.html#files.flConfigFile">[docs]</a><span class="k">def</span> <span class="nf">flConfigFile</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s">&#39;.ini&#39;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="flConfigFile"><a class="viewcode-back" href="../docs/utilities.html#files.flConfigFile">[docs]</a><span class="k">def</span> <span class="nf">flConfigFile</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s">&#39;.ini&#39;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Build a configuration filename (default extension .ini) based on the</span>
 <span class="sd">    name and path of the function/module calling this function. Can also</span>
@@ -219,7 +219,7 @@
     <span class="k">return</span> <span class="n">config_file</span>
 
 </div>
-<div class="viewcode-block" id="flStartLog"><a class="viewcode-back" href="../docs/topographic.html#files.flStartLog">[docs]</a><span class="k">def</span> <span class="nf">flStartLog</span><span class="p">(</span><span class="n">logFile</span><span class="p">,</span> <span class="n">logLevel</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">datestamp</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">newlog</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<div class="viewcode-block" id="flStartLog"><a class="viewcode-back" href="../docs/utilities.html#files.flStartLog">[docs]</a><span class="k">def</span> <span class="nf">flStartLog</span><span class="p">(</span><span class="n">logFile</span><span class="p">,</span> <span class="n">logLevel</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">datestamp</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">newlog</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Start logging to logFile all messages of logLevel and higher.</span>
 <span class="sd">    Setting verbose=True will report all messages to STDOUT as well</span>
@@ -284,7 +284,7 @@
     <span class="k">return</span> <span class="n">logger</span>
 
 </div>
-<div class="viewcode-block" id="flLogFatalError"><a class="viewcode-back" href="../docs/topographic.html#files.flLogFatalError">[docs]</a><span class="k">def</span> <span class="nf">flLogFatalError</span><span class="p">(</span><span class="n">tblines</span><span class="p">):</span>
+<div class="viewcode-block" id="flLogFatalError"><a class="viewcode-back" href="../docs/utilities.html#files.flLogFatalError">[docs]</a><span class="k">def</span> <span class="nf">flLogFatalError</span><span class="p">(</span><span class="n">tblines</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Log the error messages normally reported in a traceback</span>
 <span class="sd">    so that all error messages can be caught.</span>
@@ -296,7 +296,7 @@
     <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
 
 </div>
-<div class="viewcode-block" id="flModDate"><a class="viewcode-back" href="../docs/topographic.html#files.flModDate">[docs]</a><span class="k">def</span> <span class="nf">flModDate</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">dateformat</span><span class="o">=</span><span class="s">&#39;%Y-%m-</span><span class="si">%d</span><span class="s"> %H:%M:%S&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="flModDate"><a class="viewcode-back" href="../docs/utilities.html#files.flModDate">[docs]</a><span class="k">def</span> <span class="nf">flModDate</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">dateformat</span><span class="o">=</span><span class="s">&#39;%Y-%m-</span><span class="si">%d</span><span class="s"> %H:%M:%S&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the update date of the input file</span>
 
@@ -315,7 +315,7 @@
     <span class="k">return</span> <span class="n">strftime</span><span class="p">(</span><span class="n">dateformat</span><span class="p">,</span> <span class="n">moddate</span><span class="p">)</span>
 
 </div>
-<div class="viewcode-block" id="flSize"><a class="viewcode-back" href="../docs/topographic.html#files.flSize">[docs]</a><span class="k">def</span> <span class="nf">flSize</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<div class="viewcode-block" id="flSize"><a class="viewcode-back" href="../docs/utilities.html#files.flSize">[docs]</a><span class="k">def</span> <span class="nf">flSize</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the size of the input file in bytes</span>
 
@@ -368,7 +368,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">Wind Multipliers v0.3 documentation</a> &raquo;</li>
+        <li><a href="../index.html">WindMultipliers v1.0 documentation</a> &raquo;</li>
           <li><a href="index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>

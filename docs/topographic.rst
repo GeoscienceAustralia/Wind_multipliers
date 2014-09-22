@@ -4,14 +4,6 @@ topographic
 ************
 
 
-File structure:
-
-* ``py-files/`` # contains all multiplier code
-* ``py-input/`` # input (DEM)
-* ``py-output/`` # ouput (8 x DEMs)
-* ``test/`` # contains scenario testing to verify output and and enhancements from AS1170.2 standard
-
-
 __init__.py
 ===========================================
 
@@ -20,25 +12,9 @@ __init__.py
    :members:
 
 
-ascii_read.py
-===========================================
-
-
-.. automodule:: ascii_read
-   :members:
-
-
-files.py
-===========================================
-
-
-.. automodule:: files
-   :members:
-
 
 findpeaks.py
 ===========================================
-
 
 .. automodule:: findpeaks
    :members:
@@ -65,18 +41,9 @@ multiplier_calc.py
    :members:
 
 
-test_topomult.py
-===================
-
-.. automodule:: test_topomult
-   :members:
-
-
-
 
 topomult.py
 ===========================================
-
 
 .. automodule:: topomult
    :members:

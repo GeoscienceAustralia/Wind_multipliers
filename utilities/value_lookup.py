@@ -1,10 +1,6 @@
 """
-:mod:`value_lookup` -- dictionaries relevant to terrain and shielding multipliers
-==================================================================================
-
-:moduleauthor: Tina Yang <tina.yang@ga.gov.au>
-
-""" 
+:mod:`value_lookup` -- dictionaries relevant to terrain & shielding multipliers
+"""
 
 multiplier_type = ['terrain', 'shielding']
 
@@ -27,7 +23,7 @@ terrain_class_desc = dict([(1, 'City Buildings'),
 
 
 # krishna's value roughly 6.5m used before 26/09/2013
-#mz_init_non_cycl = dict([(1, 750),
+# mz_init_non_cycl = dict([(1, 750),
 #                         (2, 765),
 #                         (3, 778),
 #                         (4, 822),
@@ -40,13 +36,11 @@ terrain_class_desc = dict([(1, 'City Buildings'),
 #                         (11, 1000),
 #                         (12, 937),
 #                         (13, 1000),
-#                         (14, 830), 
+#                         (14, 830),
 #                         (15, 1037)])
-                         
 
-                         
-                         
-#Tina's value at 10 m used from 26/09/2013
+
+# Tina's value at 10 m used from 26/09/2013
 mz_init_non_cycl = dict([(1, 750),
                          (2, 774),
                          (3, 782),
@@ -64,7 +58,7 @@ mz_init_non_cycl = dict([(1, 750),
                          (15, 1084)])
 
 
-#Krishna's value used at 10 m
+# Krishna's value used at 10 m
 mz_init_cycl = dict([(1, 863),
                      (2, 873),
                      (3, 882),
@@ -82,8 +76,6 @@ mz_init_cycl = dict([(1, 863),
                      (15, 1014)])
 
 
-
-
 mz_init_phil = dict([(1, 660),
                      (2, 680),
                      (3, 700),
@@ -97,7 +89,7 @@ mz_init_phil = dict([(1, 660),
                      (11, 960),
                      (12, 980),
                      (13, 1020),
-                     (14, 1100)])   
+                     (14, 1100)])
 
 
 ms_init = dict([(1, 90),
@@ -126,4 +118,3 @@ dire_aspect = dict([('none', 9),
                     ('sw', 6),
                     ('w', 7),
                     ('nw', 8)])
-                         

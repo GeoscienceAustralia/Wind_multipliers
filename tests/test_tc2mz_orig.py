@@ -1,3 +1,12 @@
+"""
+ Title: test_tc2mz_orig.py 
+ Author: Tina Yang, tina.yang@ga.gov.au 
+ CreationDate: 2014-06-02
+ Description: Unit testing module for tc2mz_orig function in terrain_mult.py 
+ Version: $Rev$ 
+ $Id$
+"""
+
 import unittest
 import numpy as np
 from numpy.testing import assert_almost_equal
@@ -23,7 +32,7 @@ class TestTc2mz_orig(unittest.TestCase):
         if parent not in sys.path:
             sys.path.insert(0, parent)
             
-        from terrain.terrain import tc2mz_orig
+        from terrain.terrain_mult import tc2mz_orig
         
         data = np.array([[2,4,4,5,13,11],
                       [7,14,3,1,8,6],

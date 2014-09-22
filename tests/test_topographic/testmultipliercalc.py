@@ -1,8 +1,18 @@
+"""
+    Title: testmultipliercalc.py 
+    Author: Tina Yang, tina.yang@ga.gov.au 
+    CreationDate: 2014-05-01
+    Description: Unit testing module for multiplier_cal function in 
+                 multiplier_calc.py 
+    Version: $Rev$ 
+    $Id$
+"""
+
 import sys
 import os.path
 import unittest
 import numpy as np
-from numpy.testing import assert_almost_equal, assert_allclose
+from numpy.testing import assert_allclose
 from matplotlib import pyplot
 from inspect import getfile, currentframe
 
@@ -33,7 +43,7 @@ class TestMultiplierCalc(unittest.TestCase):
         test_line_total = np.empty(0)
         mh_engineered_total = np.empty(0)
         
-        from topographic.multiplier_calc import multiplier_calc
+        # from topographic.multiplier_calc import multiplier_calc
         
         # get the test line and engineered mh total of 28 test cases               
         for i in range(1, len(test_slope)+1):

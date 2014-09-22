@@ -1,3 +1,11 @@
+"""
+ Author: Tina Yang, tina.yang@ga.gov.au 
+ CreationDate: 2014-05-01
+ Description: Engineered data used to test topographic multiplier computation 
+ Version: $Rev$ 
+ $Id$
+"""
+
 import numpy as np
 
 

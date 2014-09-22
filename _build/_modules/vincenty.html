@@ -7,13 +7,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>vincenty &mdash; Wind Multipliers v0.3 documentation</title>
+    <title>vincenty &mdash; WindMultipliers v1.0 documentation</title>
     <link rel="stylesheet" href="../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.3',
+        VERSION:     '1.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,7 +22,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="Wind Multipliers v0.3 documentation" href="../index.html" />
+    <link rel="top" title="WindMultipliers v1.0 documentation" href="../index.html" />
     <link rel="up" title="Module code" href="index.html" /> 
   </head>
   <body>
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">Wind Multipliers v0.3 documentation</a> &raquo;</li>
+        <li><a href="../index.html">WindMultipliers v1.0 documentation</a> &raquo;</li>
           <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -52,7 +52,7 @@
 <span class="kn">import</span> <span class="nn">math</span>
 
 <span class="n">__version__</span> <span class="o">=</span> <span class="s">&#39;1.0.1&#39;</span>
-<div class="viewcode-block" id="GreatCircle"><a class="viewcode-back" href="../docs/shielding.html#vincenty.GreatCircle">[docs]</a><span class="k">class</span> <span class="nc">GreatCircle</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="GreatCircle"><a class="viewcode-back" href="../docs/utilities.html#vincenty.GreatCircle">[docs]</a><span class="k">class</span> <span class="nc">GreatCircle</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    formula for perfect sphere from Ed Williams&#39; &#39;Aviation Formulary&#39;</span>
 <span class="sd">    (http://williams.best.vwh.net/avform.htm)</span>
@@ -103,7 +103,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">antipodal</span> <span class="o">=</span> <span class="bp">False</span>
 
-<div class="viewcode-block" id="GreatCircle.points"><a class="viewcode-back" href="../docs/shielding.html#vincenty.GreatCircle.points">[docs]</a>    <span class="k">def</span> <span class="nf">points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">npoints</span><span class="p">):</span>
+<div class="viewcode-block" id="GreatCircle.points"><a class="viewcode-back" href="../docs/utilities.html#vincenty.GreatCircle.points">[docs]</a>    <span class="k">def</span> <span class="nf">points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">npoints</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        compute arrays of npoints equally spaced</span>
 <span class="sd">        intermediate points along the great circle.</span>
@@ -204,7 +204,7 @@
 <span class="c"># |                                                                     |</span>
 <span class="c"># ----------------------------------------------------------------------</span>
 </div></div>
-<div class="viewcode-block" id="vinc_dist"><a class="viewcode-back" href="../docs/shielding.html#vincenty.vinc_dist">[docs]</a><span class="k">def</span> <span class="nf">vinc_dist</span><span class="p">(</span>  <span class="n">f</span><span class="p">,</span>  <span class="n">a</span><span class="p">,</span>  <span class="n">phi1</span><span class="p">,</span>  <span class="n">lembda1</span><span class="p">,</span>  <span class="n">phi2</span><span class="p">,</span>  <span class="n">lembda2</span> <span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="vinc_dist"><a class="viewcode-back" href="../docs/utilities.html#vincenty.vinc_dist">[docs]</a><span class="k">def</span> <span class="nf">vinc_dist</span><span class="p">(</span>  <span class="n">f</span><span class="p">,</span>  <span class="n">a</span><span class="p">,</span>  <span class="n">phi1</span><span class="p">,</span>  <span class="n">lembda1</span><span class="p">,</span>  <span class="n">phi2</span><span class="p">,</span>  <span class="n">lembda2</span> <span class="p">)</span> <span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the distance between two geographic points on the ellipsoid</span>
 <span class="sd">    and the forward and reverse azimuths between these points.</span>
@@ -311,7 +311,7 @@
 <span class="c">#                                                                           |</span>
 <span class="c">#----------------------------------------------------------------------------</span>
 </div>
-<div class="viewcode-block" id="vinc_pt"><a class="viewcode-back" href="../docs/shielding.html#vincenty.vinc_pt">[docs]</a><span class="k">def</span>  <span class="nf">vinc_pt</span><span class="p">(</span> <span class="n">f</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">phi1</span><span class="p">,</span> <span class="n">lembda1</span><span class="p">,</span> <span class="n">alpha12</span><span class="p">,</span> <span class="n">s</span> <span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="vinc_pt"><a class="viewcode-back" href="../docs/utilities.html#vincenty.vinc_pt">[docs]</a><span class="k">def</span>  <span class="nf">vinc_pt</span><span class="p">(</span> <span class="n">f</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">phi1</span><span class="p">,</span> <span class="n">lembda1</span><span class="p">,</span> <span class="n">alpha12</span><span class="p">,</span> <span class="n">s</span> <span class="p">)</span> <span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the lat and long of projected point and reverse azimuth</span>
 <span class="sd">    given a reference point and a distance and azimuth to project.</span>
@@ -468,7 +468,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">Wind Multipliers v0.3 documentation</a> &raquo;</li>
+        <li><a href="../index.html">WindMultipliers v1.0 documentation</a> &raquo;</li>
           <li><a href="index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
