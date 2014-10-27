@@ -25,7 +25,7 @@ Python 2.7, NumPy, SciPy, and GDAL are needed.
 
 
 
-Terrain, Shielding and Topographic Multipliers
+Package structures
 ==============================================
 
 The script for deriving terrain, shielding and topographic multipliers is
@@ -38,22 +38,21 @@ The script for deriving terrain, shielding and topographic multipliers is
 
 terrain module includes: 
 
-* terrain.py. 
+* **terrain.py:** produce the terrain multiplier for a given tile 
 
 shielding module includes:
  
-* shielding.py.
+* **shielding.py:** produce the shielding multiplier for a given tile
 
 topographic module includes:
  
-* **topomult.py:**
-* **make_path.py:** generate indices of a data line depending on the direction
-* **multiplier_calc.py:** calculate the multipliers for a data line extracted from the dataset
-* **multiplier_calc.py:** needs to call two functions:
-	* Mh.py: calculate Mh 
-	* findpeaks.py: get the indices of the ridges in a data line Directory
+* **topomult.py:** produce the topographic multiplier for a given tile
+    * make_path.py: generate indices of a data line depending on the direction    
+    * multiplier_calc.py: calculate the multipliers for a data line extracted from the dataset:
+        * Mh.py: calculate Mh 
+        * findpeaks.py: get the indices of the ridges in a data line Directory
 
-utilities module includes:
+utilities module includes supporting tools such as:
  
 * _execute.py;
 * blrb.py;
@@ -65,24 +64,21 @@ utilities module includes:
 * vincenty.py.
 
 .. note::
-	Before running all_multipliers.py to produce terrain, 	shielding and topographic multipliers, the configuration 	file named multiplier_conf.cfg needs to be configured. There 	are some variables to be pre-defined:
+	Before running **all_multipliers.py** to produce terrain, shielding and topographic multipliers, the configuration file named **multiplier_conf.cfg** needs to be configured. There are some variables to be pre-defined:
 
 	* **root:** the working directory of the task.
 	* **upwind_length:** the upwind buffer distance
 
-	Then copy the input files (dem and terrain classes) into the 	input folder (created beforehand manually) under root, and 	start to run all_multipliers.py. The resutls are 	respectively located under output folder (created 	automatically during 	the process) under root.
+	Then copy the input files (dem and terrain classes) into the input folder (created beforehand manually) under **root**, and start to run **all_multipliers.py**. The resutls are respectively located under output folder (created automatically during the process) under **root**.
 
 
 Background
 ===========================================
 
-
-File Structure
-===========================================
-
-
-Notes
-===========================================
+Wind multipliers are factors that transform regional wind speeds to local wind speeds considering local effects of land cover and topographic influences.
+It includes terrain, shielding, topographic and direction multipliers. Except the direction multplier whose value can be defined specifically by the 
+Australian wind loading standard AS/NZS 1170.2. Terrain, shielding and topographic multiplers are calculated using this software package based on the 
+principles and formulae defined in the AS/NZS 1170.2. The wind multipliers are primarily used for assessment of wind hazard at individual building locations.
 
 
 Issues
@@ -94,20 +90,14 @@ Issues for this project are currently being tracked through JIRA here: http://in
 Code Documentation
 ==================
 
-all_multipliers.py
-===========================================
-
-.. automodule:: all_multipliers
-   :members:
-
 .. toctree::
    :maxdepth: 2
 
-   docs/topographic
+   docs/all_multipliers
    docs/terrain
    docs/shielding
+   docs/topographic
    docs/utilities
-   docs/tests_characterisation
    docs/tests
      
 

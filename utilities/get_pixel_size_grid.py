@@ -8,7 +8,7 @@
 
 import numpy as np
 import logging as log
-from osgeo import gdal, osr
+from osgeo import osr
 
 from utilities.vincenty import vinc_dist
 from utilities.blrb import interpolate_grid
@@ -17,7 +17,7 @@ from utilities.blrb import interpolate_grid
 RADIANS_PER_DEGREE = 0.01745329251994329576923690768489
 
 
-class earth(object):
+class Earth(object):
 
     """
     Values relevant to earth.
@@ -55,8 +55,8 @@ def get_pixel_size(dataset, xxx_todo_changeme):
     Returns X & Y sizes in metres of specified pixel as a tuple.
     N.B: Pixel ordinates are zero-based from top left
 
-    :param: dataset: `file` the input dataset
-    :param: (x, y): `tuple` the input (x, y) point
+    :param dataset: `file` the input dataset
+    :param xxx_todo_changeme: `tuple` the input (x, y) point
 
     :return: tuple of `float` the grid size at the input (x, y) point
     """
@@ -90,7 +90,7 @@ def get_pixel_size(dataset, xxx_todo_changeme):
     lon2, lat2, _z = coord_transform_to_latlong.TransformPoint(xe, yc, 0)
     log.debug('For X size: (lon1, lat1) = (%f, %f), (lon2, lat2) = (%f, %f)',
               lon1, lat1, lon2, lat2)
-    x_size, _az_to, _az_from = vinc_dist(earth.F, earth.A,
+    x_size, _az_to, _az_from = vinc_dist(Earth.F, Earth.A,
                                          lat1 * RADIANS_PER_DEGREE,
                                          lon1 * RADIANS_PER_DEGREE,
                                          lat2 * RADIANS_PER_DEGREE,
@@ -100,7 +100,7 @@ def get_pixel_size(dataset, xxx_todo_changeme):
     lon2, lat2, _z = coord_transform_to_latlong.TransformPoint(xc, ys, 0)
     log.debug('For Y size: (lon1, lat1) = (%f, %f), (lon2, lat2) = (%f, %f)',
               lon1, lat1, lon2, lat2)
-    y_size, _az_to, _az_from = vinc_dist(earth.F, earth.A,
+    y_size, _az_to, _az_from = vinc_dist(Earth.F, Earth.A,
                                          lat1 * RADIANS_PER_DEGREE,
                                          lon1 * RADIANS_PER_DEGREE,
                                          lat2 * RADIANS_PER_DEGREE,

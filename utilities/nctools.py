@@ -20,32 +20,32 @@ logger.addHandler(logging.NullHandler())
 ISO_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 
-def getLatLon(x_Left, y_Upper, pixelWidth, pixelHeight, cols, rows):
+def getLatLon(x_left, y_upper, pixelwidth, pixelheight, cols, rows):
     """
     Return the longitude and latitude values that lie within
     the modelled domain
 
-    :param x_Left: :class:`numpy.ndarray` containing longitude values
-    :param y_Upper: :class:`numpy.ndarray` containing latitude values
-    :param pixelWidth: :class:`numpy.ndarray` containing longitude values
-    :param pixelHeightr: :class:`numpy.ndarray` containing latitude values
+    :param x_left: :class:`numpy.ndarray` containing longitude values
+    :param y_upper: :class:`numpy.ndarray` containing latitude values
+    :param pixelwidth: :class:`numpy.ndarray` containing longitude values
+    :param pixelheightr: :class:`numpy.ndarray` containing latitude values
     :param cols: :class:`numpy.ndarray` containing longitude values
     :param rows: :class:`numpy.ndarray` containing latitude values
 
     :return: lon: :class:`numpy.ndarray` containing longitude values
-    :return lat: :class:`numpy.ndarray` containing latitude values
+    :return: lat: :class:`numpy.ndarray` containing latitude values
 
     """
     lon = np.array(cols)
     lat = np.array(rows)
 
-    lon = [x_Left + 0.5 * pixelWidth + x * pixelWidth for x in range(0, cols)]
+    lon = [x_left + 0.5 * pixelwidth + x * pixelwidth for x in range(0, cols)]
     lat = [-
-           y_Upper -
+           y_upper -
            0.5 *
-           pixelHeight -
+           pixelheight -
            y *
-           pixelHeight for y in range(0, rows)]
+           pixelheight for y in range(0, rows)]
 
     return lon, lat
 
@@ -119,8 +119,89 @@ def ncSaveGrid(filename, dimensions, variables, nodata=-9999,
                datatitle=None, gatts={}, writedata=True,
                keepfileopen=False, zlib=True, complevel=4, lsd=None):
 
-    #    import pdb
-    #    pdb.set_trace()
+    """ 
+    Save a gridded dataset to a netCDF file using NetCDF4. 
+    
+    :param str filename: Full path to the file to write to. 
+    :param dimensions: :class:`dict`
+        The input dict 'dimensions' has a strict structure, to 
+        permit insertion of multiple dimensions. The dimensions should be keyed 
+        with the slowest varying dimension as dimension 0.
+        
+        :: 
+ 
+            dimesions = {0:{'name': 
+                            'values': 
+                            'dtype': 
+                            'atts':{'long_name': 
+                                    'units':  ...} }, 
+                         1:{'name': 
+                            'values': 
+                            'type': 
+                            'atts':{'long_name': 
+                                    'units':  ...} },
+                                  ...} 
+
+    :param variables: :class:`dict` 
+        The input dict 'variables' similarly requires a strict structure: 
+            
+        :: 
+
+            variables = {0:{'name': 
+                            'dims': 
+                            'values': 
+                            'dtype': 
+                            'atts':{'long_name': 
+                                    'units': 
+                                    ...} }, 
+                         1:{'name': 
+                            'dims': 
+                            'values': 
+                            'dtype': 
+                            'atts':{'long_name': 
+                                    'units': 
+                                    ...} }, 
+                             ...} 
+
+        The value for the 'dims' key must be a tuple that is a subset of 
+        the dimensions specified above. 
+
+    :param float nodata: Value to assign to missing data, default is -9999. 
+    :param str datatitle: Optional title to give the stored dataset. 
+    :param gatts: Optional dictionary of global attributes to include in the 
+                  file. 
+    :type gatts: `dict` or None 
+    :param dtype: The data type of the missing value. If not given, infer from 
+                  other input arguments. 
+    :type dtype: :class:`numpy.dtype` 
+    :param bool writedata: If true, then the function will write the provided 
+        data (passed in via the variables dict) to the file. Otherwise, no data 
+        is written. 
+        
+    :param bool keepfileopen:  If True, return a netcdf object and keep the 
+        file open, so that data can be written by the calling program. 
+        Otherwise, flush data to disk and close the file. 
+    
+    :param bool zlib: If true, compresses data in variables using gzip 
+        compression. 
+    
+    :param integer complevel: Value between 1 and 9, describing level of 
+        compression desired. Ignored if zlib=False. 
+
+    :param integer lsd: Variable data will be truncated to this number of 
+        significant digits. 
+
+    :return: `netCDF4.Dataset` object (if keepfileopen=True) 
+    :rtype: :class:`netCDF4.Dataset` 
+
+    :raises KeyError: If input dimension or variable dicts do not have required 
+        keys. 
+    :raises IOError: If output file cannot be created. 
+    :raises ValueError: if there is a mismatch between dimensions and shape of 
+        values to write. 
+
+    """ 
+
 
     try:
         ncobj = Dataset(filename, 'w', format='NETCDF3_CLASSIC', clobber=True)
@@ -217,15 +298,15 @@ def saveMultiplier(multiplier_name, multiplier_values, lat, lon, nc_name):
                                 multiplier[multiplier_name] +
                                 ' for each grid cell in ' + direction +
                                 ' direction for this tile'),
-                   'Lineage': ('This dataset was produced based on the \
-                               national dynamic land cover dataset v1 and \
-                               1 second SRTM level 2 derived digtial \
-                               models (DEM-S) version 1.0. Methodology is \
-                               based on the reference: Yang, T., Nadimpalli, \
-                               K. & Cechet, R.P. 2014. Local wind assessment \
-                               in Australia: computation methodology for wind \
-                               multipliers. Record 2014/33. Geoscience \
-                               Australia, Canberra.'),
+                   'Lineage': ('This dataset was produced based on the '
+                               'national dynamic land cover dataset v1 and '
+                               '1 second SRTM level 2 derived digtial '
+                               'models (DEM-S) version 1.0. Methodology is '
+                               'based on the reference: Yang, T., Nadimpalli, ' 
+                               'K. & Cechet, R.P. 2014. Local wind assessment '
+                               'in Australia: computation methodology for wind '
+                               'multipliers. Record 2014/33. Geoscience '
+                               'Australia, Canberra.'),
                    'Version': flProgramVersion(),
                    'Python_ver': sys.version,
                    'Custodian': ('Geoscience Australia')}

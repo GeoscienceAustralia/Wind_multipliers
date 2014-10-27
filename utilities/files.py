@@ -226,7 +226,7 @@ def flStartLog(logFile, logLevel, verbose=False, datestamp=False, newlog=True):
 
     :returns: :class:`logging.logger` object.
 
-    Example: flStartLog('/home/user/log/app.log', 'INFO', verbose=True)
+    :Example: flStartLog('/home/user/log/app.log', 'INFO', verbose=True)
 
     """
 

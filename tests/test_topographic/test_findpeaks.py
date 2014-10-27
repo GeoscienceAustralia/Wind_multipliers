@@ -59,7 +59,9 @@ class TestFindpeaks(unittest.TestCase):
 
     def test_findpeaks(self): 
         
-        cmd_folder = os.path.realpath(os.path.abspath(os.path.split(getfile(currentframe()))[0]))         
+        cmd_folder = os.path.realpath(
+                     os.path.abspath(os.path.split(
+                     getfile(currentframe()))[0]))         
         
         parent = os.path.abspath(os.path.join(cmd_folder, os.pardir))
         
@@ -94,29 +96,37 @@ class TestFindpeaks(unittest.TestCase):
             escarp_factor = np.ones((nrow, 1), dtype=float)
             
             if np.size(ridge_ind) == 0: # the DEM is completely flat
-               log.debug( "Flat line" )
-                 
-            elif np.size(ridge_ind) == 1 and ridge_ind[0] == 0:  # the DEM is downward slope all the time
-               log.debug( "Downward slope" )
+                log.debug( "Flat line" )
+            
+            # the DEM is downward slope all the time
+            elif np.size(ridge_ind) == 1 and ridge_ind[0] == 0:  
+                log.debug( "Downward slope" )
                 
-            else:                        # 2 general cases, calculate m, works as Mh.m
+            else:                # 2 general cases, calculate m, works as Mh.m
                          
                 if ridge_ind[0] == 0:    # (1) down up down up ....
                     for i in range(1, np.size(ridge_ind)):
-                        H[i], slope[i], downwind_slope[i], escarp_factor[i] = escarpment_factor(fwd_line, ridge_ind[i], valley_ind[i-1], self.data_spacing)                      
+                        H[i], slope[i], downwind_slope[i], escarp_factor[i] = \
+                        escarpment_factor(fwd_line, ridge_ind[i], 
+                                          valley_ind[i-1], 
+                                          self.data_spacing)                      
                   
                 else:                    # (2) up dowm up dowm ....
                     for i in range(0, np.size(ridge_ind)):
-                        H[i], slope[i], downwind_slope[i], escarp_factor[i] = escarpment_factor(fwd_line, ridge_ind[i], valley_ind[i], self.data_spacing)
+                        H[i], slope[i], downwind_slope[i], escarp_factor[i] = \
+                        escarpment_factor(fwd_line, ridge_ind[i], 
+                                          valley_ind[i], self.data_spacing)
         
             hill_no = np.size(ridge_ind) 
             
 #            import pdb
 #            pdb.set_trace()            
             
-            scripts_result = np.concatenate([[hill_no], H.flatten(), slope.flatten(), downwind_slope.flatten(), escarp_factor.flatten()])
-            #scripts_result = [[hill_no], H.flatten(), slope.flatten(), downwind_slope.flatten(), escarp_factor.flatten()]            
-            
+            scripts_result = np.concatenate([[hill_no], H.flatten(), 
+                                             slope.flatten(), 
+                                            downwind_slope.flatten(), 
+                                            escarp_factor.flatten()])
+           
             print scripts_result
             print expect_results[p]
                   
@@ -129,7 +139,8 @@ class TestFindpeaks(unittest.TestCase):
             pyplot.show()
 
             
-            assert_almost_equal(scripts_result, expect_results[p], decimal=2, err_msg='',verbose=True)  
+            assert_almost_equal(scripts_result, expect_results[p], decimal=2, 
+                                err_msg='',verbose=True)  
 
 
 if __name__ == "__main__":

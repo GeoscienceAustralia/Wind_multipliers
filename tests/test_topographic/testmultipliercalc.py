@@ -43,8 +43,6 @@ class TestMultiplierCalc(unittest.TestCase):
         test_line_total = np.empty(0)
         mh_engineered_total = np.empty(0)
         
-        # from topographic.multiplier_calc import multiplier_calc
-        
         # get the test line and engineered mh total of 28 test cases               
         for i in range(1, len(test_slope)+1):
             print '\ntest ' + str(i) + ' ...'            
@@ -60,11 +58,14 @@ class TestMultiplierCalc(unittest.TestCase):
                 L2_down = 2.5*L2_upper
             else:
                 L2_down = L2_upper
-                                          
+            
+            #starting position of 2Lu                             
             start_ind = 41
 
             for j in range(start_ind, 61):
+                #distance from the point to the crest
                 distance = 1500 - j*self.data_spacing
+                #updated eleveation considering the forward slope
                 test_line[j] = test_line[j] + (500-distance)*test_slope[i]
             if test_escarp[i] == 'Y':
                 for j in range(61, int(np.floor(L2_down/self.data_spacing))+61):

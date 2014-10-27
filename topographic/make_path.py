@@ -7,7 +7,7 @@ This module is called by the module :term:`topomult`
 import numpy
 
 
-def make_path(nr, nc, n, dir):
+def make_path(nr, nc, n, dire):
     """
     Returns a vector of array indices for a path starting at index n in a
     matrix of size nr by nc and proceeding in direction dir, where dir is one
@@ -17,12 +17,12 @@ def make_path(nr, nc, n, dir):
     :param nr: `int` number of rows of the input DEM
     :param nc: `int` number of columns of the input DEM
     :param n: `int` starting index
-    :param dir: `string` firection of the path
+    :param dire: `string` firection of the path
 
     :Returns: :class:`numpy.ndarray` the indices of a path
     """
 
-    dir = dir.lower()
+    dire = dire.lower()
 
     # first compute the i,j coordinates from the 1-d index n
     i = numpy.mod(n, nr) + 1
@@ -31,16 +31,16 @@ def make_path(nr, nc, n, dir):
     # find the i and j increments according to
     # the directions in which we traverse
 
-    if dir.find('n') >= 0:
+    if dire.find('n') >= 0:
         i_incr = 1
-    elif dir.find('s') >= 0:
+    elif dire.find('s') >= 0:
         i_incr = -1
     else:
         i_incr = 0
 
-    if dir.find('w') >= 0:
+    if dire.find('w') >= 0:
         j_incr = 1
-    elif dir.find('e') >= 0:
+    elif dire.find('e') >= 0:
         j_incr = -1
     else:
         j_incr = 0

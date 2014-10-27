@@ -1,6 +1,5 @@
 """
-:mod:`all_multipliers` -- Calculate terrain, shielding and
-topographic multipliers
+:mod:`all_multipliers` -- Calculate terrain, shielding & topographic multipliers
 ================================================================================
 
 This module can be run in parallel using MPI if the
@@ -747,8 +746,8 @@ def run(callback=None):
     flStartLog(logfile, loglevel, verbose)
 
     # set input maps and output folder
-    terrain_map = pjoin(pjoin(root, 'input'), "lc_terrain_class_test_5.img")
-    #terrain_map = pjoin(pjoin(root, 'input'), "lc_terrain_class.img")
+    #terrain_map = pjoin(pjoin(root, 'input'), "lc_terrain_class_test_5.img")
+    terrain_map = pjoin(pjoin(root, 'input'), "lc_terrain_class.img")
     #terrain_map = pjoin(pjoin(root, 'input'), "TestLandCoverData.img")
     dem = pjoin(pjoin(root, 'input'), "dems1_whole.img")
     #dem = pjoin(pjoin(root, 'input'), "TestDEMFlatTerrain.img")

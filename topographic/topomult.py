@@ -52,12 +52,12 @@ def topomult(input_dem):
     nr = ds.RasterYSize
 
     geotransform = ds.GetGeoTransform()
-    x_Left = geotransform[0]
-    y_Upper = -geotransform[3]
-    pixelWidth = geotransform[1]
-    pixelHeight = -geotransform[5]
+    x_left = geotransform[0]
+    y_upper = -geotransform[3]
+    pixelwidth = geotransform[1]
+    pixelheight = -geotransform[5]
 
-    lon, lat = getLatLon(x_Left, y_Upper, pixelWidth, pixelHeight, nc, nr)
+    lon, lat = getLatLon(x_left, y_upper, pixelwidth, pixelheight, nc, nr)
 
     band = ds.GetRasterBand(1)
     elevation_array = band.ReadAsArray(0, 0, nc, nr)
@@ -84,7 +84,7 @@ def topomult(input_dem):
         else:
             data_spacing = cellsize
 
-        Mhdata = np.ones(data.shape)
+        mhdata = np.ones(data.shape)
 
         strt_idx = []
         if direction.find('n') >= 0:
@@ -110,21 +110,21 @@ def topomult(input_dem):
             path = make_path.make_path(nr, nc, idx, direction)
             line = data[path]
             line[np.isnan(line)] = 0.
-            M = multiplier_calc.multiplier_calc(line, data_spacing)
+            m = multiplier_calc.multiplier_calc(line, data_spacing)
 
             # write the line back to the data array
-            M = np.transpose(M)
-            Mhdata[path] = M[0, ].flatten()
+            m = np.transpose(m)
+            mhdata[path] = m[0, ].flatten()
 
         # Reshape the result to matrix like
-        Mhdata = np.reshape(Mhdata, (nc, nr))
-        Mhdata = np.transpose(Mhdata)
+        mhdata = np.reshape(mhdata, (nc, nr))
+        mhdata = np.transpose(mhdata)
 
         # smooth
         g = np.ones((3, 3)) / 9.
-        mhsmooth = signal.convolve(Mhdata, g, mode='same')
+        mhsmooth = signal.convolve(mhdata, g, mode='same')
         mhsmooth[np.isnan(elevation_array)] = np.nan
-        del Mhdata
+        del mhdata
 
         # output format as netCDF4
         tile_nc = pjoin(nc_folder, os.path.splitext(file_name)[0] + '_' +

@@ -65,20 +65,19 @@ class GreatCircle(object):
         compute arrays of npoints equally spaced
         intermediate points along the great circle.
 
-        input parameter npoints is the number of points
-        to compute.
+        :param npoints: the number of points to compute.
 
-        Returns lons, lats (lists with longitudes and latitudes
-        of intermediate points in degrees).
+        :Returns: lons, lats (lists with longitudes and latitudes
+            of intermediate points in degrees).
 
-        For example npoints=10 will return arrays lons,lats of 10
-        equally spaced points along the great circle.
+        :Example: npoints=10 will return arrays lons,lats of 10
+            equally spaced points along the great circle.
         """
         # must ask for at least 2 points.
         if npoints <= 1:
             raise ValueError('npoints must be greater than 1')
         elif npoints == 2:
-            return [math.degrees(self.lon1), math.degrees(self.lon2)],\
+            return [math.degrees(self.lon1), math.degrees(self.lon2)], \
                    [math.degrees(self.lat1), math.degrees(self.lat2)]
         # can't do it if endpoints are antipodal, since
         # route is undefined.
@@ -175,15 +174,14 @@ def vinc_dist(f, a, phi1, lembda1, phi2, lembda2):
     and the forward and reverse azimuths between these points.
     lats, longs and azimuths are in radians, distance in metres
 
-    Arguments:
-        f: flattening
-        a: equatorial radius (metres)
-        phi1: latitude of first point
-        lembda1: longitude of first point
-        phi2: latitude of second point
-        lembda2: longitude of second point
+    :param f: flattening
+    :param a: equatorial radius (metres)
+    :param phi1: latitude of first point
+    :param lembda1: longitude of first point
+    :param phi2: latitude of second point
+    :param lembda2: longitude of second point
 
-    Returns ( s, alpha12,  alpha21 ) as a tuple
+    :Returns: ( s, alpha12,  alpha21 ) as a tuple
     """
 
     if (abs(phi2 - phi1) < 1e-8) and (abs(lembda2 - lembda1) < 1e-8):
@@ -305,9 +303,10 @@ def vinc_pt(f, a, phi1, lembda1, alpha12, s):
     """
     Returns the lat and long of projected point and reverse azimuth
     given a reference point and a distance and azimuth to project.
-    lats, longs and azimuths are passed in decimal degrees
+    
+    :parameters: lats, longs and azimuths passed in decimal degrees
 
-    Returns ( phi2,  lambda2,  alpha21 ) as a tuple
+    :Returns: ( phi2,  lambda2,  alpha21 ) as a tuple
     """
 
     two_pi = 2.0 * math.pi
@@ -322,8 +321,8 @@ def vinc_pt(f, a, phi1, lembda1, alpha12, s):
     TanU1 = (1 - f) * math.tan(phi1)
     U1 = math.atan(TanU1)
     sigma1 = math.atan2(TanU1, math.cos(alpha12))
-    Sinalpha = math.cos(U1) * math.sin(alpha12)
-    cosalpha_sq = 1.0 - Sinalpha * Sinalpha
+    sinalpha = math.cos(U1) * math.sin(alpha12)
+    cosalpha_sq = 1.0 - sinalpha * sinalpha
 
     u2 = cosalpha_sq * (a * a - b * b) / (b * b)
     A = 1.0 + (u2 / 16384) * (4096 + u2 * (-768 + u2 *
@@ -360,7 +359,7 @@ def vinc_pt(f, a, phi1, lembda1, alpha12, s):
                        math.sin(sigma) *
                        math.cos(alpha12)),
                       ((1 - f) *
-                       math.sqrt(math.pow(Sinalpha, 2) +
+                       math.sqrt(math.pow(sinalpha, 2) +
                                  pow(math.sin(U1) *
                                      math.sin(sigma) -
                                      math.cos(U1) *
@@ -373,7 +372,7 @@ def vinc_pt(f, a, phi1, lembda1, alpha12, s):
 
     C = (f / 16) * cosalpha_sq * (4 + f * (4 - 3 * cosalpha_sq))
 
-    omega = lembda - (1 - C) * f * Sinalpha *  \
+    omega = lembda - (1 - C) * f * sinalpha *  \
         (sigma + C * math.sin(sigma) *
          (math.cos(two_sigma_m) +
           C * math.cos(sigma) *
@@ -382,7 +381,7 @@ def vinc_pt(f, a, phi1, lembda1, alpha12, s):
     lembda2 = lembda1 + omega
 
     alpha21 = math.atan2(
-        Sinalpha,
+        sinalpha,
         (-
          math.sin(U1) *
          math.sin(sigma) +

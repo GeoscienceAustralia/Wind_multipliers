@@ -51,20 +51,20 @@ def terrain(cyclone_area, temp_tile):
 
     # get georeference info
     geotransform = temp_dataset.GetGeoTransform()
-    x_Left = geotransform[0]
-    y_Upper = -geotransform[3]
-    pixelWidth = geotransform[1]
-    pixelHeight = -geotransform[5]
+    x_left = geotransform[0]
+    y_upper = -geotransform[3]
+    pixelwidth = geotransform[1]
+    pixelheight = -geotransform[5]
 
     # get the tile's longitude and latitude values used to save output in
     # netcdf
-    lon, lat = getLatLon(x_Left, y_Upper, pixelWidth, pixelHeight, cols, rows)
+    lon, lat = getLatLon(x_left, y_upper, pixelwidth, pixelheight, cols, rows)
 
     # get the average grid size in metre of the tile
     x_m_array, y_m_array = get_pixel_size_grids(temp_dataset)
-    pixelWidth = 0.5 * (np.mean(x_m_array) + np.mean(y_m_array))
-    log.info('pixelWidth is %2i ' % pixelWidth)
-    print pixelWidth
+    pixelwidth = 0.5 * (np.mean(x_m_array) + np.mean(y_m_array))
+    log.info('pixelwidth is %2i ' % pixelwidth)
+    print pixelwidth
 
     # produce the original terrain multiplier from the input terrain map
     log.info(
@@ -85,9 +85,9 @@ def terrain(cyclone_area, temp_tile):
     for one_dir in dire:
         log.info(one_dir)
         if one_dir in ['w', 'e', 'n', 's']:
-            filter_width = int(terrain_buffer / pixelWidth)
+            filter_width = int(terrain_buffer / pixelwidth)
         else:
-            filter_width = int(terrain_buffer / (pixelWidth * 1.414))
+            filter_width = int(terrain_buffer / (pixelwidth * 1.414))
 
         # if the tile is smaller than the upwind buffer, all the tile is in
         # buffer

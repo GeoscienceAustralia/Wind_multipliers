@@ -23,7 +23,7 @@ import numexpr
 from scipy import ndimage
 from os.path import join as pjoin
 import numpy as np
-from osgeo.gdalconst import *
+from osgeo.gdalconst import GDT_Float32
 from osgeo import gdal
 from utilities import value_lookup
 from utilities.get_pixel_size_grid import get_pixel_size_grids
@@ -143,7 +143,8 @@ def get_slope_aspect(input_dem):
 #    driver = gdal.GetDriverByName('HFA')
 #
 #    slope = pjoin(ms_folder, os.path.splitext(file_name)[0] + '_slope.img')
-#    slope_ds = driver.Create(slope, ds.RasterXSize, ds.RasterYSize, 1, GDT_Float32)
+#    slope_ds = driver.Create(
+#                      slope, ds.RasterXSize, ds.RasterYSize, 1, GDT_Float32)
 #    slope_ds.SetGeoTransform(ds.GetGeoTransform())
 #    slope_ds.SetProjection(ds.GetProjection())
 #
@@ -157,7 +158,8 @@ def get_slope_aspect(input_dem):
 #
 #
 #    aspect = pjoin(ms_folder, os.path.splitext(file_name)[0] + '_aspect.img')
-#    aspect_ds = driver.Create(aspect, ds.RasterXSize, ds.RasterYSize, 1, GDT_Float32)
+#    aspect_ds = driver.Create(aspect, ds.RasterXSize, ds.RasterYSize, 
+#                               1, GDT_Float32)
 #    aspect_ds.SetGeoTransform(ds.GetGeoTransform())
 #    aspect_ds.SetProjection(ds.GetProjection())
 #
@@ -221,14 +223,14 @@ def terrain_class2ms_orig(terrain):
     ms_orig_ds.SetGeoTransform(terrain_resample_ds.GetGeoTransform())
     ms_orig_ds.SetProjection(terrain_resample_ds.GetProjection())
 
-    outBand_ms_orig = ms_orig_ds.GetRasterBand(1)
-    outBand_ms_orig.WriteArray(outdata)
+    outband_ms_orig = ms_orig_ds.GetRasterBand(1)
+    outband_ms_orig.WriteArray(outdata)
     del outdata
 
     # flush data to disk, set the NoData value and calculate stats
-    outBand_ms_orig.FlushCache()
-    outBand_ms_orig.SetNoDataValue(-99)
-    outBand_ms_orig.GetStatistics(0, 1)
+    outband_ms_orig.FlushCache()
+    outband_ms_orig.SetNoDataValue(-99)
+    outband_ms_orig.GetStatistics(0, 1)
 
     terrain_resample_ds = None
 
@@ -255,12 +257,12 @@ def convo_combine(ms_orig, slope_array, aspect_array):
     cols = ms_orig_ds.RasterXSize
     rows = ms_orig_ds.RasterYSize
     geotransform = ms_orig_ds.GetGeoTransform()
-    x_Left = geotransform[0]
-    y_Upper = -geotransform[3]
-    pixelWidth = geotransform[1]
-    pixelHeight = -geotransform[5]
+    x_left = geotransform[0]
+    y_upper = -geotransform[3]
+    pixelwidth = geotransform[1]
+    pixelheight = -geotransform[5]
 
-    lon, lat = getLatLon(x_Left, y_Upper, pixelWidth, pixelHeight, cols, rows)
+    lon, lat = getLatLon(x_left, y_upper, pixelwidth, pixelheight, cols, rows)
 
     band = ms_orig_ds.GetRasterBand(1)
     data = band.ReadAsArray(0, 0, cols, rows)
@@ -270,9 +272,9 @@ def convo_combine(ms_orig, slope_array, aspect_array):
         sys.exit(1)
 
     x_m_array, y_m_array = get_pixel_size_grids(ms_orig_ds)
-    pixelWidth = 0.5 * (np.mean(x_m_array) + np.mean(y_m_array))
+    pixelwidth = 0.5 * (np.mean(x_m_array) + np.mean(y_m_array))
 
-    log.info('pixelWidth is %2i ' % pixelWidth)
+    log.info('pixelwidth is %2i ' % pixelwidth)
 
     ms_folder = os.path.dirname(ms_orig)
     nc_folder = pjoin(ms_folder, 'netcdf')
@@ -284,9 +286,9 @@ def convo_combine(ms_orig, slope_array, aspect_array):
 
         log.info(one_dir)
         if one_dir in ['w', 'e', 'n', 's']:
-            kernel_size = int(100.0 / pixelWidth)
+            kernel_size = int(100.0 / pixelwidth)
         else:
-            kernel_size = int(100.0 / pixelWidth)
+            kernel_size = int(100.0 / pixelwidth)
 
         log.info('convolution kernel size is %s ' % str(kernel_size))
 
