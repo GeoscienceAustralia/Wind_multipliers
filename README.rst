@@ -10,8 +10,8 @@ Before running all_multipliers.py to produce terrain, shielding and topographic
 multipliers, the configuration file named multiplier_conf.cfg needs to be
 configured. There are some variables to be pre-defined:
 
-<strong>root:</strong> the working directory of the task.<br/>
-<strong>upwind\_length:</strong> the upwind buffer distance.<br/>
+    * **root:** the working directory of the task.
+    * **upwind_length:** the upwind buffer distance
 
 Then copy the input files (dem and terrain classes) into the input
 folder (created beforehand manually) under root, and start to run
@@ -19,7 +19,8 @@ all_multipliers.py. The resutls are respectively located under output
 folder (created automatically during the process) under root.
 
 This version is parallel implementation using PyPar for MPI handling. To run it
-in parallel mode: mpirun -np ncpu python all_mulitpliers.py.
+in parallel mode: mpirun -np ncpu python all_mulitpliers.py, while ncpu is the
+number of CPUs adopted.
 
 
 
