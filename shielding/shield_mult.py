@@ -285,10 +285,12 @@ def convo_combine(ms_orig, slope_array, aspect_array):
     for one_dir in dire:
 
         log.info(one_dir)
-        if one_dir in ['w', 'e', 'n', 's']:
-            kernel_size = int(100.0 / pixelwidth)
-        else:
-            kernel_size = int(100.0 / pixelwidth)
+        
+        kernel_size = int(100.0 / pixelwidth)
+#        if one_dir in ['w', 'e', 'n', 's']:
+#            kernel_size = int(100.0 / pixelwidth)
+#        else:
+#            kernel_size = int(100.0 / pixelwidth)
 
         log.info('convolution kernel size is %s ' % str(kernel_size))
 

@@ -79,12 +79,14 @@ Wind multipliers are factors that transform regional wind speeds to local wind s
 It includes terrain, shielding, topographic and direction multipliers. Except the direction multplier whose value can be defined specifically by the 
 Australian wind loading standard AS/NZS 1170.2. Terrain, shielding and topographic multiplers are calculated using this software package based on the 
 principles and formulae defined in the AS/NZS 1170.2. The wind multipliers are primarily used for assessment of wind hazard at individual building locations.
+Further details on wind multipliers can be found in Geosicence Australia record: Local Wind Assessment in Australia: Computation Methodology for Wind Multipliers,
+which is avilable here http://www.ga.gov.au/metadata-gateway/metadata/record/75299/
 
 
 Issues
 ======
 
-Issues for this project are currently being tracked through JIRA here: http://intranet.ga.gov.au/jira/browse/WM
+Issues for this project are currently being tracked through Github
 
 
 Code Documentation

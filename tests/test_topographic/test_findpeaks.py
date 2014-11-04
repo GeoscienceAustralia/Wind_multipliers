@@ -132,11 +132,11 @@ class TestFindpeaks(unittest.TestCase):
                   
         
             #plot the line profile
-            point_no = len(test_line[p])
-            x = np.arange(point_no)
-            y = test_line[p]
-            pyplot.plot(x, y, 'g')
-            pyplot.show()
+#            point_no = len(test_line[p])
+#            x = np.arange(point_no)
+#            y = test_line[p]
+#            pyplot.plot(x, y, 'g')
+#            pyplot.show()
 
             
             assert_almost_equal(scripts_result, expect_results[p], decimal=2, 

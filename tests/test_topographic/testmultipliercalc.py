@@ -78,11 +78,11 @@ class TestMultiplierCalc(unittest.TestCase):
             mh_engineered_total = np.concatenate([mh_engineered_total.flatten(), mh_engineered[i].flatten()])
 
         #plot the line profile
-        point_no = len(test_slope)*181
-        x = np.arange(point_no)
-        y = test_line_total
-        pyplot.plot(x, y, 'g')
-        pyplot.show()
+#        point_no = len(test_slope)*181
+#        x = np.arange(point_no)
+#        y = test_line_total
+#        pyplot.plot(x, y, 'g')
+#        pyplot.show()
 
         # get the computed mh from scripts using the test line total
         mh_scripts = multiplier_calc(test_line_total, self.data_spacing) 
