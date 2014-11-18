@@ -12,7 +12,6 @@ This module can be run in parallel using MPI if the
 
 """
 
-
 import sys
 import os
 import time
@@ -25,13 +24,12 @@ import terrain.terrain_mult
 import shielding.shield_mult
 import topographic.topomult
 import ConfigParser
-#from osgeo.gdalconst import *
 from osgeo.gdalconst import GA_ReadOnly
-from utilities.files import flStartLog
+from utilities.files import fl_start_log
 from utilities._execute import execute
 from os.path import join as pjoin
 from functools import wraps
-from functools import reduce
+#from functools import reduce
 import itertools
 
 __version__ = '1.0'
@@ -318,7 +316,6 @@ class Multipliers(object):
         band = temp_dataset.GetRasterBand(1)
         checksum = band.Checksum()
         log.info('This landcover tile checksum is {0}'.format(str(checksum)))
-        print 'landcover checksum ' + str(checksum)
 
         if checksum > 0:
             # extract the temporary tile from DEM
@@ -398,7 +395,6 @@ class Multipliers(object):
             checksum = band.Checksum()
             log.info(
                 'This cyclonic region tile checksum is {0}'.format(checksum))
-            print 'cyclone checksum ' + str(checksum)
 
             if checksum > 0:
                 cyclone_area = temp_tile_cyclone
@@ -775,16 +771,11 @@ def run():
     else:
         pass
 
-    flStartLog(logfile, loglevel, verbose)
+    fl_start_log(logfile, loglevel, verbose)
 
     # set input maps and output folder
-    #terrain_map = pjoin(pjoin(root, 'input'), "lc_terrain_class_test_5.img")
     terrain_map = pjoin(pjoin(root, 'input'), "lc_terrain_class.img")
-    #terrain_map = pjoin(pjoin(root, 'input'), "TestLandCoverData.img")
     dem = pjoin(pjoin(root, 'input'), "dems1_whole.img")
-    #dem = pjoin(pjoin(root, 'input'), "TestDEMFlatTerrain.img")
-    #dem = pjoin(pjoin(root, 'input'), "testDEMPercentSlope.img")
-    #dem = pjoin(pjoin(root, 'input'), "ZeroBackground.img")
     cyclone_area = pjoin(pjoin(root, 'input'), "cyclone_dem_extent.img")
 
     do_output_directory_creation(root)

@@ -1,3 +1,7 @@
+"""
+Provides utilities dealing with files.
+"""
+
 import os
 import sys
 import logging
@@ -21,16 +25,16 @@ if not getattr(__builtins__, "WindowsError", None):
         pass
 
 
-def flModulePath(level=1):
+def fl_module_path(level=1):
     """
     Get the path of the module <level> levels above this function
 
     :param int level: level in the stack of the module calling this function
-                      (default = 1, function calling ``flModulePath``)
+                      (default = 1, function calling ``fl_module_path``)
 
     :returns: path, basename and extension of the file containing the module
 
-    :Example: path, base, ext = flModulePath( ), Calling flModulePath() from
+    :Example: path, base, ext = fl_module_path( ), Calling fl_module_path() from
               "/foo/bar/baz.py" produces the result "/foo/bar", "baz", ".py"
     """
 
@@ -41,17 +45,17 @@ def flModulePath(level=1):
     return path, base, ext
 
 
-def flModuleName(level=1):
+def fl_module_name(level=1):
     """
     Get the name of the module <level> levels above this function
 
     :param int level: Level in the stack of the module calling this function
-                      (default = 1, function calling ``flModuleName``)
+                      (default = 1, function calling ``fl_module_name``)
 
     :returns: Module name.
     :rtype: str
 
-    :Example: mymodule = flModuleName( ) Calling flModuleName() from
+    :Example: mymodule = fl_module_name( ) Calling fl_module_name() from
               "/foo/bar/baz.py" returns "baz"
 
     """
@@ -60,7 +64,7 @@ def flModuleName(level=1):
     return package
 
 
-def flProgramVersion(level=None):
+def fl_program_version(level=None):
     """
     Return the __version__ string from the top-level program, where defined.
 
@@ -83,7 +87,7 @@ def flProgramVersion(level=None):
         return ''
 
 
-def flLoadFile(filename, comments='%', delimiter=',', skiprows=0):
+def fl_load_file(filename, comments='%', delimiter=',', skiprows=0):
     """
     Load a delimited text file -- uses :func:`numpy.genfromtxt`
 
@@ -100,7 +104,7 @@ def flLoadFile(filename, comments='%', delimiter=',', skiprows=0):
                          skip_header=skiprows)
 
 
-def flSaveFile(filename, data, header='', delimiter=',', fmt='%.18e'):
+def fl_save_file(filename, data, header='', delimiter=',', fmt='%.18e'):
     """
     Save data to a file.
 
@@ -126,21 +130,21 @@ def flSaveFile(filename, data, header='', delimiter=',', fmt='%.18e'):
         np.savetxt(filename, data, delimiter=delimiter, fmt=fmt, comments='%')
 
 
-def flGetStat(filename, CHUNK=2 ** 16):
+def fl_get_stat(filename, chunk_whole=2 ** 16):
     """
     Get basic statistics of filename - namely directory, name (excluding
     base path), md5sum and the last modified date. Useful for checking
     if a file has previously been processed.
 
     :param str filename: Filename to check.
-    :param int CHUNK: (optional) chunk size (for md5sum calculation).
+    :param int chunk_whole: (optional) chunk size (for md5sum calculation).
 
     :returns: path, name, md5sum, modification date for the file.
     :raises TypeError: if the input file is not a string.
     :raises IOError: if the file is not a valid file, or if the file
                      cannot be opened.
 
-    :Example: dir, name, md5sum, moddate = flGetStat(filename)
+    :Example: dir, name, md5sum, moddate = fl_get_stat(filename)
 
     """
 
@@ -168,7 +172,7 @@ def flGetStat(filename, CHUNK=2 ** 16):
     f = open(filename, 'rb')
 
     while True:
-        chunk = f.read(CHUNK)
+        chunk = f.read(chunk_whole)
         if not chunk:
             break
         m.update(chunk)
@@ -177,7 +181,7 @@ def flGetStat(filename, CHUNK=2 ** 16):
     return directory, fname, md5sum, moddate
 
 
-def flConfigFile(extension='.ini', prefix='', level=None):
+def fl_config_file(extension='.ini', prefix='', level=None):
     """
     Build a configuration filename (default extension .ini) based on the
     name and path of the function/module calling this function. Can also
@@ -194,7 +198,7 @@ def flConfigFile(extension='.ini', prefix='', level=None):
               extension replaced with extension, and optionally prefix
               inserted after the last path separator.
 
-    :Example: configFile = flConfigFile('.ini') Calling flConfigFile from
+    :Example: configFile = fl_config_file('.ini') Calling fl_config_file from
               /foo/bar/baz.py should return /foo/bar/baz.ini
     """
 
@@ -202,19 +206,19 @@ def flConfigFile(extension='.ini', prefix='', level=None):
         import inspect
         level = len(inspect.stack())
 
-    path, base, ext = flModulePath(level)
+    path, base, ext = fl_module_path(level)
     config_file = os.path.join(path, prefix + base + extension)
     config_file = config_file.replace(os.path.sep, '/')
     return config_file
 
 
-def flStartLog(logFile, logLevel, verbose=False, datestamp=False, newlog=True):
+def fl_start_log(log_file, log_level, verbose=False, datestamp=False, newlog=True):
     """
-    Start logging to logFile all messages of logLevel and higher.
+    Start logging to log_file all messages of log_level and higher.
     Setting ``verbose=True`` will report all messages to STDOUT as well.
 
-    :param str logFile: Full path to log file.
-    :param str logLevel: String specifiying one of the standard Python logging
+    :param str log_file: Full path to log file.
+    :param str log_level: String specifiying one of the standard Python logging
                          levels ('NOTSET','DEBUG','INFO','WARNING','ERROR',
                          'CRITICAL')
     :param boolean verbose: ``True`` will echo all logging calls to STDOUT
@@ -226,36 +230,36 @@ def flStartLog(logFile, logLevel, verbose=False, datestamp=False, newlog=True):
 
     :returns: :class:`logging.logger` object.
 
-    :Example: flStartLog('/home/user/log/app.log', 'INFO', verbose=True)
+    :Example: fl_start_log('/home/user/log/app.log', 'INFO', verbose=True)
 
     """
 
     if datestamp:
-        b, e = os.path.splitext(logFile)
+        b, e = os.path.splitext(log_file)
         curdate = datetime.datetime.now()
         curdatestr = curdate.strftime('%Y%m%d%H%M')
         # The lstrip on the extension is required as splitext leaves it on.
-        logFile = "%s.%s.%s" % (b, curdatestr, e.lstrip('.'))
+        log_file = "%s.%s.%s" % (b, curdatestr, e.lstrip('.'))
 
-    logDir = os.path.dirname(os.path.realpath(logFile))
-    if not os.path.isdir(logDir):
+    log_dir = os.path.dirname(os.path.realpath(log_file))
+    if not os.path.isdir(log_dir):
         try:
-            os.makedirs(logDir)
+            os.makedirs(log_dir)
         except OSError:
             # Unable to create the directory, so stick it in the
             # current working directory:
-            path, fname = os.path.split(logFile)
-            logFile = os.path.join(os.getcwd(), fname)
+            path, fname = os.path.split(log_file)
+            log_file = os.path.join(os.getcwd(), fname)
 
     if newlog:
         mode = 'w'
     else:
         mode = 'a'
 
-    logging.basicConfig(level=getattr(logging, logLevel),
+    logging.basicConfig(level=getattr(logging, log_level),
                         format='%(asctime)s: %(message)s',
                         datefmt='%Y-%m-%d %H:%M:%S',
-                        filename=logFile,
+                        filename=log_file,
                         filemode=mode)
     logger = logging.getLogger()
 
@@ -267,19 +271,19 @@ def flStartLog(logFile, logLevel, verbose=False, datestamp=False, newlog=True):
             # If set to true, all logging calls will also be printed to the
             # console (i.e. STDOUT)
             console = logging.StreamHandler()
-            console.setLevel(getattr(logging, logLevel))
+            console.setLevel(getattr(logging, log_level))
             formatter = logging.Formatter('%(asctime)s: %(message)s',
                                           '%H:%M:%S', )
             console.setFormatter(formatter)
             logger.addHandler(console)
 
-    logger.info('Started log file %s (detail level %s)' % (logFile, logLevel))
+    logger.info('Started log file %s (detail level %s)' % (log_file, log_level))
     logger.info('Running %s (pid %d)' % (sys.argv[0], os.getpid()))
-    logger.info('Version %s' % (flProgramVersion()))
+    logger.info('Version %s' % (fl_program_version()))
     return logger
 
 
-def flLogFatalError(tblines):
+def fl_log_fatal_error(tblines):
     """
     Log the error messages normally reported in a traceback so that
     all error messages can be caught, then exit. The input 'tblines'
@@ -294,7 +298,7 @@ def flLogFatalError(tblines):
     sys.exit()
 
 
-def flModDate(filename, dateformat='%Y-%m-%d %H:%M:%S'):
+def fl_mod_date(filename, dateformat='%Y-%m-%d %H:%M:%S'):
     """
     Return the last modified date of the input file
 
@@ -305,7 +309,7 @@ def flModDate(filename, dateformat='%Y-%m-%d %H:%M:%S'):
     :returns: File modification date/time as a string
     :rtype: str
 
-    :Example: modDate = flModDate( 'C:/foo/bar.csv' ,
+    :Example: modDate = fl_mod_date( 'C:/foo/bar.csv' ,
                                  dateformat='%Y-%m-%dT%H:%M:%S' )
     """
 
@@ -319,7 +323,7 @@ def flModDate(filename, dateformat='%Y-%m-%d %H:%M:%S'):
     return strftime(dateformat, moddate)
 
 
-def flSize(filename):
+def fl_size(filename):
     """
     Return the size of the input file in bytes
 
@@ -328,7 +332,7 @@ def flSize(filename):
     :returns: File size in bytes.
     :rtype: int
 
-    :Example: file_size = flSize( 'C:/foo/bar.csv' )
+    :Example: file_size = fl_size( 'C:/foo/bar.csv' )
     """
 
     try:

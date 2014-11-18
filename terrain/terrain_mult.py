@@ -20,7 +20,7 @@ for 8 directions and output as NetCDF format.
 import os
 import logging as log
 from utilities import value_lookup
-from utilities.nctools import saveMultiplier, getLatLon
+from utilities.nctools import save_multiplier, get_lat_lon
 from utilities.get_pixel_size_grid import get_pixel_size_grids
 import numpy as np
 import osgeo.gdal as gdal
@@ -58,13 +58,12 @@ def terrain(cyclone_area, temp_tile):
 
     # get the tile's longitude and latitude values used to save output in
     # netcdf
-    lon, lat = getLatLon(x_left, y_upper, pixelwidth, pixelheight, cols, rows)
+    lon, lat = get_lat_lon(x_left, y_upper, pixelwidth, pixelheight, cols, rows)
 
     # get the average grid size in metre of the tile
     x_m_array, y_m_array = get_pixel_size_grids(temp_dataset)
     pixelwidth = 0.5 * (np.mean(x_m_array) + np.mean(y_m_array))
-    log.info('pixelwidth is %2i ' % pixelwidth)
-    print pixelwidth
+    log.info('pixelwidth is {0}'.format(pixelwidth))
 
     # produce the original terrain multiplier from the input terrain map
     log.info(
@@ -112,7 +111,7 @@ def terrain(cyclone_area, temp_tile):
             one_dir +
             '.nc')
         log.info("Saving terrain multiplier in netCDF file")
-        saveMultiplier('Mz', outdata, lat, lon, tile_nc)
+        save_multiplier('Mz', outdata, lat, lon, tile_nc)
 
         del outdata
 

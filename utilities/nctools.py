@@ -13,14 +13,14 @@ import ConfigParser
 from os.path import join as pjoin
 import inspect
 
-from utilities.files import flProgramVersion
+from utilities.files import fl_program_version
 
-logger = logging.getLogger(__name__)
-logger.addHandler(logging.NullHandler())
+LOGGER = logging.getLogger(__name__)
+LOGGER.addHandler(logging.NullHandler())
 ISO_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 
-def getLatLon(x_left, y_upper, pixelwidth, pixelheight, cols, rows):
+def get_lat_lon(x_left, y_upper, pixelwidth, pixelheight, cols, rows):
     """
     Return the longitude and latitude values that lie within
     the modelled domain
@@ -50,7 +50,7 @@ def getLatLon(x_left, y_upper, pixelwidth, pixelheight, cols, rows):
     return lon, lat
 
 
-def ncCreateVar(
+def nc_create_var(
         ncobj,
         name,
         dimensions,
@@ -80,7 +80,7 @@ def ncCreateVar(
     :rtype: :class:`netCDF4.Variable`
     """
 
-    logger.debug("Creating variable %s" % name)
+    LOGGER.debug("Creating variable %s" % name)
 
     var = ncobj.createVariable(name, dtype, dimensions, **kwargs)
 
@@ -93,7 +93,7 @@ def ncCreateVar(
     return var
 
 
-def ncCreateDim(ncobj, name, values, dtype, atts=None):
+def nc_create_dim(ncobj, name, values, dtype, atts=None):
     """
     Create a `dimension` instance in a :class:`netcdf4.Dataset` or
     :class:`netcdf4.Group` instance.
@@ -108,14 +108,14 @@ def ncCreateDim(ncobj, name, values, dtype, atts=None):
     """
 
     ncobj.createDimension(name, np.size(values))
-    varDim = (name,)
-    dimension = ncCreateVar(ncobj, name, varDim, dtype)
+    var_dim = (name,)
+    dimension = nc_create_var(ncobj, name, var_dim, dtype)
     dimension[:] = np.array(values, dtype=dtype)
     if atts:
         dimension.setncatts(atts)
 
 
-def ncSaveGrid(filename, dimensions, variables, nodata=-9999,
+def nc_save_grid(filename, dimensions, variables, nodata=-9999,
                datatitle=None, gatts={}, writedata=True,
                keepfileopen=False, zlib=True, complevel=4, lsd=None):
 
@@ -220,7 +220,7 @@ def ncSaveGrid(filename, dimensions, variables, nodata=-9999,
             raise KeyError("Dimension dict missing key '{0}'".
                            format(missingkeys))
 
-        ncCreateDim(ncobj, d['name'], d['values'], d['dtype'], d['atts'])
+        nc_create_dim(ncobj, d['name'], d['values'], d['dtype'], d['atts'])
         dims = dims + (d['name'],)
 
     for v in variables.itervalues():
@@ -270,7 +270,7 @@ def ncSaveGrid(filename, dimensions, variables, nodata=-9999,
             return
 
 
-def saveMultiplier(multiplier_name, multiplier_values, lat, lon, nc_name):
+def save_multiplier(multiplier_name, multiplier_values, lat, lon, nc_name):
     """
     Save multiplier data to a netCDF file.
 
@@ -307,7 +307,7 @@ def saveMultiplier(multiplier_name, multiplier_values, lat, lon, nc_name):
                                'in Australia: computation methodology for wind '
                                'multipliers. Record 2014/33. Geoscience '
                                'Australia, Canberra.'),
-                   'Version': flProgramVersion(),
+                   'Version': fl_program_version(),
                    'Python_ver': sys.version,
                    'Custodian': ('Geoscience Australia')}
 
@@ -383,7 +383,7 @@ def saveMultiplier(multiplier_name, multiplier_values, lat, lon, nc_name):
         }
     }
 
-    ncSaveGrid(nc_name,
+    nc_save_grid(nc_name,
                dimensions, variables,
                nodata=-9999,
                datatitle=multiplier_name + ' multiplier',

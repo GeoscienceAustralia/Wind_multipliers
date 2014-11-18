@@ -63,11 +63,17 @@ def print_call(logger):
     """
 
     def wrap(func):
+        """
+        wrap
+        """
         if RUNNING_SPHINX or not logger:
             return func
 
         @wraps(func)
         def wrapper(*args, **kwargs):
+            """
+            wrapper
+            """
             arg_str = create_arg_string(func, *args, **kwargs)
             logger('\ncalling %s.%s(\n\t%s\n)\n'
                    % (func.__module__, func.__name__, arg_str))

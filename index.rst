@@ -49,7 +49,7 @@ topographic module includes:
 * **topomult.py:** produce the topographic multiplier for a given tile
     * make_path.py: generate indices of a data line depending on the direction    
     * multiplier_calc.py: calculate the multipliers for a data line extracted from the dataset:
-        * Mh.py: calculate Mh 
+        * mh.py: calculate Mh 
         * findpeaks.py: get the indices of the ridges in a data line Directory
 
 utilities module includes supporting tools such as:

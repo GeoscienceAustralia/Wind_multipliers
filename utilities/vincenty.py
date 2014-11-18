@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import numpy as NX
+import numpy as np
 import math
 
 __version__ = '1.0.1'
@@ -86,7 +86,7 @@ class GreatCircle(object):
             circle whose endpoints are antipodal')
         d = self.gcarclen
         delta = 1.0 / (npoints - 1)
-        f = delta * NX.arange(npoints)  # f=0 is point 1, f=1 is point 2.
+        f = delta * np.arange(npoints)  # f=0 is point 1, f=1 is point 2.
         incdist = self.distance / (npoints - 1)
         lat1 = self.lat1
         lat2 = self.lat2
@@ -94,15 +94,15 @@ class GreatCircle(object):
         lon2 = self.lon2
         # perfect sphere, use great circle formula
         if self.f == 0.:
-            A = NX.sin((1 - f) * d) / math.sin(d)
-            B = NX.sin(f * d) / math.sin(d)
+            A = np.sin((1 - f) * d) / math.sin(d)
+            B = np.sin(f * d) / math.sin(d)
             x = A * math.cos(lat1) * math.cos(lon1) + B * \
                 math.cos(lat2) * math.cos(lon2)
             y = A * math.cos(lat1) * math.sin(lon1) + B * \
                 math.cos(lat2) * math.sin(lon2)
             z = A * math.sin(lat1) + B * math.sin(lat2)
-            lats = NX.arctan2(z, NX.sqrt(x ** 2 + y ** 2))
-            lons = NX.arctan2(y, x)
+            lats = np.arctan2(z, np.sqrt(x ** 2 + y ** 2))
+            lons = np.arctan2(y, x)
             lons = map(math.degrees, lons.tolist())
             lats = map(math.degrees, lats.tolist())
         # use ellipsoid formulas
@@ -191,11 +191,11 @@ def vinc_dist(f, a, phi1, lembda1, phi2, lembda2):
 
     b = a * (1.0 - f)
 
-    TanU1 = (1 - f) * math.tan(phi1)
-    TanU2 = (1 - f) * math.tan(phi2)
+    tan_u1 = (1 - f) * math.tan(phi1)
+    tan_u2 = (1 - f) * math.tan(phi2)
 
-    U1 = math.atan(TanU1)
-    U2 = math.atan(TanU2)
+    U1 = math.atan(tan_u1)
+    U2 = math.atan(tan_u2)
 
     lembda = lembda2 - lembda1
     last_lembda = -4000000.0                # an impossibe value
@@ -318,9 +318,9 @@ def vinc_pt(f, a, phi1, lembda1, alpha12, s):
 
     b = a * (1.0 - f)
 
-    TanU1 = (1 - f) * math.tan(phi1)
-    U1 = math.atan(TanU1)
-    sigma1 = math.atan2(TanU1, math.cos(alpha12))
+    tan_u1 = (1 - f) * math.tan(phi1)
+    U1 = math.atan(tan_u1)
+    sigma1 = math.atan2(tan_u1, math.cos(alpha12))
     sinalpha = math.cos(U1) * math.sin(alpha12)
     cosalpha_sq = 1.0 - sinalpha * sinalpha
 

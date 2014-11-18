@@ -12,30 +12,30 @@ import numpy
 import logging
 from meta import print_call
 
-logger = logging.getLogger('root.' + __name__)
+LOGGER = logging.getLogger('root.' + __name__)
 
 DEFAULT_ORIGIN = (0, 0)
 DEFAULT_SHAPE = (8, 8)
 
 
-@print_call(logger.debug)
-def bilinear(shape, fUL, fUR, fLR, fLL, dtype=numpy.float64):
+@print_call(LOGGER.debug)
+def bilinear(shape, f_ul, f_ur, f_lr, f_ll, dtype=numpy.float64):
     """
     Bilinear interpolation of four scalar values.
 
     :param shape:
         Shape of interpolated grid (nrows, ncols).
 
-    :param fUL:
+    :param f_ul:
         Data value at upper-left (NW) corner.
 
-    :param fUR:
+    :param f_ur:
         Data value at upper-right (NE) corner.
 
-    :param fLR:
+    :param f_lr:
         Data value at lower-right (SE) corner.
 
-    :param fLL:
+    :param f_ll:
         Data value at lower-left (SW) corner.
 
     :param dtype:
@@ -50,11 +50,11 @@ def bilinear(shape, fUL, fUR, fLR, fLL, dtype=numpy.float64):
     s /= (shape[0] - 1.0)
     t /= (shape[1] - 1.0)
 
-    return s * (t * fLR + (1.0 - t) * fLL) + \
-        (1.0 - s) * (t * fUR + (1.0 - t) * fUL)
+    return s * (t * f_lr + (1.0 - t) * f_ll) + \
+        (1.0 - s) * (t * f_ur + (1.0 - t) * f_ul)
 
 
-@print_call(logger.debug)
+@print_call(LOGGER.debug)
 def indices(origin=DEFAULT_ORIGIN, shape=DEFAULT_SHAPE):
     """
     Generate corner indices for a grid block.
@@ -72,7 +72,7 @@ def indices(origin=DEFAULT_ORIGIN, shape=DEFAULT_SHAPE):
             origin[1], origin[1] + shape[1] - 1)
 
 
-@print_call(logger.debug)
+@print_call(LOGGER.debug)
 def subdivide(origin=DEFAULT_ORIGIN, shape=DEFAULT_SHAPE):
     """
     Generate indices for grid sub-blocks.
@@ -102,7 +102,7 @@ def subdivide(origin=DEFAULT_ORIGIN, shape=DEFAULT_SHAPE):
     }
 
 
-@print_call(logger.debug)
+@print_call(LOGGER.debug)
 def interpolate_block(origin=DEFAULT_ORIGIN, shape=DEFAULT_SHAPE,
                       eval_func=None, grid=None):
     """
@@ -131,18 +131,18 @@ def interpolate_block(origin=DEFAULT_ORIGIN, shape=DEFAULT_SHAPE,
     """
     i0, i1, j0, j1 = indices(origin, shape)
 
-    fUL = eval_func(i0, j0)
-    fLL = eval_func(i1, j0)
-    fUR = eval_func(i0, j1)
-    fLR = eval_func(i1, j1)
+    f_ul = eval_func(i0, j0)
+    f_ll = eval_func(i1, j0)
+    f_ur = eval_func(i0, j1)
+    f_lr = eval_func(i1, j1)
 
     if grid is None:
-        return bilinear(shape, fUL, fUR, fLR, fLL)
+        return bilinear(shape, f_ul, f_ur, f_lr, f_ll)
 
-    grid[i0:i1 + 1, j0:j1 + 1] = bilinear(shape, fUL, fUR, fLR, fLL)
+    grid[i0:i1 + 1, j0:j1 + 1] = bilinear(shape, f_ul, f_ur, f_lr, f_ll)
 
 
-@print_call(logger.debug)
+@print_call(LOGGER.debug)
 def interpolate_grid(depth=0, origin=DEFAULT_ORIGIN, shape=DEFAULT_SHAPE,
                      eval_func=None, grid=None):
     """
@@ -185,6 +185,6 @@ def interpolate_grid(depth=0, origin=DEFAULT_ORIGIN, shape=DEFAULT_SHAPE,
         interpolate_block(origin, shape, eval_func, grid)
     else:
         blocks = subdivide(origin, shape)
-        for (kUL, kUR, kLL, kLR) in blocks.itervalues():
-            block_shape = (kLR[0] - kUL[0] + 1, kLR[1] - kUL[1] + 1)
-            interpolate_grid(depth - 1, kUL, block_shape, eval_func, grid)
+        for (k_ul, k_ur, k_ll, k_lr) in blocks.itervalues():
+            block_shape = (k_lr[0] - k_ul[0] + 1, k_lr[1] - k_ul[1] + 1)
+            interpolate_grid(depth - 1, k_ul, block_shape, eval_func, grid)

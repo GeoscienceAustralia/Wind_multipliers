@@ -26,7 +26,7 @@ from scipy import signal
 from osgeo import gdal
 
 from utilities.get_pixel_size_grid import get_pixel_size_grids
-from utilities.nctools import saveMultiplier, getLatLon
+from utilities.nctools import save_multiplier, get_lat_lon
 
 import make_path
 import multiplier_calc
@@ -57,7 +57,7 @@ def topomult(input_dem):
     pixelwidth = geotransform[1]
     pixelheight = -geotransform[5]
 
-    lon, lat = getLatLon(x_left, y_upper, pixelwidth, pixelheight, nc, nr)
+    lon, lat = get_lat_lon(x_left, y_upper, pixelwidth, pixelheight, nc, nr)
 
     band = ds.GetRasterBand(1)
     elevation_array = band.ReadAsArray(0, 0, nc, nr)
@@ -129,9 +129,9 @@ def topomult(input_dem):
         # output format as netCDF4
         tile_nc = pjoin(nc_folder, os.path.splitext(file_name)[0] + '_' +
                         direction + '.nc')
-        saveMultiplier('Mt', mhsmooth, lat, lon, tile_nc)
+        save_multiplier('Mt', mhsmooth, lat, lon, tile_nc)
         del mhsmooth
 
-        log.info('Finished direction %s' % direction)
+        log.info('Finished direction {0}'.format(direction))
 
     ds = None

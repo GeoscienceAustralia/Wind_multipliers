@@ -60,6 +60,7 @@ def get_pixel_size(dataset, xxx_todo_changeme):
 
     :return: tuple of `float` the grid size at the input (x, y) point
     """
+    
     (x, y) = xxx_todo_changeme
     log.debug('(x, y) = (%f, %f)', x, y)
 
@@ -119,13 +120,27 @@ def get_pixel_size_grids(dataset):
     :return: tuple of :class:`numpy.ndarray` grid sizes for input dataset
     """
 
-#    import pdb
-#    pdb.set_trace()
-
     def get_pixel_x_size(x, y):
+        """
+        Returns x size in metres of specified pixel as a tuple.
+        
+        :param (x,Y): `tuple` the input (x, y) point
+    
+        :return: `float` the grid x size at the input (x, y) point
+        """
+        
         return get_pixel_size(dataset, (x, y))[0]
+        
 
     def get_pixel_y_size(x, y):
+        """
+        Returns y size in metres of specified pixel as a tuple.
+        
+        :param (x,Y): `tuple` the input (x, y) point
+    
+        :return: `float` the grid y size at the input (x, y) point
+        """
+        
         return get_pixel_size(dataset, (x, y))[1]
 
     x_size_grid = np.zeros((dataset.RasterYSize,

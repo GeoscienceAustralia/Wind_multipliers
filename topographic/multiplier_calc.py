@@ -8,7 +8,7 @@ This module is called by the module :term:`topomult`
 import logging as log
 import numpy as np
 # calculate Mh using the simpler formula modified by C.Thomas 2009
-import Mh
+import mh
 # get the indices of the ridges in a data line
 from findpeaks import findpeaks, findvalleys
 
@@ -24,11 +24,11 @@ def multiplier_calc(line, data_spacing):
     """
 
     # --------------------------------------------------------
-    # initialise M as an array filled with 1
+    # initialise m_array as an array filled with 1
     # --------------------------------------------------------
 
     nrow = np.size(line)
-    M = np.ones((nrow, 1), dtype=float)
+    m_array = np.ones((nrow, 1), dtype=float)
 
     # take the largest integer of each element of the data line
     fwd_line = np.floor(line)
@@ -48,13 +48,14 @@ def multiplier_calc(line, data_spacing):
 
         if ridge_ind[0] == 0:    # (1) down up down up ....
             for i in range(1, np.size(ridge_ind)):
-                m = Mh.Mh(fwd_line, ridge_ind[i], valley_ind[i - 1],
+                m = mh.mh_calc(fwd_line, ridge_ind[i], valley_ind[i - 1],
                           data_spacing)
-                M = np.maximum(M, m)
+                m_array = np.maximum(m_array, m)
 
         else:                    # (2) up dowm up dowm ....
             for i in range(0, np.size(ridge_ind)):
-                m = Mh.Mh(fwd_line, ridge_ind[i], valley_ind[i], data_spacing)
-                M = np.maximum(M, m)
+                m = mh.mh_calc(fwd_line, ridge_ind[i], valley_ind[i], 
+                               data_spacing)
+                m_array = np.maximum(m_array, m)
 
-    return M
+    return m_array

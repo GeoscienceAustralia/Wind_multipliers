@@ -28,7 +28,7 @@ from osgeo import gdal
 from utilities import value_lookup
 from utilities.get_pixel_size_grid import get_pixel_size_grids
 from utilities.get_pixel_size_grid import RADIANS_PER_DEGREE
-from utilities.nctools import saveMultiplier, getLatLon
+from utilities.nctools import save_multiplier, get_lat_lon
 
 
 def shield(terrain, input_dem):
@@ -262,19 +262,19 @@ def convo_combine(ms_orig, slope_array, aspect_array):
     pixelwidth = geotransform[1]
     pixelheight = -geotransform[5]
 
-    lon, lat = getLatLon(x_left, y_upper, pixelwidth, pixelheight, cols, rows)
+    lon, lat = get_lat_lon(x_left, y_upper, pixelwidth, pixelheight, cols, rows)
 
     band = ms_orig_ds.GetRasterBand(1)
     data = band.ReadAsArray(0, 0, cols, rows)
 
     if ms_orig_ds is None:
-        log.info('Could not open %s ' % ms_orig)
+        log.info('Could not open {0}'.format(ms_orig))
         sys.exit(1)
 
     x_m_array, y_m_array = get_pixel_size_grids(ms_orig_ds)
     pixelwidth = 0.5 * (np.mean(x_m_array) + np.mean(y_m_array))
 
-    log.info('pixelwidth is %2i ' % pixelwidth)
+    log.info('pixelwidth is {0}'.format(pixelwidth))
 
     ms_folder = os.path.dirname(ms_orig)
     nc_folder = pjoin(ms_folder, 'netcdf')
@@ -292,7 +292,7 @@ def convo_combine(ms_orig, slope_array, aspect_array):
 #        else:
 #            kernel_size = int(100.0 / pixelwidth)
 
-        log.info('convolution kernel size is %s ' % str(kernel_size))
+        log.info('convolution kernel size is {0}'.format(str(kernel_size)))
 
         # if the resolution size is bigger than 100 m, no covolution just copy
         # the initial shielding factor to each direction
@@ -316,7 +316,7 @@ def convo_combine(ms_orig, slope_array, aspect_array):
             one_dir +
             '.nc')
         log.info("Saving terrain multiplier in netCDF file")
-        saveMultiplier('Ms', result, lat, lon, tile_nc)
+        save_multiplier('Ms', result, lat, lon, tile_nc)
 
         del result
 
