@@ -38,11 +38,11 @@ The script for deriving terrain, shielding and topographic multipliers is
 
 terrain module includes: 
 
-* **terrain.py:** produce the terrain multiplier for a given tile 
+* **terrain_mult.py:** produce the terrain multiplier for a given tile 
 
 shielding module includes:
  
-* **shielding.py:** produce the shielding multiplier for a given tile
+* **shield_mult.py:** produce the shielding multiplier for a given tile
 
 topographic module includes:
  
