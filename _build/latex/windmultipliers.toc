@@ -22,8 +22,8 @@
 \contentsline {subsubsection}{\texttt {findpeaks} -- Generate the indices of the ridges in a data line}{17}{subsubsection*.53}
 \contentsline {subsection}{\numberline {6.4.3}make\_path.py}{18}{subsection.6.4.3}
 \contentsline {subsubsection}{\texttt {makepath} -- Returns a vector of array indices for a path}{18}{subsubsection*.56}
-\contentsline {subsection}{\numberline {6.4.4}Mh.py}{18}{subsection.6.4.4}
-\contentsline {subsubsection}{\texttt {Mh} -- Calculate the topographic multipliers}{18}{subsubsection*.58}
+\contentsline {subsection}{\numberline {6.4.4}mh.py}{18}{subsection.6.4.4}
+\contentsline {subsubsection}{\texttt {mh} -- Calculate the topographic multipliers}{18}{subsubsection*.58}
 \contentsline {subsection}{\numberline {6.4.5}multiplier\_calc.py}{19}{subsection.6.4.5}
 \contentsline {subsubsection}{\texttt {multiplier\_calc} -- Computes the topographic multipliers for a data line}{19}{subsubsection*.61}
 \contentsline {subsection}{\numberline {6.4.6}topomult.py}{19}{subsection.6.4.6}

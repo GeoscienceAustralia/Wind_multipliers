@@ -12,7 +12,7 @@
 
 
 \title{windmultipliers Documentation}
-\date{November 07, 2014}
+\date{November 18, 2014}
 \release{1.0}
 \author{Geoscience Australia}
 \newcommand{\sphinxlogo}{}
@@ -146,14 +146,14 @@ utilities
 terrain module includes:
 \begin{itemize}
 \item {} 
-\textbf{terrain.py:} produce the terrain multiplier for a given tile
+\textbf{terrain\_mult.py:} produce the terrain multiplier for a given tile
 
 \end{itemize}
 
 shielding module includes:
 \begin{itemize}
 \item {} 
-\textbf{shielding.py:} produce the shielding multiplier for a given tile
+\textbf{shield\_mult.py:} produce the shielding multiplier for a given tile
 
 \end{itemize}
 
@@ -1264,47 +1264,18 @@ Note that the array indices are all 1-d indices.
 
 
 
-\subsection{Mh.py}
-\label{docs/topographic:mh-py}\label{docs/topographic:module-Mh}
-\index{Mh (module)}
+\subsection{mh.py}
+\label{docs/topographic:mh-py}\label{docs/topographic:module-mh}
+\index{mh (module)}
 
-\subsubsection{\texttt{Mh} -- Calculate the topographic multipliers}
+\subsubsection{\texttt{mh} -- Calculate the topographic multipliers}
 \label{docs/topographic:mh-calculate-the-topographic-multipliers}
 This module is called by the module \emph{multiplier\_calc}
 
-\index{Mh() (in module Mh)}
+\index{escarpment\_factor() (in module mh)}
 
 \begin{fulllineitems}
-\phantomsection\label{docs/topographic:Mh.Mh}\pysiglinewithargsret{\code{Mh.}\bfcode{Mh}}{\emph{profile}, \emph{ridge}, \emph{valley}, \emph{data\_spacing}}{}
-Calculate topographic multiplier
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{itemize}
-\item {} 
-\textbf{profile} -- \code{numpy.ndarray} the elevation of a line
-
-\item {} 
-\textbf{ridge} -- \code{numpy.ndarray} the indices of the ridges of a line
-
-\item {} 
-\textbf{valley} -- \code{numpy.ndarray} the indices of the valleys of a line
-
-\item {} 
-\textbf{data\_spacing} -- \emph{float} distance between neighbour points of a line
-
-\end{itemize}
-
-\item[{Returns}] \leavevmode
-\code{numpy.ndarray} the topogrpahic multiplier of the line
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-
-\index{escarpment\_factor() (in module Mh)}
-
-\begin{fulllineitems}
-\phantomsection\label{docs/topographic:Mh.escarpment_factor}\pysiglinewithargsret{\code{Mh.}\bfcode{escarpment\_factor}}{\emph{profile}, \emph{ridge}, \emph{valley}, \emph{data\_spacing}}{}
+\phantomsection\label{docs/topographic:mh.escarpment_factor}\pysiglinewithargsret{\code{mh.}\bfcode{escarpment\_factor}}{\emph{profile}, \emph{ridge}, \emph{valley}, \emph{data\_spacing}}{}
 Calculate escarpment factor
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{itemize}
@@ -1324,6 +1295,35 @@ Calculate escarpment factor
 
 \item[{Returns}] \leavevmode
 \emph{float} the escarpment factor
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+
+\index{mh\_calc() (in module mh)}
+
+\begin{fulllineitems}
+\phantomsection\label{docs/topographic:mh.mh_calc}\pysiglinewithargsret{\code{mh.}\bfcode{mh\_calc}}{\emph{profile}, \emph{ridge}, \emph{valley}, \emph{data\_spacing}}{}
+Calculate topographic multiplier
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{profile} -- \code{numpy.ndarray} the elevation of a line
+
+\item {} 
+\textbf{ridge} -- \code{numpy.ndarray} the indices of the ridges of a line
+
+\item {} 
+\textbf{valley} -- \code{numpy.ndarray} the indices of the valleys of a line
+
+\item {} 
+\textbf{data\_spacing} -- \emph{float} distance between neighbour points of a line
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+\code{numpy.ndarray} the topogrpahic multiplier of the line
 
 \end{description}\end{quote}
 
@@ -2562,7 +2562,7 @@ Version: \$Rev\$
 \begin{theindex}
 \def\bigletter#1{{\Large\sffamily#1}\nopagebreak\vspace{1mm}}
 \bigletter{\_}
-\item {\texttt{\_\_init\_\_}}, \pageref{docs/utilities:module-__init__}
+\item {\texttt{\_\_init\_\_}}, \pageref{docs/topographic:module-__init__}
 \item {\texttt{\_execute}}, \pageref{docs/utilities:module-_execute}
 \indexspace
 \bigletter{a}
@@ -2580,7 +2580,7 @@ Version: \$Rev\$
 \bigletter{m}
 \item {\texttt{make\_path}}, \pageref{docs/topographic:module-make_path}
 \item {\texttt{meta}}, \pageref{docs/utilities:module-meta}
-\item {\texttt{Mh}}, \pageref{docs/topographic:module-Mh}
+\item {\texttt{mh}}, \pageref{docs/topographic:module-mh}
 \item {\texttt{multiplier\_calc}}, \pageref{docs/topographic:module-multiplier_calc}
 \indexspace
 \bigletter{n}

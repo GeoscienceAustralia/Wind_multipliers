@@ -27,10 +27,10 @@ make_path.py
    :members:
 
 
-Mh.py
+mh.py
 ============
 
-.. automodule:: Mh
+.. automodule:: mh
    :members:
 
 
