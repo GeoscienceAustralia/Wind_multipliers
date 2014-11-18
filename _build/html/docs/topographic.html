@@ -1,0 +1,335 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>topographic &mdash; WindMultipliers v1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="WindMultipliers v1.0 documentation" href="../index.html" />
+    <link rel="next" title="utilities" href="utilities.html" />
+    <link rel="prev" title="shielding" href="shielding.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="utilities.html" title="utilities"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="shielding.html" title="shielding"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">WindMultipliers v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="topographic">
+<h1>topographic<a class="headerlink" href="#topographic" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-__init__">
+<span id="init-py"></span><h2>__init__.py<a class="headerlink" href="#module-__init__" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-findpeaks">
+<span id="findpeaks-py"></span><h2>findpeaks.py<a class="headerlink" href="#module-findpeaks" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="findpeaks-generate-the-indices-of-the-ridges-in-a-data-line">
+<h3><a class="reference internal" href="#module-findpeaks" title="findpeaks"><tt class="xref py py-mod docutils literal"><span class="pre">findpeaks</span></tt></a> &#8211; Generate the indices of the ridges in a data line<a class="headerlink" href="#findpeaks-generate-the-indices-of-the-ridges-in-a-data-line" title="Permalink to this headline">¶</a></h3>
+<p>This module is called by the module <em class="xref std std-term">multiplier_calc</em></p>
+<dl class="function">
+<dt id="findpeaks.findpeaks">
+<tt class="descclassname">findpeaks.</tt><tt class="descname">findpeaks</tt><big>(</big><em>y</em><big>)</big><a class="reference internal" href="../_modules/findpeaks.html#findpeaks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#findpeaks.findpeaks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate the indices of the peaks in a data line</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>y</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the elevation of a line</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the index values of the ridges in the line</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="findpeaks.findvalleys">
+<tt class="descclassname">findpeaks.</tt><tt class="descname">findvalleys</tt><big>(</big><em>y</em><big>)</big><a class="reference internal" href="../_modules/findpeaks.html#findvalleys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#findpeaks.findvalleys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate the indices of the valleys in a data line</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>y</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the elevation of a line</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the index values of the valleys in the line</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-make_path">
+<span id="make-path-py"></span><h2>make_path.py<a class="headerlink" href="#module-make_path" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="makepath-returns-a-vector-of-array-indices-for-a-path">
+<h3><tt class="xref py py-mod docutils literal"><span class="pre">makepath</span></tt> &#8211; Returns a vector of array indices for a path<a class="headerlink" href="#makepath-returns-a-vector-of-array-indices-for-a-path" title="Permalink to this headline">¶</a></h3>
+<p>This module is called by the module <em class="xref std std-term">topomult</em></p>
+<dl class="function">
+<dt id="make_path.make_path">
+<tt class="descclassname">make_path.</tt><tt class="descname">make_path</tt><big>(</big><em>nr</em>, <em>nc</em>, <em>n</em>, <em>dire</em><big>)</big><a class="reference internal" href="../_modules/make_path.html#make_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#make_path.make_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a vector of array indices for a path starting at index n in a
+matrix of size nr by nc and proceeding in direction dir, where dir is one
+of the 8 cardinal directions (n,s,e,w,ne,nw,se,sw).
+Note that the array indices are all 1-d indices.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>nr</strong> &#8211; <cite>int</cite> number of rows of the input DEM</li>
+<li><strong>nc</strong> &#8211; <cite>int</cite> number of columns of the input DEM</li>
+<li><strong>n</strong> &#8211; <cite>int</cite> starting index</li>
+<li><strong>dire</strong> &#8211; <cite>string</cite> firection of the path</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns :</th><td class="field-body"><p class="first last"><tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the indices of a path</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-Mh">
+<span id="mh-py"></span><h2>Mh.py<a class="headerlink" href="#module-Mh" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="mh-calculate-the-topographic-multipliers">
+<h3><a class="reference internal" href="#module-Mh" title="Mh"><tt class="xref py py-mod docutils literal"><span class="pre">Mh</span></tt></a> &#8211; Calculate the topographic multipliers<a class="headerlink" href="#mh-calculate-the-topographic-multipliers" title="Permalink to this headline">¶</a></h3>
+<p>This module is called by the module <em class="xref std std-term">multiplier_calc</em></p>
+<dl class="function">
+<dt id="Mh.Mh">
+<tt class="descclassname">Mh.</tt><tt class="descname">Mh</tt><big>(</big><em>profile</em>, <em>ridge</em>, <em>valley</em>, <em>data_spacing</em><big>)</big><a class="reference internal" href="../_modules/Mh.html#Mh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Mh.Mh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate topographic multiplier</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>profile</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the elevation of a line</li>
+<li><strong>ridge</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the indices of the ridges of a line</li>
+<li><strong>valley</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the indices of the valleys of a line</li>
+<li><strong>data_spacing</strong> &#8211; <cite>float</cite> distance between neighbour points of a line</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the topogrpahic multiplier of the line</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Mh.escarpment_factor">
+<tt class="descclassname">Mh.</tt><tt class="descname">escarpment_factor</tt><big>(</big><em>profile</em>, <em>ridge</em>, <em>valley</em>, <em>data_spacing</em><big>)</big><a class="reference internal" href="../_modules/Mh.html#escarpment_factor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Mh.escarpment_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate escarpment factor</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>profile</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the elevation of a line</li>
+<li><strong>ridge</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the indices of the ridges of a line</li>
+<li><strong>valley</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the indices of the valleys of a line</li>
+<li><strong>data_spacing</strong> &#8211; <cite>float</cite> distance between neighbour points of a line</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><cite>float</cite> the escarpment factor</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-multiplier_calc">
+<span id="multiplier-calc-py"></span><h2>multiplier_calc.py<a class="headerlink" href="#module-multiplier_calc" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="multiplier-calc-computes-the-topographic-multipliers-for-a-data-line">
+<h3><a class="reference internal" href="#module-multiplier_calc" title="multiplier_calc"><tt class="xref py py-mod docutils literal"><span class="pre">multiplier_calc</span></tt></a> &#8211; Computes the topographic multipliers for a data line<a class="headerlink" href="#multiplier-calc-computes-the-topographic-multipliers-for-a-data-line" title="Permalink to this headline">¶</a></h3>
+<p>This module is called by the module <em class="xref std std-term">topomult</em></p>
+<dl class="function">
+<dt id="multiplier_calc.multiplier_calc">
+<tt class="descclassname">multiplier_calc.</tt><tt class="descname">multiplier_calc</tt><big>(</big><em>line</em>, <em>data_spacing</em><big>)</big><a class="reference internal" href="../_modules/multiplier_calc.html#multiplier_calc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#multiplier_calc.multiplier_calc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the multipliers for a data line</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>line</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the elevation of a line</li>
+<li><strong>data_spacing</strong> &#8211; <cite>float</cite> the distance between the neighour points</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the topographic values of the line</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-topomult">
+<span id="topomult-py"></span><h2>topomult.py<a class="headerlink" href="#module-topomult" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="topomult-calculate-topographic-multiplier">
+<h3><a class="reference internal" href="#module-topomult" title="topomult"><tt class="xref py py-mod docutils literal"><span class="pre">topomult</span></tt></a> &#8211; Calculate topographic multiplier<a class="headerlink" href="#topomult-calculate-topographic-multiplier" title="Permalink to this headline">¶</a></h3>
+<p>This module is called by the module
+<em class="xref std std-term">all_multipliers</em> to calculate the topographic multiplier for an input
+tile for 8 directions and output as NetCDF format.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">References:</th><td class="field-body">Yang, T., Nadimpalli, K. &amp; Cechet, R.P. 2014. Local wind assessment
+in Australia: computation methodology for wind multipliers. Record 2014/33.
+Geoscience Australia, Canberra.</td>
+</tr>
+<tr class="field"><th class="field-name">moduleauthor:</th><td class="field-body">Tina Yang &lt;<a class="reference external" href="mailto:tina&#46;yang&#37;&#52;&#48;ga&#46;gov&#46;au">tina<span>&#46;</span>yang<span>&#64;</span>ga<span>&#46;</span>gov<span>&#46;</span>au</a>&gt;
+Histroical authors: Xunguo Lin, Chris Thomas, Wenping Jiang, Craig Arthur</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="topomult.topomult">
+<tt class="descclassname">topomult.</tt><tt class="descname">topomult</tt><big>(</big><em>input_dem</em><big>)</big><a class="reference internal" href="../_modules/topomult.html#topomult"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#topomult.topomult" title="Permalink to this definition">¶</a></dt>
+<dd><p>Executes core topographic multiplier functionality</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>input_dem</strong> &#8211; <cite>file</cite> the input tile of the DEM</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">topographic</a><ul>
+<li><a class="reference internal" href="#module-__init__">__init__.py</a></li>
+<li><a class="reference internal" href="#module-findpeaks">findpeaks.py</a><ul>
+<li><a class="reference internal" href="#findpeaks-generate-the-indices-of-the-ridges-in-a-data-line"><tt class="docutils literal"><span class="pre">findpeaks</span></tt> &#8211; Generate the indices of the ridges in a data line</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-make_path">make_path.py</a><ul>
+<li><a class="reference internal" href="#makepath-returns-a-vector-of-array-indices-for-a-path"><tt class="docutils literal"><span class="pre">makepath</span></tt> &#8211; Returns a vector of array indices for a path</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-Mh">Mh.py</a><ul>
+<li><a class="reference internal" href="#mh-calculate-the-topographic-multipliers"><tt class="docutils literal"><span class="pre">Mh</span></tt> &#8211; Calculate the topographic multipliers</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-multiplier_calc">multiplier_calc.py</a><ul>
+<li><a class="reference internal" href="#multiplier-calc-computes-the-topographic-multipliers-for-a-data-line"><tt class="docutils literal"><span class="pre">multiplier_calc</span></tt> &#8211; Computes the topographic multipliers for a data line</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-topomult">topomult.py</a><ul>
+<li><a class="reference internal" href="#topomult-calculate-topographic-multiplier"><tt class="docutils literal"><span class="pre">topomult</span></tt> &#8211; Calculate topographic multiplier</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="shielding.html"
+                        title="previous chapter">shielding</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="utilities.html"
+                        title="next chapter">utilities</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/docs/topographic.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="utilities.html" title="utilities"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="shielding.html" title="shielding"
+             >previous</a> |</li>
+        <li><a href="../index.html">WindMultipliers v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Geoscience Australia.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,862 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>all_multipliers &mdash; WindMultipliers v1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="WindMultipliers v1.0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">WindMultipliers v1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for all_multipliers</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">:mod:`all_multipliers` -- Calculate terrain, shiedling and topographic multipliers </span>
+<span class="sd">==================================================================================</span>
+
+<span class="sd">This module can be run in parallel using MPI if the </span>
+<span class="sd">:term:`pypar` library is found and all_multipliers is run using the</span>
+<span class="sd">:term:`mpirun` command. For example, to run with 8 processors::    </span>
+<span class="sd">    </span>
+<span class="sd">    mpirun -n 8 python all_multipliers.py</span>
+
+<span class="sd">:moduleauthor: Tina Yang &lt;tina.yang@ga.gov.au&gt;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+    
+
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">inspect</span><span class="o">,</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span><span class="o">,</span> <span class="nn">osgeo.gdal</span> <span class="kn">as</span> <span class="nn">gdal</span><span class="o">,</span> <span class="nn">logging</span> <span class="kn">as</span> <span class="nn">log</span>
+<span class="kn">import</span> <span class="nn">terrain.terrain</span>
+<span class="kn">import</span> <span class="nn">shielding.shielding</span>
+<span class="kn">import</span> <span class="nn">topographic.topomult</span>
+<span class="kn">import</span> <span class="nn">ConfigParser</span>
+<span class="kn">from</span> <span class="nn">osgeo.gdalconst</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">utilities.files</span> <span class="kn">import</span> <span class="n">flStartLog</span>
+<span class="kn">from</span> <span class="nn">utilities._execute</span> <span class="kn">import</span> <span class="n">execute</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span> <span class="k">as</span> <span class="n">pjoin</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+
+<span class="n">__version__</span> <span class="o">=</span> <span class="s">&#39;1.0&#39;</span>
+
+<div class="viewcode-block" id="TileGrid"><a class="viewcode-back" href="../docs/all_multipliers.html#all_multipliers.TileGrid">[docs]</a><span class="k">class</span> <span class="nc">TileGrid</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>    
+    <span class="sd">&quot;&quot;&quot;    </span>
+<span class="sd">    Tiling to minimise MemoryErrors and enable parallelisation.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">upwind_length</span><span class="p">,</span> <span class="n">terrain_map</span><span class="p">):</span>        
+        <span class="sd">&quot;&quot;&quot;        </span>
+<span class="sd">        Initialise the tile grid for dividing up the input landcover raster                </span>
+<span class="sd">        </span>
+<span class="sd">        Parameters:        </span>
+<span class="sd">        -----------        </span>
+<span class="sd">        </span>
+<span class="sd">        :param upwind_length: `float` buffer size of a tile        </span>
+<span class="sd">        :param terrain_map: `file` the input landcover file.       </span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>                        
+            
+        <span class="c"># register all of the drivers</span>
+        <span class="n">gdal</span><span class="o">.</span><span class="n">AllRegister</span><span class="p">()</span>
+    
+        <span class="c"># open the image </span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">terrain_map</span><span class="p">,</span> <span class="n">GA_ReadOnly</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ds</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Could not open &#39;</span> <span class="o">+</span> <span class="n">terrain_map</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    
+        <span class="c"># get image size, format, projection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_dim</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">RasterXSize</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_dim</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">RasterYSize</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;The input land cover raster format is </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">ds</span><span class="o">.</span><span class="n">GetDriver</span><span class="p">()</span><span class="o">.</span><span class="n">ShortName</span> <span class="o">+</span> <span class="s">&#39;/ </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">ds</span><span class="o">.</span><span class="n">GetDriver</span><span class="p">()</span><span class="o">.</span><span class="n">LongName</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Image size is </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_dim</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;x </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_dim</span><span class="p">))</span>
+    
+        <span class="c"># get georeference info</span>
+        <span class="n">geotransform</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">GetGeoTransform</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_Left</span> <span class="o">=</span> <span class="n">geotransform</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_Upper</span> <span class="o">=</span> <span class="o">-</span><span class="n">geotransform</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pixelWidth</span> <span class="o">=</span> <span class="n">geotransform</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pixelHeight</span> <span class="o">=</span> <span class="o">-</span><span class="n">geotransform</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Top left corner X,Y: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_Left</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39; </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_Upper</span><span class="p">))</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Resolution </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixelWidth</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;x </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixelHeight</span><span class="p">))</span> 
+        
+        <span class="c"># calculte the size of a tile and its buffer        </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_step</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixelWidth</span><span class="p">)))</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_step</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixelHeight</span><span class="p">)))</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Maximum no. of cells per tile is </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_step</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;x </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_step</span><span class="p">))</span>     
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_buffer</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">upwind_length</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">pixelWidth</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_buffer</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">upwind_length</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">pixelHeight</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;No. of cells in the buffer of each tile in x and y is </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_buffer</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;, </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_buffer</span><span class="p">))</span>             
+        
+   
+        <span class="bp">self</span><span class="o">.</span><span class="n">tileGrid</span><span class="p">()</span>         
+         
+      
+        
+<div class="viewcode-block" id="TileGrid.tileGrid"><a class="viewcode-back" href="../docs/all_multipliers.html#all_multipliers.TileGrid.tileGrid">[docs]</a>    <span class="k">def</span> <span class="nf">tileGrid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>        
+        <span class="sd">&quot;&quot;&quot;        </span>
+<span class="sd">        Defines the indices required to subset a 2D array into smaller        </span>
+<span class="sd">        rectangular 2D arrays (of dimension x_step * y_step plus buffer</span>
+<span class="sd">        size for each side if available).</span>
+<span class="sd">          </span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        
+        <span class="n">subset_maxcols</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_dim</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_step</span><span class="p">)))</span>        
+        <span class="n">subset_maxrows</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_dim</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_step</span><span class="p">)))</span>        
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_tiles</span> <span class="o">=</span> <span class="n">subset_maxcols</span> <span class="o">*</span> <span class="n">subset_maxrows</span>        
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_start</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_tiles</span><span class="p">,</span> <span class="s">&#39;i&#39;</span><span class="p">)</span>        
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_end</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_tiles</span><span class="p">,</span> <span class="s">&#39;i&#39;</span><span class="p">)</span>        
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_start</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_tiles</span><span class="p">,</span> <span class="s">&#39;i&#39;</span><span class="p">)</span>        
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_end</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_tiles</span><span class="p">,</span> <span class="s">&#39;i&#39;</span><span class="p">)</span>        
+        <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span> 
+        
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">subset_maxcols</span><span class="p">):</span>  
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">subset_maxrows</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">x_start</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">x_step</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_buffer</span><span class="p">)</span>             
+                <span class="bp">self</span><span class="o">.</span><span class="n">x_end</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(((</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">x_step</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_buffer</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_dim</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>                
+                <span class="bp">self</span><span class="o">.</span><span class="n">y_start</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">y_step</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_buffer</span><span class="p">)</span>              
+                <span class="bp">self</span><span class="o">.</span><span class="n">y_end</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(((</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">y_step</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_buffer</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_dim</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>                
+                <span class="n">k</span> <span class="o">+=</span> <span class="mi">1</span>        
+                        
+                </div>
+<div class="viewcode-block" id="TileGrid.getGridLimit_buffer"><a class="viewcode-back" href="../docs/all_multipliers.html#all_multipliers.TileGrid.getGridLimit_buffer">[docs]</a>    <span class="k">def</span> <span class="nf">getGridLimit_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>        
+        <span class="sd">&quot;&quot;&quot;        </span>
+<span class="sd">        Return the limits with buffer for tile `k`. x-indices correspond to the         </span>
+<span class="sd">        east-west coordinate, y-indices correspond to the north-south        </span>
+<span class="sd">        coordinate.        </span>
+<span class="sd">        </span>
+<span class="sd">        Parameters:        </span>
+<span class="sd">        -----------        </span>
+<span class="sd">        </span>
+<span class="sd">        :param k: `int` tile number        </span>
+<span class="sd">        </span>
+<span class="sd">        Returns:        </span>
+<span class="sd">        --------        </span>
+<span class="sd">        </span>
+<span class="sd">        :param x1: minimum x-index for tile `k`        </span>
+<span class="sd">        :param x2: maximum x-index for tile `k`        </span>
+<span class="sd">        :param y1: minimum y-index for tile `k`        </span>
+<span class="sd">        :param y2: maximum y-index for tile `k`        </span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        
+        <span class="n">x1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_start</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>        
+        <span class="n">x2</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_end</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>        
+        <span class="n">y1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_start</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>        
+        <span class="n">y2</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_end</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>        
+        
+        <span class="k">return</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">y2</span>    
+    
+    </div>
+<div class="viewcode-block" id="TileGrid.getGridLimit"><a class="viewcode-back" href="../docs/all_multipliers.html#all_multipliers.TileGrid.getGridLimit">[docs]</a>    <span class="k">def</span> <span class="nf">getGridLimit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>        
+        <span class="sd">&quot;&quot;&quot;        </span>
+<span class="sd">        Return the limits without buffer for tile `k`. x-indices correspond to the         </span>
+<span class="sd">        east-west coordinate, y-indices correspond to the north-south        </span>
+<span class="sd">        coordinate.        </span>
+<span class="sd">        </span>
+<span class="sd">        Parameters:        </span>
+<span class="sd">        -----------        </span>
+<span class="sd">        </span>
+<span class="sd">        :param k: `int` tile number        </span>
+<span class="sd">        </span>
+<span class="sd">        Returns:        </span>
+<span class="sd">        --------        </span>
+<span class="sd">        </span>
+<span class="sd">        :param x1: minimum x-index for tile `k`        </span>
+<span class="sd">        :param x2: maximum x-index for tile `k`        </span>
+<span class="sd">        :param y1: minimum y-index for tile `k`        </span>
+<span class="sd">        :param y2: maximum y-index for tile `k`        </span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>  
+       
+                
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_start</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">x1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_start</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">x_buffer</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_start</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_start</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">y1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_start</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">y_buffer</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">y1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_start</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>           
+           
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_end</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="o">!=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_dim</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">x2</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_end</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_buffer</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_dim</span>
+            
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_end</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="o">!=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_dim</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">y2</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_end</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_buffer</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">y2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_dim</span>
+            
+        
+        <span class="k">return</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">y2</span>    
+        
+    </div>
+<div class="viewcode-block" id="TileGrid.getStartCord"><a class="viewcode-back" href="../docs/all_multipliers.html#all_multipliers.TileGrid.getStartCord">[docs]</a>    <span class="k">def</span> <span class="nf">getStartCord</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>        
+        <span class="sd">&quot;&quot;&quot;        </span>
+<span class="sd">        Return the starting longitude and latitude value of the tile without buffer  </span>
+<span class="sd">        </span>
+<span class="sd">        Parameters:        </span>
+<span class="sd">        -----------        </span>
+<span class="sd">        </span>
+<span class="sd">        :param k: `int` tile number        </span>
+<span class="sd">               </span>
+<span class="sd">        Returns:        </span>
+<span class="sd">        --------        </span>
+<span class="sd">        </span>
+<span class="sd">        :param tile_x_cord: `float` starting x coordinate of a tile without buffer              </span>
+<span class="sd">        :param tile_y_cord: `float` starting y coordinate of a tile without buffer     </span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span> 
+        <span class="n">limits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getGridLimit</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="n">tile_x_cord</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_Left</span> <span class="o">+</span> <span class="n">limits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixelWidth</span>
+        <span class="n">tile_y_cord</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_Upper</span> <span class="o">+</span> <span class="n">limits</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixelHeight</span>               
+        
+        <span class="k">return</span> <span class="n">tile_x_cord</span><span class="p">,</span> <span class="n">tile_y_cord</span>
+
+    </div>
+<div class="viewcode-block" id="TileGrid.getTileName"><a class="viewcode-back" href="../docs/all_multipliers.html#all_multipliers.TileGrid.getTileName">[docs]</a>    <span class="k">def</span> <span class="nf">getTileName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>        
+        <span class="sd">&quot;&quot;&quot;        </span>
+<span class="sd">        Return the name of a tile </span>
+<span class="sd">        </span>
+<span class="sd">        Parameters:        </span>
+<span class="sd">        -----------        </span>
+<span class="sd">        </span>
+<span class="sd">        :param k: `int` tile number </span>
+<span class="sd">               </span>
+<span class="sd">        Returns:        </span>
+<span class="sd">        --------        </span>
+<span class="sd">        </span>
+<span class="sd">        :param name: `string` name of a tile composing of starting coordinates                        </span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span> 
+        
+        <span class="n">startCord</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getStartCord</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;e&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">startCord</span><span class="p">[</span><span class="mi">0</span><span class="p">])[:</span><span class="mi">8</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;s&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">startCord</span><span class="p">[</span><span class="mi">1</span><span class="p">])[:</span><span class="mi">7</span><span class="p">]</span>               
+        
+        <span class="k">return</span> <span class="n">name</span>
+        
+    </div>
+<div class="viewcode-block" id="TileGrid.getTileExtent_buffer"><a class="viewcode-back" href="../docs/all_multipliers.html#all_multipliers.TileGrid.getTileExtent_buffer">[docs]</a>    <span class="k">def</span> <span class="nf">getTileExtent_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;        </span>
+<span class="sd">        Return the exntent for tile `k`. x corresponds to the         </span>
+<span class="sd">        east-west coordinate, y corresponds to the north-south        </span>
+<span class="sd">        coordinate.        </span>
+<span class="sd">        </span>
+<span class="sd">        Parameters:        </span>
+<span class="sd">        -----------        </span>
+<span class="sd">        </span>
+<span class="sd">        :param k: `int` tile number        </span>
+<span class="sd">        </span>
+<span class="sd">        Returns:        </span>
+<span class="sd">        --------        </span>
+<span class="sd">        </span>
+<span class="sd">        :param tile_x_start: minimum x-coordinate for tile `k`        </span>
+<span class="sd">        :param tile_y_start: minimum y-coordinate for tile `k`       </span>
+<span class="sd">        :param tile_x_end: maximum x-coordinate for tile `k`      </span>
+<span class="sd">        :param tile_y_end: maximum y-coordinate for tile `k` </span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+      
+        <span class="n">limits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getGridLimit_buffer</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="n">tile_x_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_Left</span> <span class="o">+</span> <span class="n">limits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixelWidth</span>
+        <span class="n">tile_y_start</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_Upper</span> <span class="o">+</span> <span class="n">limits</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixelHeight</span><span class="p">)</span>
+        <span class="n">tile_x_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_Left</span> <span class="o">+</span> <span class="n">limits</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixelWidth</span>
+        <span class="n">tile_y_end</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_Upper</span> <span class="o">+</span> <span class="n">limits</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixelHeight</span><span class="p">)</span>  
+        
+        <span class="k">return</span> <span class="n">tile_x_start</span><span class="p">,</span> <span class="n">tile_y_start</span><span class="p">,</span> <span class="n">tile_x_end</span><span class="p">,</span> <span class="n">tile_y_end</span>
+
+</div></div>
+<div class="viewcode-block" id="Multipliers"><a class="viewcode-back" href="../docs/all_multipliers.html#all_multipliers.Multipliers">[docs]</a><span class="k">class</span> <span class="nc">Multipliers</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;    </span>
+<span class="sd">    Computing multipliers parallelly based on tiles.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terrain_map</span><span class="p">,</span> <span class="n">dem</span><span class="p">,</span> <span class="n">cyclone_area</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;        </span>
+<span class="sd">        Initialise the tile grid for dividing up the input landcover raster                </span>
+<span class="sd">        </span>
+<span class="sd">        Parameters:        </span>
+<span class="sd">        -----------        </span>
+<span class="sd">                </span>
+<span class="sd">        :param terrain_map: `file` the input landcover file. </span>
+<span class="sd">        :param dem: `file` the input dem file. </span>
+<span class="sd">        :param cyclone_area: `file` the input cyclone area file. </span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_img</span> <span class="o">=</span> <span class="n">terrain_map</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dem</span> <span class="o">=</span> <span class="n">dem</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cyclone_area</span> <span class="o">=</span> <span class="n">cyclone_area</span>
+        
+    
+<div class="viewcode-block" id="Multipliers.multipliers_calculate"><a class="viewcode-back" href="../docs/all_multipliers.html#all_multipliers.Multipliers.multipliers_calculate">[docs]</a>    <span class="k">def</span> <span class="nf">multipliers_calculate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tile_info</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;        </span>
+<span class="sd">        Calculate the multiplier values for a specific tile                </span>
+<span class="sd">        </span>
+<span class="sd">        Parameters:        </span>
+<span class="sd">        -----------        </span>
+<span class="sd">                </span>
+<span class="sd">        :param tile_info: `tuple` the input tile info </span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span> 
+        
+        <span class="n">tile_name</span> <span class="o">=</span> <span class="n">tile_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">tile_extents</span> <span class="o">=</span> <span class="n">tile_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        
+        <span class="c"># get the tile name without buffer using coordinates with 4 decimals         </span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;The working tile is  </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">tile_name</span><span class="p">)</span>
+        
+        <span class="c"># extract the temporary tile from terrain class map</span>
+        <span class="n">temp_tile</span> <span class="o">=</span> <span class="n">pjoin</span><span class="p">(</span><span class="n">output_folder</span><span class="p">,</span> <span class="n">tile_name</span> <span class="o">+</span> <span class="s">&#39;_input.img&#39;</span><span class="p">)</span>
+                                                             
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;tile_extents = </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">tile_extents</span><span class="p">)</span>
+        
+        <span class="n">command_string</span> <span class="o">=</span> <span class="s">&#39;gdal_translate -projwin </span><span class="si">%f</span><span class="s"> </span><span class="si">%f</span><span class="s"> </span><span class="si">%f</span><span class="s"> </span><span class="si">%f</span><span class="s"> &#39;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">tile_extents</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tile_extents</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">tile_extents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">tile_extents</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="n">command_string</span> <span class="o">+=</span> <span class="s">&#39; -a_ullr </span><span class="si">%f</span><span class="s"> </span><span class="si">%f</span><span class="s"> </span><span class="si">%f</span><span class="s"> </span><span class="si">%f</span><span class="s"> &#39;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">tile_extents</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tile_extents</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">tile_extents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">tile_extents</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+            <span class="p">)</span>                                                            
+        <span class="n">command_string</span> <span class="o">+=</span> <span class="s">&#39; -of HFA&#39;</span>                 
+        <span class="n">command_string</span> <span class="o">+=</span> <span class="s">&#39; </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">input_img</span><span class="p">,</span>
+            <span class="n">temp_tile</span>
+            <span class="p">)</span>           
+        
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Extract the working tile from the input landcover:</span><span class="se">\n</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">command_string</span><span class="p">)</span>        
+        <span class="n">result</span> <span class="o">=</span> <span class="n">execute</span><span class="p">(</span><span class="n">command_string</span><span class="o">=</span><span class="n">command_string</span><span class="p">)</span><span class="c">#        </span>
+        <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s">&#39;stdout&#39;</span><span class="p">]:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s">&#39;stdout&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;stdout from </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">command_string</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">)</span>         
+        <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s">&#39;returncode&#39;</span><span class="p">]:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s">&#39;stderr&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;stderr from </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">command_string</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s"> failed&#39;</span> <span class="o">%</span> <span class="n">command_string</span><span class="p">)</span> 
+        
+        <span class="c"># check the checksum value of the terrain map tile, if it is greater than 0, go ahead                    </span>
+        <span class="n">temp_dataset</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">temp_tile</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">temp_dataset</span><span class="p">,</span> <span class="s">&#39;Unable to open dataset </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">temp_tile</span>
+        <span class="n">band</span> <span class="o">=</span> <span class="n">temp_dataset</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">checksum</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">Checksum</span><span class="p">()</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;This landcover tile checksum is </span><span class="si">%s</span><span class="s"> &#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">checksum</span><span class="p">))</span>
+        <span class="k">print</span> <span class="s">&#39;landcover checksum &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">checksum</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">checksum</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c"># extract the temporary tile from DEM</span>
+            <span class="n">temp_tile_dem</span> <span class="o">=</span> <span class="n">pjoin</span><span class="p">(</span><span class="n">output_folder</span><span class="p">,</span> <span class="n">tile_name</span> <span class="o">+</span> <span class="s">&#39;_dem.img&#39;</span><span class="p">)</span>            
+            
+            <span class="n">command_string</span> <span class="o">=</span> <span class="s">&#39;gdal_translate -projwin </span><span class="si">%f</span><span class="s"> </span><span class="si">%f</span><span class="s"> </span><span class="si">%f</span><span class="s"> </span><span class="si">%f</span><span class="s"> &#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">tile_extents</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tile_extents</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">tile_extents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">tile_extents</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+                <span class="p">)</span>            
+            <span class="n">command_string</span> <span class="o">+=</span> <span class="s">&#39; -a_ullr </span><span class="si">%f</span><span class="s"> </span><span class="si">%f</span><span class="s"> </span><span class="si">%f</span><span class="s"> </span><span class="si">%f</span><span class="s"> &#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">tile_extents</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tile_extents</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">tile_extents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">tile_extents</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+                <span class="p">)</span>                                                            
+            <span class="n">command_string</span> <span class="o">+=</span> <span class="s">&#39; -of HFA&#39;</span>                 
+            <span class="n">command_string</span> <span class="o">+=</span> <span class="s">&#39; </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dem</span><span class="p">,</span>
+                <span class="n">temp_tile_dem</span>
+                <span class="p">)</span> 
+                
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Extract the working tile from the input DEM:</span><span class="se">\n</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">command_string</span><span class="p">)</span>        
+            <span class="n">result</span> <span class="o">=</span> <span class="n">execute</span><span class="p">(</span><span class="n">command_string</span><span class="o">=</span><span class="n">command_string</span><span class="p">)</span><span class="c">#        </span>
+            <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s">&#39;stdout&#39;</span><span class="p">]:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s">&#39;stdout&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;stdout from </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">command_string</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">)</span>         
+            <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s">&#39;returncode&#39;</span><span class="p">]:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s">&#39;stderr&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;stderr from </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">command_string</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s"> failed&#39;</span> <span class="o">%</span> <span class="n">command_string</span><span class="p">)</span> 
+                       
+            <span class="c"># extract the temporary tile from Cyclone area</span>
+            <span class="n">temp_tile_cyclone</span> <span class="o">=</span> <span class="n">pjoin</span><span class="p">(</span><span class="n">output_folder</span><span class="p">,</span> <span class="n">tile_name</span> <span class="o">+</span> <span class="s">&#39;_cyc.img&#39;</span><span class="p">)</span>            
+           
+            <span class="n">command_string</span> <span class="o">=</span> <span class="s">&#39;gdal_translate -projwin </span><span class="si">%f</span><span class="s"> </span><span class="si">%f</span><span class="s"> </span><span class="si">%f</span><span class="s"> </span><span class="si">%f</span><span class="s"> &#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">tile_extents</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tile_extents</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">tile_extents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">tile_extents</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+                <span class="p">)</span>            
+            <span class="n">command_string</span> <span class="o">+=</span> <span class="s">&#39; -a_ullr </span><span class="si">%f</span><span class="s"> </span><span class="si">%f</span><span class="s"> </span><span class="si">%f</span><span class="s"> </span><span class="si">%f</span><span class="s"> &#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">tile_extents</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tile_extents</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">tile_extents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">tile_extents</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+                <span class="p">)</span>                                                              
+            <span class="n">command_string</span> <span class="o">+=</span> <span class="s">&#39; -of HFA&#39;</span>                 
+            <span class="n">command_string</span> <span class="o">+=</span> <span class="s">&#39; </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cyclone_area</span><span class="p">,</span>
+                <span class="n">temp_tile_cyclone</span>
+                <span class="p">)</span>
+                
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Extract the working tile from the input cyclonic region:</span><span class="se">\n</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">command_string</span><span class="p">)</span>        
+            <span class="n">result</span> <span class="o">=</span> <span class="n">execute</span><span class="p">(</span><span class="n">command_string</span><span class="o">=</span><span class="n">command_string</span><span class="p">)</span><span class="c">#        </span>
+            <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s">&#39;stdout&#39;</span><span class="p">]:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s">&#39;stdout&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;stdout from </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">command_string</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">)</span>         
+            <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s">&#39;returncode&#39;</span><span class="p">]:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s">&#39;stderr&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;stderr from </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">command_string</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s"> failed&#39;</span> <span class="o">%</span> <span class="n">command_string</span><span class="p">)</span> 
+            
+            <span class="c"># check the checksum value of the cyclone map tile, if it greater than 0, it is cyclone area</span>
+            <span class="n">temp_dataset_cycl</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">temp_tile_cyclone</span><span class="p">)</span> 
+            <span class="n">band</span> <span class="o">=</span> <span class="n">temp_dataset_cycl</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">checksum</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">Checksum</span><span class="p">()</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;This cyclonic region tile checksum is </span><span class="si">%s</span><span class="s"> &#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">checksum</span><span class="p">))</span>
+            <span class="k">print</span> <span class="s">&#39;cyclone checksum &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">checksum</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">checksum</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">cyclone_area</span> <span class="o">=</span> <span class="n">temp_tile_cyclone</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cyclone_area</span> <span class="o">=</span> <span class="bp">None</span>
+            
+            <span class="c">#resample the terrain as DEM</span>
+            <span class="n">temp_dataset_DEM</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">temp_tile_dem</span><span class="p">)</span>
+            
+            <span class="n">terrain_resample</span> <span class="o">=</span> <span class="n">pjoin</span><span class="p">(</span><span class="n">output_folder</span><span class="p">,</span> <span class="n">tile_name</span> <span class="o">+</span> <span class="s">&#39;_ter.img&#39;</span><span class="p">)</span>
+            
+            <span class="n">command_string</span> <span class="o">=</span> <span class="s">&#39;gdal_translate -outsize </span><span class="si">%i</span><span class="s"> </span><span class="si">%i</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">temp_dataset_DEM</span><span class="o">.</span><span class="n">RasterXSize</span><span class="p">,</span> <span class="n">temp_dataset_DEM</span><span class="o">.</span><span class="n">RasterYSize</span>
+                <span class="p">)</span>                                                              
+            <span class="n">command_string</span> <span class="o">+=</span> <span class="s">&#39; -of HFA&#39;</span>                 
+            <span class="n">command_string</span> <span class="o">+=</span> <span class="s">&#39; </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">temp_tile</span><span class="p">,</span>
+                <span class="n">terrain_resample</span>
+                <span class="p">)</span>            
+          
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Resample the landcover tile the same as the DEM tile:</span><span class="se">\n</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">command_string</span><span class="p">)</span>        
+            <span class="n">result</span> <span class="o">=</span> <span class="n">execute</span><span class="p">(</span><span class="n">command_string</span><span class="o">=</span><span class="n">command_string</span><span class="p">)</span><span class="c">#        </span>
+            <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s">&#39;stdout&#39;</span><span class="p">]:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s">&#39;stdout&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;stdout from </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">command_string</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">)</span>         
+            <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s">&#39;returncode&#39;</span><span class="p">]:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s">&#39;stderr&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;stderr from </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">command_string</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s"> failed&#39;</span> <span class="o">%</span> <span class="n">command_string</span><span class="p">)</span> 
+             
+            <span class="c"># start to calculate the multipliers </span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;producing Terrain multipliers ...&#39;</span><span class="p">)</span>   
+            <span class="n">terrain</span><span class="o">.</span><span class="n">terrain</span><span class="o">.</span><span class="n">terrain</span><span class="p">(</span><span class="n">cyclone_area</span><span class="p">,</span> <span class="n">terrain_resample</span><span class="p">)</span>
+        
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;producing Shielding multipliers ...&#39;</span><span class="p">)</span>
+            <span class="c">#shielding.shielding.shield(terrain_resample, temp_tile_dem)</span>
+            
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;producing Topographic multipliers ...&#39;</span><span class="p">)</span>
+            <span class="c">#topographic.topomult.topomult(temp_tile_dem)</span>
+            
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">temp_tile_dem</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">temp_tile</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">terrain_resample</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">temp_tile_cyclone</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">temp_tile</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">temp_tile</span><span class="p">)</span>
+        
+        
+        </div>
+<div class="viewcode-block" id="Multipliers.paralleliseOnTiles"><a class="viewcode-back" href="../docs/all_multipliers.html#all_multipliers.Multipliers.paralleliseOnTiles">[docs]</a>    <span class="k">def</span> <span class="nf">paralleliseOnTiles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tiles</span><span class="p">,</span> <span class="n">progressCallback</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>        
+        <span class="sd">&quot;&quot;&quot;        </span>
+<span class="sd">        Iterate over tiles to calculate the wind multipliers</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters:        </span>
+<span class="sd">        -----------                </span>
+<span class="sd">        </span>
+<span class="sd">        :param tiles: `generator` that yields tuples of tile dimensions.        </span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>      
+
+        <span class="n">work_tag</span> <span class="o">=</span> <span class="mi">0</span>         
+        <span class="n">result_tag</span> <span class="o">=</span> <span class="mi">1</span>        
+        <span class="k">if</span> <span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">rank</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">):</span>            
+<span class="c">#            w = 0            </span>
+<span class="c">#            for d in range(1, pp.size()):                </span>
+<span class="c">#                pp.send(tiles[w], destination=d, tag = work_tag)</span>
+<span class="c">#                log.debug(&quot;Processing tile %d of %d&quot; % (w, len(tiles)))                </span>
+<span class="c">#                w += 1            </span>
+<span class="c">#                </span>
+<span class="c">#            terminated = 0            </span>
+<span class="c">#            while(terminated &lt; pp.size() - 1):   </span>
+
+            <span class="n">w</span> <span class="o">=</span> <span class="mi">0</span> 
+            <span class="n">p</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span> 
+            <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">pp</span><span class="o">.</span><span class="n">size</span><span class="p">()):</span> 
+                <span class="k">if</span> <span class="n">w</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">tiles</span><span class="p">):</span> 
+                    <span class="n">pp</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">tiles</span><span class="p">[</span><span class="n">w</span><span class="p">],</span> <span class="n">destination</span><span class="o">=</span><span class="n">d</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">work_tag</span><span class="p">)</span> 
+                    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Processing tile </span><span class="si">%d</span><span class="s"> of </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tiles</span><span class="p">)))</span> 
+                    <span class="n">w</span> <span class="o">+=</span> <span class="mi">1</span> 
+                <span class="k">else</span><span class="p">:</span> 
+                    <span class="n">pp</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="n">d</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">work_tag</span><span class="p">)</span> 
+                    <span class="n">p</span> <span class="o">=</span> <span class="n">w</span> 
+
+            <span class="n">terminated</span> <span class="o">=</span> <span class="mi">0</span> 
+
+            <span class="k">while</span><span class="p">(</span><span class="n">terminated</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">):</span> 
+                
+                <span class="n">result</span><span class="p">,</span> <span class="n">status</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">receive</span><span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">any_source</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">result_tag</span><span class="p">,</span>                                              
+                                            <span class="n">return_status</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>                
+                   
+                <span class="n">d</span> <span class="o">=</span> <span class="n">status</span><span class="o">.</span><span class="n">source</span>
+                
+                <span class="k">if</span> <span class="n">w</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">tiles</span><span class="p">):</span>                    
+                    <span class="n">pp</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">tiles</span><span class="p">[</span><span class="n">w</span><span class="p">],</span> <span class="n">destination</span><span class="o">=</span><span class="n">d</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">work_tag</span><span class="p">)</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Processing tile </span><span class="si">%d</span><span class="s"> of </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tiles</span><span class="p">)))</span>                    
+                    <span class="n">w</span> <span class="o">+=</span> <span class="mi">1</span>                
+                <span class="k">else</span><span class="p">:</span>                    
+                    <span class="n">pp</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="n">d</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">work_tag</span><span class="p">)</span>                    
+                    <span class="n">terminated</span> <span class="o">+=</span> <span class="mi">1</span>                
+                
+                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Number of terminated threads is </span><span class="si">%d</span><span class="s">&quot;</span><span class="o">%</span><span class="n">terminated</span><span class="p">)</span>
+                
+                <span class="k">if</span> <span class="n">progressCallback</span><span class="p">:</span>                    
+                    <span class="n">progressCallback</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>        
+                    
+        <span class="k">elif</span> <span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">rank</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>            
+            <span class="k">while</span><span class="p">(</span><span class="bp">True</span><span class="p">):</span>                
+                <span class="n">W</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">receive</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">work_tag</span><span class="p">)</span>                
+                <span class="k">if</span> <span class="n">W</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>                    
+                    <span class="k">break</span>                
+                <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">multipliers_calculate</span><span class="p">(</span><span class="n">W</span><span class="p">)</span>                
+                <span class="n">pp</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">destination</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">result_tag</span><span class="p">)</span>        
+                
+        <span class="k">elif</span> <span class="n">pp</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">pp</span><span class="o">.</span><span class="n">rank</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>            
+            <span class="c"># Assumed no Pypar - helps avoid the need to extend DummyPypar()            </span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">tile</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tiles</span><span class="p">):</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Processing tile </span><span class="si">%d</span><span class="s"> of </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tiles</span><span class="p">)))</span>                
+                <span class="bp">self</span><span class="o">.</span><span class="n">multipliers_calculate</span><span class="p">(</span><span class="n">tile</span><span class="p">)</span>   
+                
+                <span class="k">if</span> <span class="n">progressCallback</span><span class="p">:</span>                    
+                    <span class="n">progressCallback</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="getTiles"><a class="viewcode-back" href="../docs/all_multipliers.html#all_multipliers.getTiles">[docs]</a><span class="k">def</span> <span class="nf">getTiles</span><span class="p">(</span><span class="n">tilegrid</span><span class="p">):</span>    
+    <span class="sd">&quot;&quot;&quot;    </span>
+<span class="sd">    Helper to obtain a generator that yields tile numbers </span>
+<span class="sd">    </span>
+<span class="sd">    :param tilegrid: :class:`TileGrid` instance</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>        
+    
+    <span class="n">tilenums</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">tilegrid</span><span class="o">.</span><span class="n">num_tiles</span><span class="p">)</span>    
+    <span class="k">return</span> <span class="n">getTileInfo</span><span class="p">(</span><span class="n">tilegrid</span><span class="p">,</span> <span class="n">tilenums</span><span class="p">)</span>
+    
+    </div>
+<div class="viewcode-block" id="getTileInfo"><a class="viewcode-back" href="../docs/all_multipliers.html#all_multipliers.getTileInfo">[docs]</a><span class="k">def</span> <span class="nf">getTileInfo</span><span class="p">(</span><span class="n">tilegrid</span><span class="p">,</span> <span class="n">tilenums</span><span class="p">):</span>    
+    <span class="sd">&quot;&quot;&quot;    </span>
+<span class="sd">    Generate a list of tuples of the name and extent of a tile   </span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:    </span>
+<span class="sd">    -----------    </span>
+<span class="sd">    </span>
+<span class="sd">    :param tilegrid: :class:`TileGrid` instance        </span>
+<span class="sd">    </span>
+<span class="sd">    :param tilenums: list of tile numbers (must be sequential)    </span>
+<span class="sd">    </span>
+<span class="sd">    Returns:    </span>
+<span class="sd">    --------        </span>
+<span class="sd">    </span>
+<span class="sd">    :param tileinfo: list of tuples of tile names and extents    </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>        
+    
+    <span class="n">tile_info</span> <span class="o">=</span> <span class="p">[[</span><span class="n">tilegrid</span><span class="o">.</span><span class="n">getTileName</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">tilegrid</span><span class="o">.</span><span class="n">getTileExtent_buffer</span><span class="p">(</span><span class="n">t</span><span class="p">)]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tilenums</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">tile_info</span>
+
+</div>
+<div class="viewcode-block" id="timer"><a class="viewcode-back" href="../docs/all_multipliers.html#all_multipliers.timer">[docs]</a><span class="k">def</span> <span class="nf">timer</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>    
+    <span class="sd">&quot;&quot;&quot;    </span>
+<span class="sd">    Basic timing functions for entire process    </span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    
+    <span class="nd">@wraps</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>    
+    <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>        
+        <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>        
+        <span class="n">res</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>                
+        
+        <span class="n">tottime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t1</span>        
+        <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%02d</span><span class="s">:</span><span class="si">%02d</span><span class="s">:</span><span class="si">%02d</span><span class="s"> &quot;</span> <span class="o">%</span> \
+          <span class="nb">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">ll</span><span class="p">,</span> <span class="n">b</span> <span class="p">:</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">ll</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">b</span><span class="p">)</span> <span class="o">+</span> <span class="n">ll</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span>                        
+                        <span class="p">[(</span><span class="n">tottime</span><span class="p">,),</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">60</span><span class="p">])</span>        
+                        
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Time for </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">func_name</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span> <span class="p">)</span>        
+        <span class="k">return</span> <span class="n">res</span>    
+        
+    <span class="k">return</span> <span class="n">wrap</span>
+    
+</div>
+<div class="viewcode-block" id="disableOnWorkers"><a class="viewcode-back" href="../docs/all_multipliers.html#all_multipliers.disableOnWorkers">[docs]</a><span class="k">def</span> <span class="nf">disableOnWorkers</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>    
+    <span class="sd">&quot;&quot;&quot;    </span>
+<span class="sd">    Disable function calculation on workers. Function will    </span>
+<span class="sd">    only be evaluated on the master.    </span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="nd">@wraps</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>    
+    <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>        
+        <span class="k">if</span> <span class="n">pp</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">pp</span><span class="o">.</span><span class="n">rank</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>            
+            <span class="k">return</span>        
+        <span class="k">else</span><span class="p">:</span>            
+            <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>    
+    <span class="k">return</span> <span class="n">wrap</span>
+
+</div>
+<span class="nd">@disableOnWorkers</span>
+<div class="viewcode-block" id="doOutputDirectoryCreation"><a class="viewcode-back" href="../docs/all_multipliers.html#all_multipliers.doOutputDirectoryCreation">[docs]</a><span class="k">def</span> <span class="nf">doOutputDirectoryCreation</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>    
+    <span class="sd">&quot;&quot;&quot;    </span>
+<span class="sd">    Create all the necessary output folders.        </span>
+<span class="sd">    </span>
+<span class="sd">    :param root: `string` Name of root directory    </span>
+<span class="sd">    :raises OSError: If the directory tree cannot be created.        </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>        
+    
+    <span class="n">output</span> <span class="o">=</span> <span class="n">pjoin</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s">&#39;output&#39;</span><span class="p">)</span>
+    
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Output will be stored under </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>    
+    
+    <span class="n">subdirs_1</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;terrain&#39;</span><span class="p">,</span> <span class="s">&#39;shielding&#39;</span><span class="p">,</span> <span class="s">&#39;topographic&#39;</span><span class="p">]</span> 
+    <span class="n">subdirs_2</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;netcdf&#39;</span><span class="p">]</span>                
+    
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">output</span><span class="p">):</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>            
+        <span class="k">raise</span>
+    
+    <span class="k">for</span> <span class="n">subdir</span> <span class="ow">in</span> <span class="n">subdirs_1</span><span class="p">:</span> 
+        <span class="n">out_sub1</span> <span class="o">=</span> <span class="n">pjoin</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">subdir</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">out_sub1</span><span class="p">):</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">out_sub1</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">out_sub1</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>            
+            <span class="k">raise</span>
+            
+        <span class="k">for</span> <span class="n">sub2</span> <span class="ow">in</span> <span class="n">subdirs_2</span><span class="p">:</span>
+            <span class="n">out_sub2</span> <span class="o">=</span> <span class="n">pjoin</span><span class="p">(</span><span class="n">out_sub1</span><span class="p">,</span> <span class="n">sub2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">out_sub2</span><span class="p">):</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">out_sub2</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">out_sub2</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>            
+                <span class="k">raise</span>
+
+</div>
+<div class="viewcode-block" id="balanced"><a class="viewcode-back" href="../docs/all_multipliers.html#all_multipliers.balanced">[docs]</a><span class="k">def</span> <span class="nf">balanced</span><span class="p">(</span><span class="n">iterable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Balance an iterator across processors.</span>
+
+<span class="sd">    This partitions the work evenly across processors. However, it requires</span>
+<span class="sd">    the iterator to have been generated on all processors before hand. This is</span>
+<span class="sd">    only some magical slicing of the iterator, i.e., a poor man version of</span>
+<span class="sd">    scattering.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">P</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">size</span><span class="p">(),</span> <span class="n">pp</span><span class="o">.</span><span class="n">rank</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">itertools</span><span class="o">.</span><span class="n">islice</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="balance"><a class="viewcode-back" href="../docs/all_multipliers.html#all_multipliers.balance">[docs]</a><span class="k">def</span> <span class="nf">balance</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>    
+    <span class="sd">&quot;&quot;&quot;    </span>
+<span class="sd">    Compute p&#39;th interval when N is distributed over P bins    </span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    
+    <span class="n">P</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">size</span><span class="p">(),</span> <span class="n">pp</span><span class="o">.</span><span class="n">rank</span><span class="p">()</span>    
+    <span class="n">L</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="o">/</span> <span class="n">P</span><span class="p">))</span>    
+    <span class="n">K</span> <span class="o">=</span> <span class="n">N</span> <span class="o">-</span> <span class="n">P</span> <span class="o">*</span> <span class="n">L</span>    
+    <span class="k">if</span> <span class="n">p</span> <span class="o">&lt;</span> <span class="n">K</span><span class="p">:</span>        
+        <span class="n">Nlo</span> <span class="o">=</span> <span class="n">p</span> <span class="o">*</span> <span class="n">L</span> <span class="o">+</span> <span class="n">p</span>        
+        <span class="n">Nhi</span> <span class="o">=</span> <span class="n">Nlo</span> <span class="o">+</span> <span class="n">L</span> <span class="o">+</span> <span class="mi">1</span>    
+    <span class="k">else</span><span class="p">:</span>        
+        <span class="n">Nlo</span> <span class="o">=</span> <span class="n">p</span> <span class="o">*</span> <span class="n">L</span> <span class="o">+</span> <span class="n">K</span>        
+        <span class="n">Nhi</span> <span class="o">=</span> <span class="n">Nlo</span> <span class="o">+</span> <span class="n">L</span>    
+    
+    <span class="k">return</span> <span class="n">Nlo</span><span class="p">,</span> <span class="n">Nhi</span>
+
+</div>
+<div class="viewcode-block" id="attemptParallel"><a class="viewcode-back" href="../docs/all_multipliers.html#all_multipliers.attemptParallel">[docs]</a><span class="k">def</span> <span class="nf">attemptParallel</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Attempt to load Pypar globally as `pp`.  If pypar cannot be loaded then a</span>
+<span class="sd">    dummy `pp` is created.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">global</span> <span class="n">pp</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c"># load pypar for everyone</span>
+
+        <span class="kn">import</span> <span class="nn">pypar</span> <span class="kn">as</span> <span class="nn">pp</span>
+        <span class="kn">import</span> <span class="nn">atexit</span>
+        <span class="n">atexit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">finalize</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+
+        <span class="c"># no pypar, create a dummy one</span>
+
+        <span class="k">class</span> <span class="nc">DummyPypar</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+            <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="k">return</span> <span class="mi">1</span>
+
+            <span class="k">def</span> <span class="nf">rank</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="k">return</span> <span class="mi">0</span>
+
+            <span class="k">def</span> <span class="nf">barrier</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="k">pass</span>
+            
+            <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="k">pass</span>
+
+        <span class="n">pp</span> <span class="o">=</span> <span class="n">DummyPypar</span><span class="p">()</span>
+
+</div>
+<span class="nd">@timer</span>
+<div class="viewcode-block" id="run"><a class="viewcode-back" href="../docs/all_multipliers.html#all_multipliers.run">[docs]</a><span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">callback</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>    
+    <span class="sd">&quot;&quot;&quot;    </span>
+<span class="sd">    Run the wind multiplier calculations.    </span>
+<span class="sd">    </span>
+<span class="sd">    This will attempt to run the calculation in parallel by tiling the    </span>
+<span class="sd">    domain, but also provides a sane fallback mechanism to execute     </span>
+<span class="sd">    in serial.  </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>        
+    
+    <span class="c"># add subfolders into path</span>
+    <span class="n">cmd_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getfile</span><span class="p">(</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()))[</span><span class="mi">0</span><span class="p">]))</span>   
+    <span class="k">if</span> <span class="n">cmd_folder</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">cmd_folder</span><span class="p">)</span>
+    
+    <span class="n">cmd_subfolder1</span> <span class="o">=</span> <span class="n">pjoin</span><span class="p">(</span><span class="n">cmd_folder</span><span class="p">,</span><span class="s">&quot;terrain&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">cmd_subfolder1</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">cmd_subfolder1</span><span class="p">)</span>
+
+    <span class="n">cmd_subfolder2</span> <span class="o">=</span> <span class="n">pjoin</span><span class="p">(</span><span class="n">cmd_folder</span><span class="p">,</span><span class="s">&quot;shielding&quot;</span><span class="p">)</span>    
+    <span class="k">if</span> <span class="n">cmd_subfolder2</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">cmd_subfolder2</span><span class="p">)</span>
+
+    <span class="n">cmd_subfolder3</span> <span class="o">=</span> <span class="n">pjoin</span><span class="p">(</span><span class="n">cmd_folder</span><span class="p">,</span><span class="s">&quot;topographic&quot;</span><span class="p">)</span>    
+    <span class="k">if</span> <span class="n">cmd_subfolder3</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">cmd_subfolder2</span><span class="p">)</span> 
+        
+    <span class="n">cmd_subfolder4</span> <span class="o">=</span> <span class="n">pjoin</span><span class="p">(</span><span class="n">cmd_folder</span><span class="p">,</span><span class="s">&quot;utilities&quot;</span><span class="p">)</span>    
+    <span class="k">if</span> <span class="n">cmd_subfolder4</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">cmd_subfolder2</span><span class="p">)</span>
+    
+    <span class="n">config</span> <span class="o">=</span> <span class="n">ConfigParser</span><span class="o">.</span><span class="n">RawConfigParser</span><span class="p">()</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">pjoin</span><span class="p">(</span><span class="n">cmd_folder</span><span class="p">,</span> <span class="s">&#39;multiplier_conf.cfg&#39;</span><span class="p">))</span>
+
+    <span class="n">root</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;inputValues&#39;</span><span class="p">,</span> <span class="s">&#39;root&#39;</span><span class="p">)</span>
+    <span class="n">upwind_length</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;inputValues&#39;</span><span class="p">,</span> <span class="s">&#39;upwind_length&#39;</span><span class="p">))</span>
+    
+    <span class="n">logfile</span> <span class="o">=</span> <span class="s">&#39;multipliers.log&#39;</span>    
+    <span class="n">loglevel</span> <span class="o">=</span> <span class="s">&#39;INFO&#39;</span>
+    <span class="n">verbose</span> <span class="o">=</span> <span class="bp">False</span>      
+     
+    
+    <span class="n">attemptParallel</span><span class="p">()</span> 
+    
+    <span class="k">if</span> <span class="n">pp</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">pp</span><span class="o">.</span><span class="n">rank</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">logfile</span> <span class="o">+=</span> <span class="s">&#39;_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">rank</span><span class="p">())</span>
+        <span class="n">verbose</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">pass</span>
+   
+    <span class="n">flStartLog</span><span class="p">(</span><span class="n">logfile</span><span class="p">,</span> <span class="n">loglevel</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+    
+    <span class="c"># set input maps and output folder</span>
+    <span class="n">terrain_map</span> <span class="o">=</span> <span class="n">pjoin</span><span class="p">(</span><span class="n">pjoin</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s">&#39;input&#39;</span><span class="p">),</span> <span class="s">&quot;lc_terrain_class_test_5.img&quot;</span><span class="p">)</span>
+    <span class="c">#terrain_map = pjoin(pjoin(root, &#39;input&#39;), &quot;lc_terrain_class.img&quot;)</span>
+    <span class="c">#terrain_map = pjoin(pjoin(root, &#39;input&#39;), &quot;TestLandCoverData.img&quot;)</span>
+    <span class="n">dem</span> <span class="o">=</span> <span class="n">pjoin</span><span class="p">(</span><span class="n">pjoin</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s">&#39;input&#39;</span><span class="p">),</span> <span class="s">&quot;dems1_whole.img&quot;</span><span class="p">)</span>
+    <span class="c">#dem = pjoin(pjoin(root, &#39;input&#39;), &quot;TestDEMFlatTerrain.img&quot;)</span>
+    <span class="c">#dem = pjoin(pjoin(root, &#39;input&#39;), &quot;testDEMPercentSlope.img&quot;)</span>
+    <span class="c">#dem = pjoin(pjoin(root, &#39;input&#39;), &quot;ZeroBackground.img&quot;)</span>
+    <span class="n">cyclone_area</span> <span class="o">=</span>  <span class="n">pjoin</span><span class="p">(</span><span class="n">pjoin</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s">&#39;input&#39;</span><span class="p">),</span> <span class="s">&quot;cyclone_dem_extent.img&quot;</span><span class="p">)</span>
+    
+    <span class="n">doOutputDirectoryCreation</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+    <span class="k">global</span> <span class="n">output_folder</span>
+    <span class="n">output_folder</span> <span class="o">=</span> <span class="n">pjoin</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s">&#39;output&#39;</span><span class="p">)</span>
+    
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;get the tiles&quot;</span><span class="p">)</span>    
+    <span class="n">TG</span> <span class="o">=</span> <span class="n">TileGrid</span><span class="p">(</span><span class="n">upwind_length</span><span class="p">,</span> <span class="n">terrain_map</span><span class="p">)</span>    
+    <span class="n">tiles</span> <span class="o">=</span> <span class="n">getTiles</span><span class="p">(</span><span class="n">TG</span><span class="p">)</span>    
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;the number of tiles is </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tiles</span><span class="p">)))</span>
+    
+    <span class="n">pp</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
+    
+    <span class="n">multiplier</span> <span class="o">=</span> <span class="n">Multipliers</span><span class="p">(</span><span class="n">terrain_map</span><span class="p">,</span> <span class="n">dem</span><span class="p">,</span> <span class="n">cyclone_area</span><span class="p">)</span>
+    <span class="n">multiplier</span><span class="o">.</span><span class="n">paralleliseOnTiles</span><span class="p">(</span><span class="n">tiles</span><span class="p">)</span>     
+    
+    <span class="n">pp</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span> 
+    
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Successfully completed wind multipliers calculation&quot;</span><span class="p">)</span>  
+
+</div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">run</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">WindMultipliers v1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Geoscience Australia.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

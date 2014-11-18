@@ -1,0 +1,233 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>topomult &mdash; WindMultipliers v1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="WindMultipliers v1.0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">WindMultipliers v1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for topomult</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">:mod:`topomult` -- Calculate topographic multiplier</span>
+<span class="sd">==================================================================================</span>
+
+<span class="sd">This module is called by the module </span>
+<span class="sd">:term:`all_multipliers` to calculate the topographic multiplier for an input tile</span>
+<span class="sd">for 8 directions and output as NetCDF format.</span>
+<span class="sd">    </span>
+<span class="sd">:References: Yang, T., Nadimpalli, K. &amp; Cechet, R.P. 2014. Local wind assessment </span>
+<span class="sd">in Australia: computation methodology for wind multipliers. Record 2014/33. </span>
+<span class="sd">Geoscience Australia, Canberra.</span>
+
+<span class="sd">:moduleauthor: Tina Yang &lt;tina.yang@ga.gov.au&gt; </span>
+<span class="sd">               Histroical authors: Xunguo Lin, Chris Thomas, </span>
+<span class="sd">                                   Wenping Jiang, Craig Arthur </span>
+<span class="sd">                 </span>
+
+<span class="sd">&quot;&quot;&quot;</span> 
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span> <span class="k">as</span> <span class="n">pjoin</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">logging</span> <span class="kn">as</span> <span class="nn">log</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">signal</span>
+<span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">gdal</span>
+<span class="c">#from osgeo.gdalconst import *</span>
+
+<span class="kn">from</span> <span class="nn">utilities.get_pixel_size_grid</span> <span class="kn">import</span> <span class="n">get_pixel_size_grids</span>
+<span class="kn">from</span> <span class="nn">utilities.nctools</span> <span class="kn">import</span> <span class="n">saveMultiplier</span><span class="p">,</span> <span class="n">getLatLon</span>
+
+<span class="kn">import</span> <span class="nn">make_path</span>       
+<span class="kn">import</span> <span class="nn">multiplier_calc</span> 
+
+<span class="n">__version__</span> <span class="o">=</span> <span class="s">&#39;0.4 - intergarate with terrian and shileding multiplier for tiling and parallelisation&#39;</span>
+
+
+
+<div class="viewcode-block" id="topomult"><a class="viewcode-back" href="../docs/topographic.html#topomult.topomult">[docs]</a><span class="k">def</span> <span class="nf">topomult</span><span class="p">(</span><span class="n">input_dem</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Executes core topographic multiplier functionality</span>
+
+<span class="sd">    :param input_dem:`file` the input tile of the DEM</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
+    
+   <span class="c"># find output folder</span>
+    <span class="n">mh_folder</span> <span class="o">=</span> <span class="n">pjoin</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">input_dem</span><span class="p">),</span> <span class="s">&#39;topographic&#39;</span><span class="p">)</span>
+    <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">input_dem</span><span class="p">)</span>
+    <span class="n">nc_folder</span> <span class="o">=</span> <span class="n">pjoin</span><span class="p">(</span><span class="n">mh_folder</span><span class="p">,</span> <span class="s">&#39;netcdf&#39;</span><span class="p">)</span>        
+    
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">input_dem</span><span class="p">)</span>    
+    <span class="n">nc</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">RasterXSize</span>
+    <span class="n">nr</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">RasterYSize</span>    
+    
+    <span class="n">geotransform</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">GetGeoTransform</span><span class="p">()</span>
+    <span class="n">x_Left</span> <span class="o">=</span> <span class="n">geotransform</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">y_Upper</span> <span class="o">=</span> <span class="o">-</span><span class="n">geotransform</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">pixelWidth</span> <span class="o">=</span> <span class="n">geotransform</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">pixelHeight</span> <span class="o">=</span> <span class="o">-</span><span class="n">geotransform</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+    
+    <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="n">getLatLon</span><span class="p">(</span><span class="n">x_Left</span><span class="p">,</span> <span class="n">y_Upper</span><span class="p">,</span> <span class="n">pixelWidth</span><span class="p">,</span> <span class="n">pixelHeight</span><span class="p">,</span> <span class="n">nc</span><span class="p">,</span> <span class="n">nr</span><span class="p">)</span> 
+
+    <span class="n">band</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>    
+    <span class="n">elevation_array</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">ReadAsArray</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">nc</span><span class="p">,</span> <span class="n">nr</span><span class="p">)</span>
+    <span class="n">elevation_array</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">elevation_array</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">0.001</span><span class="p">)]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    
+    <span class="n">elevation_array_tran</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">elevation_array</span><span class="p">)</span>        
+    <span class="n">data</span> <span class="o">=</span>  <span class="n">elevation_array_tran</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    
+    <span class="n">x_m_array</span><span class="p">,</span> <span class="n">y_m_array</span> <span class="o">=</span> <span class="n">get_pixel_size_grids</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+    <span class="n">cellsize</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x_m_array</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y_m_array</span><span class="p">))</span>    
+       
+    <span class="c"># Compute the starting positions along the boundaries depending on dir </span>
+    <span class="c"># Together, the direction and the starting position determines a line.</span>
+    <span class="c"># Note that the starting positions are defined</span>
+    <span class="c"># in terms of the 1-d index of the array.</span>
+    
+    <span class="n">directions</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">,</span><span class="s">&#39;s&#39;</span><span class="p">,</span><span class="s">&#39;e&#39;</span><span class="p">,</span><span class="s">&#39;w&#39;</span><span class="p">,</span><span class="s">&#39;ne&#39;</span><span class="p">,</span><span class="s">&#39;nw&#39;</span><span class="p">,</span><span class="s">&#39;se&#39;</span><span class="p">,</span><span class="s">&#39;sw&#39;</span><span class="p">]</span>
+    
+    <span class="k">for</span> <span class="n">direction</span> <span class="ow">in</span> <span class="n">directions</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span>        
+        
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">data_spacing</span> <span class="o">=</span> <span class="n">cellsize</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data_spacing</span> <span class="o">=</span> <span class="n">cellsize</span>
+            
+        <span class="n">Mhdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        
+        <span class="n">strt_idx</span> <span class="o">=</span> <span class="p">[]</span>    
+        <span class="k">if</span> <span class="n">direction</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;n&#39;</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">strt_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">strt_idx</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">nr</span> <span class="o">*</span> <span class="n">nc</span><span class="p">,</span> <span class="n">nr</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="n">direction</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;s&#39;</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">strt_idx</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">strt_idx</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">nr</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">nr</span> <span class="o">*</span> <span class="n">nc</span><span class="p">,</span> <span class="n">nr</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="n">direction</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;e&#39;</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">strt_idx</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">strt_idx</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">((</span><span class="n">nc</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">nr</span><span class="p">,</span> <span class="n">nr</span> <span class="o">*</span> <span class="n">nc</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="n">direction</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;w&#39;</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">strt_idx</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">strt_idx</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">nr</span><span class="p">)))</span>
+           
+        <span class="c"># For the diagonal directions the corner will have been counted twice </span>
+        <span class="c"># so get rid of the duplicates then loop over the data lines </span>
+        <span class="c"># (i.e. over the starting positions)</span>
+        <span class="n">strt_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">strt_idx</span><span class="p">)</span>
+        
+        <span class="k">for</span> <span class="n">ctr</span><span class="p">,</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">strt_idx</span><span class="p">):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span> <span class="s">&#39;Processing path </span><span class="si">%3i</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">ctr</span><span class="o">+</span><span class="s">&#39; of </span><span class="si">%3i</span><span class="s">&#39;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">strt_idx</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;, index </span><span class="si">%5i</span><span class="s">.&#39;</span> <span class="o">%</span> <span class="n">idx</span> <span class="p">)</span>
+           
+            <span class="c"># Get a line of the data</span>
+            <span class="c"># path is a 1-d vector which gives the indices of the data    </span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">make_path</span><span class="o">.</span><span class="n">make_path</span><span class="p">(</span><span class="n">nr</span><span class="p">,</span> <span class="n">nc</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">direction</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">path</span><span class="p">]</span>
+            <span class="n">line</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">line</span><span class="p">)]</span> <span class="o">=</span> <span class="mf">0.</span>
+            <span class="n">M</span> <span class="o">=</span> <span class="n">multiplier_calc</span><span class="o">.</span><span class="n">multiplier_calc</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">data_spacing</span><span class="p">)</span>
+              
+            <span class="c"># write the line back to the data array</span>
+            <span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
+            <span class="n">Mhdata</span><span class="p">[</span><span class="n">path</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">,]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>  
+    
+        <span class="c"># Reshape the result to matrix like </span>
+        <span class="n">Mhdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">Mhdata</span><span class="p">,</span> <span class="p">(</span><span class="n">nc</span><span class="p">,</span> <span class="n">nr</span><span class="p">))</span>
+        <span class="n">Mhdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">Mhdata</span><span class="p">)</span>
+        
+        <span class="c"># smooth</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span><span class="o">/</span><span class="mf">9.</span>
+        <span class="n">mhsmooth</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">Mhdata</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;same&#39;</span><span class="p">)</span>
+        <span class="n">mhsmooth</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">elevation_array</span><span class="p">)]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">del</span> <span class="n">Mhdata</span>
+        
+        <span class="c"># output format as netCDF4       </span>
+        <span class="n">tile_nc</span> <span class="o">=</span> <span class="n">pjoin</span><span class="p">(</span><span class="n">nc_folder</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">file_name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;_&#39;</span> <span class="o">+</span> <span class="n">direction</span> <span class="o">+</span> <span class="s">&#39;.nc&#39;</span><span class="p">)</span>
+        <span class="n">saveMultiplier</span><span class="p">(</span><span class="s">&#39;Mt&#39;</span><span class="p">,</span> <span class="n">mhsmooth</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">tile_nc</span><span class="p">)</span> 
+        <span class="k">del</span> <span class="n">mhsmooth</span>
+        
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Finished direction </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">direction</span><span class="p">)</span>
+        
+    <span class="n">ds</span> <span class="o">=</span> <span class="bp">None</span>
+
+   </div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span> 
+    <span class="n">dem</span> <span class="o">=</span> <span class="s">r&#39;/nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output_work/test_wrong_dem.img&#39;</span>
+    <span class="n">topomult</span><span class="p">(</span><span class="n">dem</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">WindMultipliers v1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Geoscience Australia.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

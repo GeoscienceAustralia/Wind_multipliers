@@ -1,0 +1,193 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tests_characterisation.read_file &mdash; WindMultipliers v1.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="WindMultipliers v1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">WindMultipliers v1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for tests_characterisation.read_file</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/python2.6</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">gdal</span>
+<span class="kn">from</span> <span class="nn">osgeo.gdalconst</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: read_file.py</span>
+<span class="sd">   :synopsis: Module used to read input file, and convert data to numpy array</span>
+
+<span class="sd">.. moduleauthor:: Daniel Wild &lt;daniel.wild@ga.gov.au&gt;</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="readASC"><a class="viewcode-back" href="../../docs/tests_characterisation.html#tests_characterisation.read_file.readASC">[docs]</a><span class="k">def</span> <span class="nf">readASC</span><span class="p">(</span><span class="n">inputFile</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads .asc DEM into a GDALDataSet</span>
+
+<span class="sd">    :param inputFile: The path to an input file (DEM)</span>
+<span class="sd">    :returns: A numpy array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c"># debug - permit print whole numpy array</span>
+    <span class="c"># numpy.set_printoptions(threshold=numpy.nan)</span>
+
+    <span class="n">inDs</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">inputFile</span><span class="p">,</span> <span class="n">GA_ReadOnly</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">convertToNumpyArray</span><span class="p">(</span><span class="n">inDs</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="readNetCDF"><a class="viewcode-back" href="../../docs/tests_characterisation.html#tests_characterisation.read_file.readNetCDF">[docs]</a><span class="k">def</span> <span class="nf">readNetCDF</span><span class="p">(</span><span class="n">inputFile</span><span class="p">,</span> <span class="n">ncVar</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads an NETCDF file into a GDALDataSet</span>
+
+<span class="sd">    :param inputFile: The path to an input file (NETCDF)</span>
+<span class="sd">    :param ncVar: The name of var to read from NETCDF file</span>
+<span class="sd">    :returns: A numpy array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c"># DEBUG - permit print whole numpy array</span>
+    <span class="c">#numpy.set_printoptions(threshold=numpy.nan)</span>
+
+    <span class="c"># DEBUG - meaningful errors</span>
+    <span class="n">gdal</span><span class="o">.</span><span class="n">UseExceptions</span><span class="p">()</span>
+
+    <span class="n">inDs</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s">&#39;NETCDF:&quot;&#39;</span><span class="o">+</span> <span class="n">inputFile</span><span class="o">+</span><span class="s">&#39;&quot;:&#39;</span><span class="o">+</span><span class="n">ncVar</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">convertToNumpyArray</span><span class="p">(</span><span class="n">inDs</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="convertToNumpyArray"><a class="viewcode-back" href="../../docs/tests_characterisation.html#tests_characterisation.read_file.convertToNumpyArray">[docs]</a><span class="k">def</span> <span class="nf">convertToNumpyArray</span><span class="p">(</span><span class="n">gdalDataSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads GDALDataSet into a numpy array</span>
+
+<span class="sd">    :param gdalDataSet: a GDAL DataSet to be converted to numpy.array</span>
+<span class="sd">    :returns: A numpy array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">gdalDataSet</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;Could not open </span><span class="si">%s</span><span class="s">&#39;</span><span class="o">%</span><span class="n">gdalDataSet</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c"># get raster size</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">gdalDataSet</span><span class="o">.</span><span class="n">RasterYSize</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="n">gdalDataSet</span><span class="o">.</span><span class="n">RasterXSize</span>
+
+    <span class="c"># create empty numpy array</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">rows</span><span class="p">,</span><span class="n">cols</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+
+    <span class="c"># get the bands and block sizes</span>
+    <span class="n">inBand</span> <span class="o">=</span> <span class="n">gdalDataSet</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">blockSizes</span> <span class="o">=</span> <span class="n">inBand</span><span class="o">.</span><span class="n">GetBlockSize</span><span class="p">()</span>
+    <span class="n">xBlockSize</span> <span class="o">=</span> <span class="n">blockSizes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">yBlockSize</span> <span class="o">=</span> <span class="n">blockSizes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c"># loop through the rows</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">yBlockSize</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">+</span> <span class="n">yBlockSize</span> <span class="o">&lt;</span> <span class="n">rows</span><span class="p">:</span>
+            <span class="n">numRows</span> <span class="o">=</span> <span class="n">yBlockSize</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">numRows</span> <span class="o">=</span> <span class="n">rows</span> <span class="o">-</span> <span class="n">i</span>
+
+      <span class="c"># loop through the columns</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">xBlockSize</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">j</span> <span class="o">+</span> <span class="n">xBlockSize</span> <span class="o">&lt;</span> <span class="n">cols</span><span class="p">:</span>
+                <span class="n">numCols</span> <span class="o">=</span> <span class="n">xBlockSize</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">numCols</span> <span class="o">=</span> <span class="n">cols</span> <span class="o">-</span> <span class="n">j</span>
+
+            <span class="c"># read the data in</span>
+            <span class="n">dd</span> <span class="o">=</span> <span class="n">inBand</span><span class="o">.</span><span class="n">ReadAsArray</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">numCols</span><span class="p">,</span> <span class="n">numRows</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+
+            <span class="c"># do the calculations</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">numRows</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="n">numCols</span><span class="p">]</span> <span class="o">=</span> <span class="n">dd</span>
+
+    <span class="c"># DEBUG</span>
+    <span class="c">#print data</span>
+
+    <span class="k">return</span> <span class="n">data</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">WindMultipliers v1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Geoscience Australia.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,686 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>shield_mult &mdash; WindMultipliers v1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="WindMultipliers v1.0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">WindMultipliers v1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for shield_mult</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">:mod:`shielding` -- Calculate shielding multiplier</span>
+<span class="sd">==================================================================================</span>
+
+<span class="sd">This module is called by the module </span>
+<span class="sd">:term:`all_multipliers` to calculate the shielding multiplier for an input tile</span>
+<span class="sd">for 8 directions and output as NetCDF format.</span>
+
+<span class="sd">References:</span>
+<span class="sd">    </span>
+<span class="sd">    Yang, T., Nadimpalli, K. &amp; Cechet, R.P. 2014. Local wind assessment </span>
+<span class="sd">    in Australia: computation methodology for wind multipliers. Record 2014/33. </span>
+<span class="sd">    Geoscience Australia, Canberra.</span>
+
+<span class="sd">:moduleauthor: Tina Yang &lt;tina.yang@ga.gov.au&gt;</span>
+
+<span class="sd">&quot;&quot;&quot;</span> 
+    
+<span class="c"># Import system &amp; process modules</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">logging</span> <span class="kn">as</span> <span class="nn">log</span>
+<span class="kn">import</span> <span class="nn">numexpr</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">ndimage</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span> <span class="k">as</span> <span class="n">pjoin</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">osgeo.gdalconst</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">gdal</span>
+<span class="kn">from</span> <span class="nn">utilities</span> <span class="kn">import</span> <span class="n">value_lookup</span>
+<span class="kn">from</span> <span class="nn">utilities.get_pixel_size_grid</span> <span class="kn">import</span> <span class="n">get_pixel_size_grids</span><span class="p">,</span> <span class="n">RADIANS_PER_DEGREE</span>
+<span class="kn">from</span> <span class="nn">utilities.nctools</span> <span class="kn">import</span> <span class="n">saveMultiplier</span><span class="p">,</span> <span class="n">getLatLon</span>
+
+
+
+<div class="viewcode-block" id="shield"><a class="viewcode-back" href="../docs/shielding.html#shield_mult.shield">[docs]</a><span class="k">def</span> <span class="nf">shield</span><span class="p">(</span><span class="n">terrain</span><span class="p">,</span> <span class="n">input_dem</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Performs core calculations to derive the shielding multiplier</span>
+<span class="sd">        </span>
+<span class="sd">    :param terrain: `file` the input tile of the terrain class map (landcover). </span>
+<span class="sd">    :param input_dem:`file` the input tile of the DEM    </span>
+<span class="sd">    &quot;&quot;&quot;</span> 
+    
+<span class="c">#    import pdb</span>
+<span class="c">#    pdb.set_trace()    </span>
+    
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Derive slope and reclassified aspect ...   &#39;</span><span class="p">)</span>
+    <span class="n">slope_array</span><span class="p">,</span> <span class="n">aspect_array</span> <span class="o">=</span> <span class="n">get_slope_aspect</span><span class="p">(</span><span class="n">input_dem</span><span class="p">)</span>
+    
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Reclassfy the terrain classes into initial shielding factors ...&#39;</span><span class="p">)</span>
+    <span class="n">ms_orig</span> <span class="o">=</span> <span class="n">terrain_class2ms_orig</span><span class="p">(</span><span class="n">terrain</span><span class="p">)</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Moving average and combine the slope and aspect for each direction ...&#39;</span><span class="p">)</span>
+    <span class="n">convo_combine</span><span class="p">(</span><span class="n">ms_orig</span><span class="p">,</span> <span class="n">slope_array</span><span class="p">,</span> <span class="n">aspect_array</span><span class="p">)</span>
+    
+    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">ms_orig</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">slope_array</span><span class="p">,</span> <span class="n">aspect_array</span>
+    
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span> <span class="s">&#39;finish shielding multiplier computation for this tile successfully&#39;</span><span class="p">)</span>
+   
+</div>
+<div class="viewcode-block" id="reclassify_aspect"><a class="viewcode-back" href="../docs/shielding.html#shield_mult.reclassify_aspect">[docs]</a><span class="k">def</span> <span class="nf">reclassify_aspect</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reclassify the aspect valus from 0 ~ 360 to 1 ~ 9</span>
+<span class="sd">   </span>
+<span class="sd">    :param data: :class:`numpy.ndarray` the input aspect values 0 ~ 360</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:        </span>
+<span class="sd">    --------  </span>
+<span class="sd">        </span>
+<span class="sd">    :outdata: :class:`numpy.ndarray` the output aspect values 1 ~ 9</span>
+<span class="sd">    &quot;&quot;&quot;</span>   
+    
+<span class="c">#    import pdb</span>
+<span class="c">#    pdb.set_trace() </span>
+    
+    <span class="n">outdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+    <span class="n">outdata</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span>    
+       
+    <span class="n">outdata</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">data</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">data</span> <span class="o">&lt;</span> <span class="mf">22.5</span><span class="p">))]</span> <span class="o">=</span> <span class="mi">1</span>    
+    <span class="n">outdata</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="mf">337.5</span> <span class="o">&lt;=</span> <span class="n">data</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">data</span> <span class="o">&lt;=</span> <span class="mi">360</span><span class="p">))]</span> <span class="o">=</span> <span class="mi">1</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">9</span><span class="p">):</span>
+        <span class="n">outdata</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="mf">22.5</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="mi">45</span> <span class="o">&lt;=</span> <span class="n">data</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">data</span> <span class="o">&lt;</span> <span class="mf">67.5</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="mi">45</span><span class="p">))]</span> <span class="o">=</span> <span class="n">i</span>    
+   
+    <span class="k">return</span> <span class="n">outdata</span>
+    
+</div>
+<div class="viewcode-block" id="get_slope_aspect"><a class="viewcode-back" href="../docs/shielding.html#shield_mult.get_slope_aspect">[docs]</a><span class="k">def</span> <span class="nf">get_slope_aspect</span><span class="p">(</span><span class="n">input_dem</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the slope and aspect from the input DEM</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:        </span>
+<span class="sd">    ----------- </span>
+<span class="sd">   </span>
+<span class="sd">    :param input_dem: `file` the input DEM</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:        </span>
+<span class="sd">    --------  </span>
+<span class="sd">        </span>
+<span class="sd">    :slope_array: :class:`numpy.ndarray` the output slope values</span>
+<span class="sd">    :aspect_array_reclassify: :class:`numpy.ndarray` the output aspect values</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
+    
+<span class="c">#    import pdb</span>
+<span class="c">#    pdb.set_trace() </span>
+   
+    <span class="n">np</span><span class="o">.</span><span class="n">seterr</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s">&#39;ignore&#39;</span><span class="p">)</span>
+    
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">input_dem</span><span class="p">)</span>    
+    <span class="n">cols</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">RasterXSize</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">RasterYSize</span>
+    <span class="n">geotransform</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">GetGeoTransform</span><span class="p">()</span>
+    <span class="n">pixel_x_size</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">geotransform</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> 
+    <span class="n">pixel_y_size</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">geotransform</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+    <span class="n">band</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>     
+    <span class="n">elevation_array</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">ReadAsArray</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">rows</span><span class="p">)</span>
+    <span class="n">elevation_array</span> <span class="o">=</span> <span class="n">elevation_array</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">elevation_array</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">elevation_array</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">0.001</span><span class="p">)]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+   
+    <span class="n">x_m_array</span><span class="p">,</span> <span class="n">y_m_array</span> <span class="o">=</span> <span class="n">get_pixel_size_grids</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+    
+    <span class="n">dzdx_array</span> <span class="o">=</span> <span class="n">ndimage</span><span class="o">.</span><span class="n">sobel</span><span class="p">(</span><span class="n">elevation_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mf">8.</span> <span class="o">*</span> <span class="n">pixel_x_size</span><span class="p">)</span>
+    <span class="n">dzdx_array</span> <span class="o">=</span> <span class="n">numexpr</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s">&quot;dzdx_array * pixel_x_size / x_m_array&quot;</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">x_m_array</span>
+    
+    <span class="n">dzdy_array</span> <span class="o">=</span> <span class="n">ndimage</span><span class="o">.</span><span class="n">sobel</span><span class="p">(</span><span class="n">elevation_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mf">8.</span> <span class="o">*</span> <span class="n">pixel_y_size</span><span class="p">)</span>
+    <span class="n">dzdy_array</span> <span class="o">=</span> <span class="n">numexpr</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s">&quot;dzdy_array * pixel_y_size / y_m_array&quot;</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">y_m_array</span>    
+    
+    <span class="c"># Slope    </span>
+    <span class="n">hypotenuse_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">dzdx_array</span><span class="p">,</span> <span class="n">dzdy_array</span><span class="p">)</span>
+    <span class="n">slope_array</span> <span class="o">=</span> <span class="n">numexpr</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s">&quot;arctan(hypotenuse_array) / RADIANS_PER_DEGREE&quot;</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">hypotenuse_array</span>          
+    
+    <span class="c"># Aspect</span>
+    <span class="c"># Convert angles from conventional radians to compass heading 0-360</span>
+    <span class="n">aspect_array</span> <span class="o">=</span> <span class="n">numexpr</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s">&quot;(450 - arctan2(dzdy_array, -dzdx_array) / RADIANS_PER_DEGREE) % 360&quot;</span><span class="p">)</span>
+    <span class="c"># Derive reclassifed aspect...    </span>
+    <span class="n">aspect_array_reclassify</span> <span class="o">=</span> <span class="n">reclassify_aspect</span><span class="p">(</span><span class="n">aspect_array</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">aspect_array</span>       
+
+    
+    
+    <span class="n">ms_folder</span> <span class="o">=</span> <span class="n">pjoin</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">input_dem</span><span class="p">),</span> <span class="s">&#39;shielding&#39;</span><span class="p">)</span>
+    <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">input_dem</span><span class="p">)</span>
+    <span class="n">driver</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&#39;HFA&#39;</span><span class="p">)</span>
+    
+    <span class="n">slope</span> <span class="o">=</span> <span class="n">pjoin</span><span class="p">(</span><span class="n">ms_folder</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">file_name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;_slope.img&#39;</span><span class="p">)</span>    
+    <span class="n">slope_ds</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="n">slope</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">RasterXSize</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">RasterYSize</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">GDT_Float32</span><span class="p">)</span>
+    <span class="n">slope_ds</span><span class="o">.</span><span class="n">SetGeoTransform</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">GetGeoTransform</span><span class="p">())</span>
+    <span class="n">slope_ds</span><span class="o">.</span><span class="n">SetProjection</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">GetProjection</span><span class="p">())</span> 
+    
+    <span class="n">outBand_slope</span> <span class="o">=</span> <span class="n">slope_ds</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">outBand_slope</span><span class="o">.</span><span class="n">WriteArray</span><span class="p">(</span><span class="n">slope_array</span><span class="p">)</span>
+    
+    <span class="c"># flush data to disk, set the NoData value and calculate stats</span>
+    <span class="n">outBand_slope</span><span class="o">.</span><span class="n">FlushCache</span><span class="p">()</span>
+    <span class="n">outBand_slope</span><span class="o">.</span><span class="n">SetNoDataValue</span><span class="p">(</span><span class="o">-</span><span class="mi">99</span><span class="p">)</span>
+    <span class="n">outBand_slope</span><span class="o">.</span><span class="n">GetStatistics</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    
+    
+    <span class="n">aspect</span> <span class="o">=</span> <span class="n">pjoin</span><span class="p">(</span><span class="n">ms_folder</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">file_name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;_aspect.img&#39;</span><span class="p">)</span>    
+    <span class="n">aspect_ds</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="n">aspect</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">RasterXSize</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">RasterYSize</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">GDT_Float32</span><span class="p">)</span>
+    <span class="n">aspect_ds</span><span class="o">.</span><span class="n">SetGeoTransform</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">GetGeoTransform</span><span class="p">())</span>
+    <span class="n">aspect_ds</span><span class="o">.</span><span class="n">SetProjection</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">GetProjection</span><span class="p">())</span> 
+    
+    <span class="n">outBand_aspect</span> <span class="o">=</span> <span class="n">aspect_ds</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">outBand_aspect</span><span class="o">.</span><span class="n">WriteArray</span><span class="p">(</span><span class="n">aspect_array_reclassify</span><span class="p">)</span>
+    
+    <span class="c"># flush data to disk, set the NoData value and calculate stats</span>
+    <span class="n">outBand_aspect</span><span class="o">.</span><span class="n">FlushCache</span><span class="p">()</span>
+    <span class="n">outBand_aspect</span><span class="o">.</span><span class="n">SetNoDataValue</span><span class="p">(</span><span class="o">-</span><span class="mi">99</span><span class="p">)</span>
+    <span class="n">outBand_aspect</span><span class="o">.</span><span class="n">GetStatistics</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    
+    
+    <span class="n">ds</span> <span class="o">=</span> <span class="bp">None</span>
+    
+    <span class="k">return</span> <span class="n">slope_array</span><span class="p">,</span> <span class="n">aspect_array_reclassify</span>
+    
+   </div>
+<div class="viewcode-block" id="terrain_class2ms_orig"><a class="viewcode-back" href="../docs/shielding.html#shield_mult.terrain_class2ms_orig">[docs]</a><span class="k">def</span> <span class="nf">terrain_class2ms_orig</span><span class="p">(</span><span class="n">terrain</span><span class="p">):</span> 
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reclassify the terrain classes into initial shielding factors</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:        </span>
+<span class="sd">    ----------- </span>
+<span class="sd">   </span>
+<span class="sd">    :param input_dem: `file` the input terrain class map</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:        </span>
+<span class="sd">    --------  </span>
+<span class="sd">        </span>
+<span class="sd">    :ms_orig: `file` the output initial shielding value map</span>
+<span class="sd">    &quot;&quot;&quot;</span>   
+<span class="c">#    import pdb</span>
+<span class="c">#    pdb.set_trace()     </span>
+    
+    <span class="n">ms_folder</span> <span class="o">=</span> <span class="n">pjoin</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">terrain</span><span class="p">),</span> <span class="s">&#39;shielding&#39;</span><span class="p">)</span>
+    <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">terrain</span><span class="p">)</span>
+    <span class="c"># output format as ERDAS Imagine</span>
+    <span class="n">driver</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">GetDriverByName</span><span class="p">(</span><span class="s">&#39;HFA&#39;</span><span class="p">)</span>
+    
+    <span class="c"># open the tile</span>
+    <span class="n">terrain_resample_ds</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">terrain</span><span class="p">)</span>
+    
+    <span class="c"># get image size, format, projection</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="n">terrain_resample_ds</span><span class="o">.</span><span class="n">RasterXSize</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">terrain_resample_ds</span><span class="o">.</span><span class="n">RasterYSize</span>
+    
+    <span class="c"># get georeference info    </span>
+    <span class="n">band</span> <span class="o">=</span> <span class="n">terrain_resample_ds</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>     
+    <span class="n">data</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">ReadAsArray</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">rows</span><span class="p">)</span>    
+    
+    <span class="n">ms_init</span> <span class="o">=</span> <span class="n">value_lookup</span><span class="o">.</span><span class="n">ms_init</span> 
+    
+    <span class="n">outdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+                
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]:</span>
+        <span class="n">outdata</span><span class="p">[</span><span class="n">data</span> <span class="o">==</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">ms_init</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">/</span><span class="mf">100.0</span>
+      
+    <span class="n">outdata</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">data</span><span class="o">==</span><span class="mi">0</span><span class="p">)]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    
+    <span class="n">ms_orig</span> <span class="o">=</span> <span class="n">pjoin</span><span class="p">(</span><span class="n">ms_folder</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">file_name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;_ms.img&#39;</span><span class="p">)</span>    
+    <span class="n">ms_orig_ds</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="n">ms_orig</span><span class="p">,</span> <span class="n">terrain_resample_ds</span><span class="o">.</span><span class="n">RasterXSize</span><span class="p">,</span> <span class="n">terrain_resample_ds</span><span class="o">.</span><span class="n">RasterYSize</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">GDT_Float32</span><span class="p">)</span>
+    <span class="n">ms_orig_ds</span><span class="o">.</span><span class="n">SetGeoTransform</span><span class="p">(</span><span class="n">terrain_resample_ds</span><span class="o">.</span><span class="n">GetGeoTransform</span><span class="p">())</span>
+    <span class="n">ms_orig_ds</span><span class="o">.</span><span class="n">SetProjection</span><span class="p">(</span><span class="n">terrain_resample_ds</span><span class="o">.</span><span class="n">GetProjection</span><span class="p">())</span> 
+    
+    <span class="n">outBand_ms_orig</span> <span class="o">=</span> <span class="n">ms_orig_ds</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">outBand_ms_orig</span><span class="o">.</span><span class="n">WriteArray</span><span class="p">(</span><span class="n">outdata</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">outdata</span>
+    
+    <span class="c"># flush data to disk, set the NoData value and calculate stats</span>
+    <span class="n">outBand_ms_orig</span><span class="o">.</span><span class="n">FlushCache</span><span class="p">()</span>
+    <span class="n">outBand_ms_orig</span><span class="o">.</span><span class="n">SetNoDataValue</span><span class="p">(</span><span class="o">-</span><span class="mi">99</span><span class="p">)</span>
+    <span class="n">outBand_ms_orig</span><span class="o">.</span><span class="n">GetStatistics</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    
+    <span class="n">terrain_resample_ds</span> <span class="o">=</span> <span class="bp">None</span>
+    
+    <span class="k">return</span> <span class="n">ms_orig</span>
+        
+</div>
+<div class="viewcode-block" id="convo_combine"><a class="viewcode-back" href="../docs/shielding.html#shield_mult.convo_combine">[docs]</a><span class="k">def</span> <span class="nf">convo_combine</span><span class="p">(</span><span class="n">ms_orig</span><span class="p">,</span> <span class="n">slope_array</span><span class="p">,</span> <span class="n">aspect_array</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apply convolution to the orginal shielding factor for each direction and call</span>
+<span class="sd">    the :term:`combine` module to consider the slope and aspect and remove the </span>
+<span class="sd">    conservitism to get final shielding multiplier values</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:        </span>
+<span class="sd">    ----------- </span>
+<span class="sd">   </span>
+<span class="sd">    :param ms_orig: `file` the original shidelding factor map</span>
+<span class="sd">    :param slope_array: :class:`numpy.ndarray` the input slope values</span>
+<span class="sd">    :param aspect_array_reclassify: :class:`numpy.ndarray` the input aspect values</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span> 
+<span class="c">#    import pdb</span>
+<span class="c">#    pdb.set_trace() </span>
+    
+    <span class="n">ms_orig_ds</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">ms_orig</span><span class="p">)</span>    
+    
+    <span class="c"># get image size, format, projection</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="n">ms_orig_ds</span><span class="o">.</span><span class="n">RasterXSize</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">ms_orig_ds</span><span class="o">.</span><span class="n">RasterYSize</span>    
+    <span class="n">geotransform</span> <span class="o">=</span> <span class="n">ms_orig_ds</span><span class="o">.</span><span class="n">GetGeoTransform</span><span class="p">()</span>
+    <span class="n">x_Left</span> <span class="o">=</span> <span class="n">geotransform</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">y_Upper</span> <span class="o">=</span> <span class="o">-</span><span class="n">geotransform</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">pixelWidth</span> <span class="o">=</span> <span class="n">geotransform</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">pixelHeight</span> <span class="o">=</span> <span class="o">-</span><span class="n">geotransform</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+    
+    <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="n">getLatLon</span><span class="p">(</span><span class="n">x_Left</span><span class="p">,</span> <span class="n">y_Upper</span><span class="p">,</span> <span class="n">pixelWidth</span><span class="p">,</span> <span class="n">pixelHeight</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">rows</span><span class="p">)</span>
+    
+    <span class="n">band</span> <span class="o">=</span> <span class="n">ms_orig_ds</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>     
+    <span class="n">data</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">ReadAsArray</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">rows</span><span class="p">)</span>
+   
+    <span class="k">if</span> <span class="n">ms_orig_ds</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Could not open </span><span class="si">%s</span><span class="s"> &#39;</span> <span class="o">%</span> <span class="n">ms_orig</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    
+    <span class="n">x_m_array</span><span class="p">,</span> <span class="n">y_m_array</span> <span class="o">=</span> <span class="n">get_pixel_size_grids</span><span class="p">(</span><span class="n">ms_orig_ds</span><span class="p">)</span>
+    <span class="n">pixelWidth</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x_m_array</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y_m_array</span><span class="p">))</span>
+    
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;pixelWidth is </span><span class="si">%2i</span><span class="s"> &#39;</span> <span class="o">%</span><span class="n">pixelWidth</span><span class="p">)</span>
+    
+    <span class="n">ms_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">ms_orig</span><span class="p">)</span>
+    <span class="n">nc_folder</span> <span class="o">=</span> <span class="n">pjoin</span><span class="p">(</span><span class="n">ms_folder</span><span class="p">,</span> <span class="s">&#39;netcdf&#39;</span><span class="p">)</span>
+    <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">ms_orig</span><span class="p">)</span>            
+        
+    <span class="n">dire</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;w&#39;</span><span class="p">,</span> <span class="s">&#39;e&#39;</span><span class="p">,</span> <span class="s">&#39;n&#39;</span><span class="p">,</span> <span class="s">&#39;s&#39;</span><span class="p">,</span> <span class="s">&#39;nw&#39;</span><span class="p">,</span> <span class="s">&#39;ne&#39;</span><span class="p">,</span> <span class="s">&#39;se&#39;</span><span class="p">,</span> <span class="s">&#39;sw&#39;</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">one_dir</span> <span class="ow">in</span> <span class="n">dire</span><span class="p">:</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">one_dir</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">one_dir</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;w&#39;</span><span class="p">,</span> <span class="s">&#39;e&#39;</span><span class="p">,</span> <span class="s">&#39;n&#39;</span><span class="p">,</span> <span class="s">&#39;s&#39;</span><span class="p">]:</span>
+            <span class="n">kernel_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">100.0</span><span class="o">/</span><span class="n">pixelWidth</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">kernel_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">100.0</span><span class="o">/</span><span class="n">pixelWidth</span><span class="p">)</span>
+            
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;convolution kernel size is </span><span class="si">%s</span><span class="s"> &#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">kernel_size</span><span class="p">))</span> 
+        
+        <span class="c"># if the resolution size is bigger than 100 m, no covolution just copy </span>
+        <span class="c"># the initial shielding factor to each direction</span>
+        <span class="k">if</span> <span class="n">kernel_size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span> 
+            <span class="n">outdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    
+            <span class="n">kern_dir</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()[</span><span class="s">&#39;kern_&#39;</span> <span class="o">+</span> <span class="n">one_dir</span><span class="p">]</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">kern_dir</span><span class="p">(</span><span class="n">kernel_size</span><span class="p">)</span>
+            <span class="n">outdata</span> <span class="o">=</span> <span class="n">blur_image</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span> 
+        <span class="k">else</span><span class="p">:</span>             
+            <span class="n">outdata</span> <span class="o">=</span> <span class="n">data</span>            
+            
+        <span class="n">result</span> <span class="o">=</span> <span class="n">combine</span><span class="p">(</span><span class="n">outdata</span><span class="p">,</span> <span class="n">slope_array</span><span class="p">,</span> <span class="n">aspect_array</span><span class="p">,</span> <span class="n">one_dir</span><span class="p">)</span> 
+        <span class="k">del</span> <span class="n">outdata</span> 
+        
+        <span class="c"># output format as netCDF4       </span>
+        <span class="n">tile_nc</span> <span class="o">=</span> <span class="n">pjoin</span><span class="p">(</span><span class="n">nc_folder</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">file_name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;_&#39;</span> <span class="o">+</span> <span class="n">one_dir</span> <span class="o">+</span> <span class="s">&#39;.nc&#39;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Saving terrain multiplier in netCDF file&quot;</span><span class="p">)</span>   
+        <span class="n">saveMultiplier</span><span class="p">(</span><span class="s">&#39;Ms&#39;</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">tile_nc</span><span class="p">)</span>
+        
+        <span class="k">del</span> <span class="n">result</span>
+
+    <span class="n">ms_orig_ds</span> <span class="o">=</span> <span class="bp">None</span>
+   
+
+</div>
+<div class="viewcode-block" id="combine"><a class="viewcode-back" href="../docs/shielding.html#shield_mult.combine">[docs]</a><span class="k">def</span> <span class="nf">combine</span><span class="p">(</span><span class="n">ms_orig_array</span><span class="p">,</span> <span class="n">slope_array</span><span class="p">,</span> <span class="n">aspect_array</span><span class="p">,</span> <span class="n">one_dir</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Used for each direction to derive the shielding multipliers by considering</span>
+<span class="sd">    slope and aspect after covolution in the previous step. It also will remove </span>
+<span class="sd">    the conservatism.   </span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:        </span>
+<span class="sd">    ----------- </span>
+<span class="sd">   </span>
+<span class="sd">    :param ms_orig_array: :class:`numpy.ndarray` convoluted initial shidelding values</span>
+<span class="sd">    :param slope_array: :class:`numpy.ndarray` the input slope values</span>
+<span class="sd">    :param aspect_array_reclassify: :class:`numpy.ndarray` the input aspect values</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:        </span>
+<span class="sd">    --------  </span>
+<span class="sd">        </span>
+<span class="sd">    :out_ms: :class:`numpy.ndarray` the output shielding mutipler values</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<span class="c">#    import pdb</span>
+<span class="c">#    pdb.set_trace() </span>
+    
+    <span class="n">dire_aspect</span> <span class="o">=</span> <span class="n">value_lookup</span><span class="o">.</span><span class="n">dire_aspect</span>
+    <span class="n">aspect_value</span> <span class="o">=</span> <span class="n">dire_aspect</span><span class="p">[</span><span class="n">one_dir</span><span class="p">]</span>
+    
+    <span class="n">conservatism</span> <span class="o">=</span> <span class="mf">0.9</span>
+    <span class="n">up_degree</span> <span class="o">=</span> <span class="mf">12.30</span>
+    <span class="n">low_degree</span> <span class="o">=</span> <span class="mf">3.27</span>
+    
+    <span class="n">out_ms</span> <span class="o">=</span> <span class="n">ms_orig_array</span>
+    
+    <span class="n">slope_uplimit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">slope_array</span> <span class="o">&gt;=</span> <span class="mf">12.30</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">aspect_array</span> <span class="o">==</span> <span class="n">aspect_value</span><span class="p">))</span>
+    <span class="n">slope_middle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">slope_array</span> <span class="o">&gt;</span> <span class="mf">3.27</span> <span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">slope_array</span> <span class="o">&lt;</span> <span class="mf">12.30</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">aspect_array</span> <span class="o">==</span> <span class="n">aspect_value</span><span class="p">))</span>
+    
+    <span class="n">out_ms</span><span class="p">[</span><span class="n">slope_uplimit</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">out_ms</span><span class="p">[</span><span class="n">slope_middle</span><span class="p">]</span>  <span class="o">=</span> <span class="p">((</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">ms_orig_array</span><span class="p">[</span><span class="n">slope_middle</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span><span class="n">slope_array</span><span class="p">[</span><span class="n">slope_middle</span><span class="p">]</span> <span class="o">-</span> <span class="n">low_degree</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">up_degree</span> <span class="o">-</span> <span class="n">low_degree</span><span class="p">))</span> <span class="o">+</span> <span class="n">ms_orig_array</span><span class="p">[</span><span class="n">slope_middle</span><span class="p">]</span> 
+    
+    <span class="n">ms_smaller</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">out_ms</span> <span class="o">&lt;</span> <span class="n">conservatism</span><span class="p">)</span>
+    <span class="n">ms_bigger</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">out_ms</span> <span class="o">&gt;=</span> <span class="n">conservatism</span><span class="p">)</span>
+    <span class="n">out_ms</span><span class="p">[</span><span class="n">ms_smaller</span><span class="p">]</span> <span class="o">=</span> <span class="n">out_ms</span><span class="p">[</span><span class="n">ms_smaller</span><span class="p">]</span> <span class="o">*</span> <span class="n">conservatism</span>
+    <span class="n">out_ms</span><span class="p">[</span><span class="n">ms_bigger</span><span class="p">]</span> <span class="o">=</span> <span class="n">out_ms</span><span class="p">[</span><span class="n">ms_bigger</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
+    
+    <span class="k">return</span> <span class="n">out_ms</span>
+    
+
+   </div>
+<div class="viewcode-block" id="init_kern_diag"><a class="viewcode-back" href="../docs/shielding.html#shield_mult.init_kern_diag">[docs]</a><span class="k">def</span> <span class="nf">init_kern_diag</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a mean kernel for convolutions, with dimensions</span>
+<span class="sd">    (2*size+1, 2*size+1), it is south west direction</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:        </span>
+<span class="sd">    ----------- </span>
+<span class="sd">   </span>
+<span class="sd">    :param size: `int` the buffer size of the convolution </span>
+<span class="sd">    </span>
+<span class="sd">    Returns:        </span>
+<span class="sd">    --------  </span>
+<span class="sd">        </span>
+<span class="sd">    :class:`numpy.ndarray` the output kernel used for convolution</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">kernel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="o">*</span><span class="n">size</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">size</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">kernel</span><span class="p">[</span><span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">size</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">kernel</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="n">size</span><span class="p">,</span> <span class="n">size</span> <span class="o">+</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>   
+    
+    <span class="k">return</span> <span class="n">kernel</span> <span class="o">/</span> <span class="n">kernel</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="init_kern"><a class="viewcode-back" href="../docs/shielding.html#shield_mult.init_kern">[docs]</a><span class="k">def</span> <span class="nf">init_kern</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a mean kernel for convolutions, with dimensions</span>
+<span class="sd">    (2*size+1, 2*size+1), it is north direction</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:        </span>
+<span class="sd">    ----------- </span>
+<span class="sd">   </span>
+<span class="sd">    :param size: `int` the buffer size of the convolution </span>
+<span class="sd">    </span>
+<span class="sd">    Returns:        </span>
+<span class="sd">    --------  </span>
+<span class="sd">        </span>
+<span class="sd">    :class:`numpy.ndarray` the output kernel used for convolution</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
+      
+    <span class="n">kernel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="o">*</span><span class="n">size</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">size</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">size</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">kernel</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">kernel</span><span class="p">[</span><span class="n">size</span><span class="o">+</span><span class="n">i</span><span class="p">:,</span> <span class="n">size</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="n">size</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>  
+    
+    <span class="k">return</span> <span class="n">kernel</span> <span class="o">/</span> <span class="n">kernel</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="kern_w"><a class="viewcode-back" href="../docs/shielding.html#shield_mult.kern_w">[docs]</a><span class="k">def</span> <span class="nf">kern_w</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a mean kernel for convolutions, with dimensions</span>
+<span class="sd">    (2*size+1, 2*size+1), it is west direction</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:        </span>
+<span class="sd">    ----------- </span>
+<span class="sd">   </span>
+<span class="sd">    :param size: `int` the buffer size of the convolution </span>
+<span class="sd">    </span>
+<span class="sd">    Returns:        </span>
+<span class="sd">    --------  </span>
+<span class="sd">        </span>
+<span class="sd">    :class:`numpy.ndarray` the output kernel used for convolution</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
+    
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">rot90</span><span class="p">(</span><span class="n">init_kern</span><span class="p">(</span><span class="n">size</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="kern_e"><a class="viewcode-back" href="../docs/shielding.html#shield_mult.kern_e">[docs]</a><span class="k">def</span> <span class="nf">kern_e</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a mean kernel for convolutions, with dimensions</span>
+<span class="sd">    (2*size+1, 2*size+1), it is east direction</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:        </span>
+<span class="sd">    ----------- </span>
+<span class="sd">   </span>
+<span class="sd">    :param size: `int` the buffer size of the convolution </span>
+<span class="sd">    </span>
+<span class="sd">    Returns:        </span>
+<span class="sd">    --------  </span>
+<span class="sd">        </span>
+<span class="sd">    :class:`numpy.ndarray` the output kernel used for convolution</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
+    
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">rot90</span><span class="p">(</span><span class="n">init_kern</span><span class="p">(</span><span class="n">size</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>    
+
+</div>
+<div class="viewcode-block" id="kern_n"><a class="viewcode-back" href="../docs/shielding.html#shield_mult.kern_n">[docs]</a><span class="k">def</span> <span class="nf">kern_n</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a mean kernel for convolutions, with dimensions</span>
+<span class="sd">    (2*size+1, 2*size+1), it is north direction</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:        </span>
+<span class="sd">    ----------- </span>
+<span class="sd">   </span>
+<span class="sd">    :param size: `int` the buffer size of the convolution </span>
+<span class="sd">    </span>
+<span class="sd">    Returns:        </span>
+<span class="sd">    --------  </span>
+<span class="sd">        </span>
+<span class="sd">    :class:`numpy.ndarray` the output kernel used for convolution</span>
+<span class="sd">    &quot;&quot;&quot;</span>      
+    
+    <span class="k">return</span> <span class="n">init_kern</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="kern_s"><a class="viewcode-back" href="../docs/shielding.html#shield_mult.kern_s">[docs]</a><span class="k">def</span> <span class="nf">kern_s</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a mean kernel for convolutions, with dimensions</span>
+<span class="sd">    (2*size+1, 2*size+1), it is south direction</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:        </span>
+<span class="sd">    ----------- </span>
+<span class="sd">   </span>
+<span class="sd">    :param size: `int` the buffer size of the convolution </span>
+<span class="sd">    </span>
+<span class="sd">    Returns:        </span>
+<span class="sd">    --------  </span>
+<span class="sd">        </span>
+<span class="sd">    :class:`numpy.ndarray` the output kernel used for convolution</span>
+<span class="sd">    &quot;&quot;&quot;</span>       
+    
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">rot90</span><span class="p">(</span><span class="n">init_kern</span><span class="p">(</span><span class="n">size</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="kern_ne"><a class="viewcode-back" href="../docs/shielding.html#shield_mult.kern_ne">[docs]</a><span class="k">def</span> <span class="nf">kern_ne</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a mean kernel for convolutions, with dimensions</span>
+<span class="sd">    (2*size+1, 2*size+1), it is north-east direction</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:        </span>
+<span class="sd">    ----------- </span>
+<span class="sd">   </span>
+<span class="sd">    :param size: `int` the buffer size of the convolution </span>
+<span class="sd">    </span>
+<span class="sd">    Returns:        </span>
+<span class="sd">    --------  </span>
+<span class="sd">        </span>
+<span class="sd">    :class:`numpy.ndarray` the output kernel used for convolution</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">flipud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fliplr</span><span class="p">(</span><span class="n">init_kern_diag</span><span class="p">(</span><span class="n">size</span><span class="p">)))</span>
+
+</div>
+<div class="viewcode-block" id="kern_nw"><a class="viewcode-back" href="../docs/shielding.html#shield_mult.kern_nw">[docs]</a><span class="k">def</span> <span class="nf">kern_nw</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a mean kernel for convolutions, with dimensions</span>
+<span class="sd">    (2*size+1, 2*size+1), it is north-west direction</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:        </span>
+<span class="sd">    ----------- </span>
+<span class="sd">   </span>
+<span class="sd">    :param size: `int` the buffer size of the convolution </span>
+<span class="sd">    </span>
+<span class="sd">    Returns:        </span>
+<span class="sd">    --------  </span>
+<span class="sd">        </span>
+<span class="sd">    :class:`numpy.ndarray` the output kernel used for convolution</span>
+<span class="sd">    &quot;&quot;&quot;</span>   
+    
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">flipud</span><span class="p">(</span><span class="n">init_kern_diag</span><span class="p">(</span><span class="n">size</span><span class="p">))</span>    
+
+</div>
+<div class="viewcode-block" id="kern_sw"><a class="viewcode-back" href="../docs/shielding.html#shield_mult.kern_sw">[docs]</a><span class="k">def</span> <span class="nf">kern_sw</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a mean kernel for convolutions, with dimensions</span>
+<span class="sd">    (2*size+1, 2*size+1), it is south-west direction</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:        </span>
+<span class="sd">    ----------- </span>
+<span class="sd">   </span>
+<span class="sd">    :param size: `int` the buffer size of the convolution </span>
+<span class="sd">    </span>
+<span class="sd">    Returns:        </span>
+<span class="sd">    --------  </span>
+<span class="sd">        </span>
+<span class="sd">    :class:`numpy.ndarray` the output kernel used for convolution</span>
+<span class="sd">    &quot;&quot;&quot;</span>  
+        
+    <span class="k">return</span> <span class="n">init_kern_diag</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="kern_se"><a class="viewcode-back" href="../docs/shielding.html#shield_mult.kern_se">[docs]</a><span class="k">def</span> <span class="nf">kern_se</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a mean kernel for convolutions, with dimensions</span>
+<span class="sd">    (2*size+1, 2*size+1), it is south-east direction</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:        </span>
+<span class="sd">    ----------- </span>
+<span class="sd">   </span>
+<span class="sd">    :param size: `int` the buffer size of the convolution </span>
+<span class="sd">    </span>
+<span class="sd">    Returns:        </span>
+<span class="sd">    --------  </span>
+<span class="sd">        </span>
+<span class="sd">    :class:`numpy.ndarray` the output kernel used for convolution</span>
+<span class="sd">    &quot;&quot;&quot;</span>      
+    
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">fliplr</span><span class="p">(</span><span class="n">init_kern_diag</span><span class="p">(</span><span class="n">size</span><span class="p">))</span>
+
+</div>
+<div class="viewcode-block" id="blur_image"><a class="viewcode-back" href="../docs/shielding.html#shield_mult.blur_image">[docs]</a><span class="k">def</span> <span class="nf">blur_image</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;constant&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Blurs the image by convolving with a kernel (e.g. mean or gaussian) of typical</span>
+<span class="sd">    size n. The optional keyword argument ny allows for a different size in the</span>
+<span class="sd">    y direction.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:        </span>
+<span class="sd">    ----------- </span>
+<span class="sd">   </span>
+<span class="sd">    :param im: :class:`numpy.ndarray` the input data of initial shielding values</span>
+<span class="sd">    :param kernel: :class:`numpy.ndarray` the kernel used for convolution</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:        </span>
+<span class="sd">    --------  </span>
+<span class="sd">        </span>
+<span class="sd">    :class:`numpy.ndarray` the output data afer convolution</span>
+<span class="sd">    &quot;&quot;&quot;</span>     
+    <span class="c">#improc = signal.convolve(im, kernel, mode=mode)</span>
+    <span class="n">improc</span> <span class="o">=</span> <span class="n">ndimage</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">cval</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+    <span class="k">return</span><span class="p">(</span><span class="n">improc</span><span class="p">)</span>
+
+</div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">dem</span> <span class="o">=</span> <span class="s">&#39;/nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output_work/test_dem.img&#39;</span>
+    <span class="n">terrain</span> <span class="o">=</span> <span class="s">&#39;/nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/validation/output_work/test_terrain.img&#39;</span>
+    <span class="n">shield</span><span class="p">(</span><span class="n">terrain</span><span class="p">,</span> <span class="n">dem</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">WindMultipliers v1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Geoscience Australia.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,543 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>terrain1 &mdash; WindMultipliers v1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="WindMultipliers v1.0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">WindMultipliers v1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for terrain1</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">:mod:`terrain` -- Calculate terrain multiplier</span>
+<span class="sd">==================================================================================</span>
+
+<span class="sd">This module is called by the module </span>
+<span class="sd">:term:`all_multipliers` to calculate the terrain multiplier for an input tile</span>
+<span class="sd">for 8 directions and output as NetCDF format.</span>
+
+<span class="sd">:References:</span>
+<span class="sd">    </span>
+<span class="sd">    Yang, T., Nadimpalli, K. &amp; Cechet, R.P. 2014. Local wind assessment </span>
+<span class="sd">    in Australia: computation methodology for wind multipliers. Record 2014/33. </span>
+<span class="sd">    Geoscience Australia, Canberra.</span>
+
+<span class="sd">:moduleauthor: Tina Yang &lt;tina.yang@ga.gov.au&gt;</span>
+
+<span class="sd">&quot;&quot;&quot;</span> 
+    
+<span class="c"># Import system &amp; process modules</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">logging</span> <span class="kn">as</span> <span class="nn">log</span>
+<span class="kn">from</span> <span class="nn">utilities</span> <span class="kn">import</span> <span class="n">value_lookup</span>
+<span class="kn">from</span> <span class="nn">utilities.nctools</span> <span class="kn">import</span> <span class="n">saveMultiplier</span><span class="p">,</span> <span class="n">getLatLon</span>
+<span class="kn">from</span> <span class="nn">utilities.get_pixel_size_grid</span> <span class="kn">import</span> <span class="n">get_pixel_size_grids</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span><span class="o">,</span> <span class="nn">osgeo.gdal</span> <span class="kn">as</span> <span class="nn">gdal</span>
+<span class="c">#from osgeo.gdalconst import *</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span> <span class="k">as</span> <span class="n">pjoin</span>
+
+
+<div class="viewcode-block" id="terrain"><a class="viewcode-back" href="../docs/terrain.html#terrain1.terrain">[docs]</a><span class="k">def</span> <span class="nf">terrain</span><span class="p">(</span><span class="n">cyclone_area</span><span class="p">,</span> <span class="n">temp_tile</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Performs core calculations to derive the terrain multiplier</span>
+
+<span class="sd">    :param cyclone_area: none or `file` the input tile of the cyclone area file. </span>
+<span class="sd">    :param temp_tile:`file` the image file of the input tile of the land cover</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<span class="c">#    import pdb</span>
+<span class="c">#    pdb.set_trace()</span>
+<span class="c">#    </span>
+    <span class="c"># open the tile</span>
+    <span class="n">temp_dataset</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">temp_tile</span><span class="p">)</span>
+    
+    <span class="c"># get image size, format, projection</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="n">temp_dataset</span><span class="o">.</span><span class="n">RasterXSize</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">temp_dataset</span><span class="o">.</span><span class="n">RasterYSize</span>
+    <span class="n">bands</span> <span class="o">=</span> <span class="n">temp_dataset</span><span class="o">.</span><span class="n">RasterCount</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Input raster format is </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">temp_dataset</span><span class="o">.</span><span class="n">GetDriver</span><span class="p">()</span><span class="o">.</span><span class="n">ShortName</span> <span class="o">+</span> 
+            <span class="s">&#39;/ </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">temp_dataset</span><span class="o">.</span><span class="n">GetDriver</span><span class="p">()</span><span class="o">.</span><span class="n">LongName</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Image size is </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">cols</span> <span class="o">+</span> <span class="s">&#39;x </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">rows</span> <span class="o">+</span> <span class="s">&#39;x </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">bands</span><span class="p">)</span>
+    
+    <span class="c"># get georeference info</span>
+    <span class="n">geotransform</span> <span class="o">=</span> <span class="n">temp_dataset</span><span class="o">.</span><span class="n">GetGeoTransform</span><span class="p">()</span>
+    <span class="n">x_Left</span> <span class="o">=</span> <span class="n">geotransform</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">y_Upper</span> <span class="o">=</span> <span class="o">-</span><span class="n">geotransform</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">pixelWidth</span> <span class="o">=</span> <span class="n">geotransform</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">pixelHeight</span> <span class="o">=</span> <span class="o">-</span><span class="n">geotransform</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+    
+    <span class="c"># get the tile&#39;s longitude and latitude values used to save output in netcdf</span>
+    <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="n">getLatLon</span><span class="p">(</span><span class="n">x_Left</span><span class="p">,</span> <span class="n">y_Upper</span><span class="p">,</span> <span class="n">pixelWidth</span><span class="p">,</span> <span class="n">pixelHeight</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">rows</span><span class="p">)</span>
+    
+    <span class="c"># get the average grid size in metre of the tile</span>
+    <span class="n">x_m_array</span><span class="p">,</span> <span class="n">y_m_array</span> <span class="o">=</span> <span class="n">get_pixel_size_grids</span><span class="p">(</span><span class="n">temp_dataset</span><span class="p">)</span>
+    <span class="n">pixelWidth</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x_m_array</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y_m_array</span><span class="p">))</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;pixelWidth is </span><span class="si">%2i</span><span class="s"> &#39;</span> <span class="o">%</span><span class="n">pixelWidth</span><span class="p">)</span>
+    <span class="k">print</span> <span class="n">pixelWidth</span>    
+    
+    <span class="c"># produce the original terrain multiplier from the input terrain map   </span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Reclassfy the terrain classes into initial terrain multipliers ...&#39;</span><span class="p">)</span>
+    <span class="n">band</span> <span class="o">=</span> <span class="n">temp_dataset</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>      
+    <span class="n">data</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">ReadAsArray</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">rows</span><span class="p">)</span>
+    <span class="n">reclassified_array</span> <span class="o">=</span> <span class="n">terrain_class2mz_orig</span><span class="p">(</span><span class="n">cyclone_area</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+    <span class="c"># if the value is 0, it is nodata</span>
+    <span class="n">reclassified_array</span><span class="p">[</span><span class="n">reclassified_array</span><span class="o">==</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+    <span class="c"># convoulution of the original terrain multipler into different directions</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Moving average for each direction ...&#39;</span><span class="p">)</span>
+    <span class="n">dire</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;w&#39;</span><span class="p">,</span> <span class="s">&#39;e&#39;</span><span class="p">,</span> <span class="s">&#39;n&#39;</span><span class="p">,</span> <span class="s">&#39;s&#39;</span><span class="p">,</span> <span class="s">&#39;nw&#39;</span><span class="p">,</span> <span class="s">&#39;ne&#39;</span><span class="p">,</span> <span class="s">&#39;se&#39;</span><span class="p">,</span> <span class="s">&#39;sw&#39;</span><span class="p">]</span>  
+    
+    <span class="c">#set the terrain buffer used for convolution as per AS/NZ 1170.2 (2011)</span>
+    <span class="n">terrain_buffer</span> <span class="o">=</span> <span class="mf">1000.</span>    
+
+    <span class="k">for</span> <span class="n">one_dir</span> <span class="ow">in</span> <span class="n">dire</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">one_dir</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">one_dir</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;w&#39;</span><span class="p">,</span> <span class="s">&#39;e&#39;</span><span class="p">,</span> <span class="s">&#39;n&#39;</span><span class="p">,</span> <span class="s">&#39;s&#39;</span><span class="p">]:</span>
+            <span class="n">filter_width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">terrain_buffer</span><span class="o">/</span><span class="n">pixelWidth</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">filter_width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">terrain_buffer</span><span class="o">/</span><span class="p">(</span><span class="n">pixelWidth</span><span class="o">*</span><span class="mf">1.414</span><span class="p">))</span>
+        
+        <span class="c"># if the tile is smaller than the upwind buffer, all the tile is in buffer</span>
+        <span class="k">if</span> <span class="n">filter_width</span> <span class="o">&gt;</span> <span class="n">reclassified_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">filter_width</span> <span class="o">=</span> <span class="n">reclassified_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;convolution filter width &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">filter_width</span><span class="p">))</span>
+        
+        <span class="n">convo_dir</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()[</span><span class="s">&#39;convo_&#39;</span> <span class="o">+</span> <span class="n">one_dir</span><span class="p">]</span>
+        <span class="n">outdata</span> <span class="o">=</span> <span class="n">convo_dir</span><span class="p">(</span><span class="n">reclassified_array</span><span class="p">,</span> <span class="n">filter_width</span><span class="p">)</span> 
+                     
+        <span class="c"># find output folder</span>
+        <span class="n">tile_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">temp_tile</span><span class="p">)</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">temp_tile</span><span class="p">)</span>        
+    
+        <span class="c"># output format as netCDF4        </span>
+        <span class="n">nc_folder</span> <span class="o">=</span> <span class="n">pjoin</span><span class="p">(</span><span class="n">pjoin</span><span class="p">(</span><span class="n">tile_folder</span><span class="p">,</span> <span class="s">&#39;terrain&#39;</span><span class="p">),</span> <span class="s">&#39;netcdf&#39;</span><span class="p">)</span>
+        <span class="n">tile_nc</span> <span class="o">=</span> <span class="n">pjoin</span><span class="p">(</span><span class="n">nc_folder</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">file_name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;_mz_&#39;</span> <span class="o">+</span> <span class="n">one_dir</span> <span class="o">+</span> <span class="s">&#39;.nc&#39;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Saving terrain multiplier in netCDF file&quot;</span><span class="p">)</span>   
+        <span class="n">saveMultiplier</span><span class="p">(</span><span class="s">&#39;Mz&#39;</span><span class="p">,</span> <span class="n">outdata</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">tile_nc</span><span class="p">)</span>        
+    
+        <span class="k">del</span> <span class="n">outdata</span>
+        
+    <span class="n">temp_dataset</span> <span class="o">=</span> <span class="bp">None</span>
+    
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;finish terrain multiplier computation for this tile successfully&#39;</span><span class="p">)</span> 
+
+</div>
+<div class="viewcode-block" id="terrain_class2mz_orig"><a class="viewcode-back" href="../docs/terrain.html#terrain1.terrain_class2mz_orig">[docs]</a><span class="k">def</span> <span class="nf">terrain_class2mz_orig</span><span class="p">(</span><span class="n">cyclone_area</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Transfer the landsat classified image into original terrain multiplier</span>
+
+<span class="sd">    :param cyclone_area: none or `file` the input tile of the cyclone area file</span>
+<span class="sd">    :param data: :class:`numpy.ndarray` the input terrain class values</span>
+<span class="sd">        </span>
+<span class="sd">    :returns: :class:`numpy.ndarray` the initial terrain multiplier value</span>
+<span class="sd">    &quot;&quot;&quot;</span>                
+    
+    <span class="c"># if the cyclone_area is empty, the cyclone value is 0</span>
+    <span class="c"># otherwise, the cyclone value is taken from the cyclone area file passed</span>
+    
+    <span class="n">cycl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">cyclone_area</span> <span class="o">&lt;&gt;</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">gdal</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="n">cyclone_area</span><span class="p">)</span>
+        <span class="n">cols</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">RasterXSize</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">RasterYSize</span>
+        <span class="n">band</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">GetRasterBand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>     
+        <span class="n">cycl</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">ReadAsArray</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">rows</span><span class="p">)</span>     
+        <span class="n">dataset</span> <span class="o">=</span> <span class="bp">None</span>
+     
+    <span class="k">return</span> <span class="n">tc2mz_orig</span><span class="p">(</span><span class="n">cycl</span><span class="p">,</span><span class="n">data</span><span class="p">)</span>  
+     
+ </div>
+<div class="viewcode-block" id="tc2mz_orig"><a class="viewcode-back" href="../docs/terrain.html#terrain1.tc2mz_orig">[docs]</a><span class="k">def</span> <span class="nf">tc2mz_orig</span><span class="p">(</span><span class="n">cycl</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Transfer the landsat classified image into original terrain multiplier</span>
+
+<span class="sd">    :param cycl: :class:`numpy.ndarray` the cyclone value of the tile</span>
+<span class="sd">    :param data: :class:`numpy.ndarray` the input terrain class values</span>
+<span class="sd">        </span>
+<span class="sd">    :returns: outdata: :class:`numpy.ndarray` the initial terrain multiplier value</span>
+<span class="sd">    &quot;&quot;&quot;</span>   
+    
+    <span class="n">mz_init</span> <span class="o">=</span> <span class="n">value_lookup</span><span class="o">.</span><span class="n">mz_init_non_cycl</span>
+    <span class="n">mz_init_cycl</span> <span class="o">=</span> <span class="n">value_lookup</span><span class="o">.</span><span class="n">mz_init_cycl</span> 
+
+    <span class="n">outdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>    
+    
+    <span class="c"># Reclassify the land classes into initial terrain multipliers </span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">mz_init</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">outdata</span><span class="p">[</span><span class="n">data</span> <span class="o">==</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">mz_init</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">/</span><span class="mf">1000.0</span>     
+           
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">mz_init_cycl</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">cycl_loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">data</span> <span class="o">==</span> <span class="n">i</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">cycl</span> <span class="o">==</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">outdata</span><span class="p">[</span><span class="n">cycl_loc</span><span class="p">]</span> <span class="o">=</span> <span class="n">mz_init_cycl</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">/</span><span class="mf">1000.0</span>              
+        
+    <span class="k">return</span> <span class="n">outdata</span>
+  
+    </div>
+<div class="viewcode-block" id="convo_w"><a class="viewcode-back" href="../docs/terrain.html#terrain1.convo_w">[docs]</a><span class="k">def</span> <span class="nf">convo_w</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">filter_width</span><span class="p">):</span> 
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convolute the initial terrain multplier to final one for west direction</span>
+
+<span class="sd">    :param data: :class:`numpy.ndarray` the initial terrain multiplier values</span>
+<span class="sd">    :param filter_width: :`int` the number of cells within upwind buffer </span>
+<span class="sd">    </span>
+<span class="sd">    :returns: outdata: :class:`numpy.ndarray` the final terrain multiplier value</span>
+<span class="sd">    &quot;&quot;&quot;</span>   
+    
+    <span class="n">outdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>    
+    
+    <span class="c"># calculate average for each pixel </span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>            
+            <span class="n">neighbour_sum</span> <span class="o">=</span> <span class="mi">0</span>   
+            <span class="c"># for pixels whose west neighbour amount is less than defined value.</span>
+            <span class="c"># e.g in terrian for each hori and vert direction, for 25m resolution, the amount is 39    </span>
+            <span class="k">if</span> <span class="n">jj</span> <span class="o">&lt;</span> <span class="n">filter_width</span><span class="p">:</span>            
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">jj</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">neighbour_sum</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="n">neighbour_sum</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">jj</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+                    
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">jj</span><span class="o">-</span><span class="n">filter_width</span><span class="p">,</span> <span class="n">jj</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">neighbour_sum</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="n">neighbour_sum</span> <span class="o">/</span> <span class="p">(</span><span class="n">filter_width</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+            <span class="c"># get the calculated pixel value                 </span>
+            <span class="n">outdata</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">jj</span><span class="p">]</span> <span class="o">=</span> <span class="n">average</span>
+    <span class="k">return</span> <span class="n">outdata</span>
+
+</div>
+<div class="viewcode-block" id="convo_e"><a class="viewcode-back" href="../docs/terrain.html#terrain1.convo_e">[docs]</a><span class="k">def</span> <span class="nf">convo_e</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">filter_width</span><span class="p">):</span>  
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convolute the initial terrain multplier to final one for east direction</span>
+
+<span class="sd">    :param data: :class:`numpy.ndarray` the initial terrain multiplier values</span>
+<span class="sd">    :param filter_width: :`int` the number of cells within upwind buffer </span>
+<span class="sd">    </span>
+<span class="sd">    :returns: outdata: :class:`numpy.ndarray` the final terrain multiplier value</span>
+<span class="sd">    &quot;&quot;&quot;</span>   
+    
+    <span class="n">outdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="c"># calculate average for each pixel</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>            
+            <span class="n">neighbour_sum</span> <span class="o">=</span> <span class="mi">0</span>   
+            <span class="c"># for pixels whose east neighbour amount is less than defined value.</span>
+            <span class="c"># e.g in terrian for each hori and vert direction, for 25m resolution, the amount is 39</span>
+            <span class="n">starting_less</span> <span class="o">=</span> <span class="n">cols</span> <span class="o">-</span> <span class="n">filter_width</span>            
+            <span class="k">if</span> <span class="n">jj</span> <span class="o">&gt;=</span> <span class="n">starting_less</span><span class="p">:</span>            
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">jj</span><span class="p">,</span> <span class="n">cols</span><span class="p">):</span>
+                    <span class="n">neighbour_sum</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="n">neighbour_sum</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">cols</span> <span class="o">-</span> <span class="n">jj</span><span class="p">)</span>                    
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">jj</span><span class="p">,</span> <span class="n">jj</span> <span class="o">+</span> <span class="n">filter_width</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">neighbour_sum</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="n">neighbour_sum</span> <span class="o">/</span> <span class="p">(</span><span class="n">filter_width</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+            <span class="c"># get the calculated pixel value                 </span>
+            <span class="n">outdata</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">jj</span><span class="p">]</span> <span class="o">=</span> <span class="n">average</span>
+    <span class="k">return</span> <span class="n">outdata</span>
+
+</div>
+<div class="viewcode-block" id="convo_n"><a class="viewcode-back" href="../docs/terrain.html#terrain1.convo_n">[docs]</a><span class="k">def</span> <span class="nf">convo_n</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">filter_width</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convolute the initial terrain multplier to final one for north direction</span>
+
+<span class="sd">    :param data: :class:`numpy.ndarray` the initial terrain multiplier values</span>
+<span class="sd">    :param filter_width: :`int` the number of cells within upwind buffer</span>
+<span class="sd">        </span>
+<span class="sd">    :returns: outdata: :class:`numpy.ndarray` the final terrain multiplier value</span>
+<span class="sd">    &quot;&quot;&quot;</span>   
+    
+    <span class="n">outdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="c"># calculate average for each pixel </span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>  
+        <span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>            
+            <span class="n">neighbour_sum</span> <span class="o">=</span> <span class="mi">0</span>   
+            <span class="c"># for pixels whose north neighbour amount is less than defined value.</span>
+            <span class="c"># e.g in terrian for each hori and vert direction, for 25m resolution, the amount is 39    </span>
+            <span class="k">if</span> <span class="n">jj</span> <span class="o">&lt;</span> <span class="n">filter_width</span><span class="p">:</span>            
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">jj</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">neighbour_sum</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">m</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="n">neighbour_sum</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">jj</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>                    
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">jj</span><span class="o">-</span><span class="n">filter_width</span><span class="p">,</span> <span class="n">jj</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">neighbour_sum</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">m</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="n">neighbour_sum</span> <span class="o">/</span> <span class="p">(</span><span class="n">filter_width</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                
+            <span class="c"># get the calculated pixel value                 </span>
+            <span class="n">outdata</span><span class="p">[</span><span class="n">jj</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">average</span>
+    <span class="k">return</span> <span class="n">outdata</span>
+
+
+</div>
+<div class="viewcode-block" id="convo_s"><a class="viewcode-back" href="../docs/terrain.html#terrain1.convo_s">[docs]</a><span class="k">def</span> <span class="nf">convo_s</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">filter_width</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convolute the initial terrain multplier to final one for south direction</span>
+
+<span class="sd">    :param data: :class:`numpy.ndarray` the initial terrain multiplier values</span>
+<span class="sd">    :param filter_width: :`int` the number of cells within upwind buffer </span>
+<span class="sd">        </span>
+<span class="sd">    :returns: outdata: :class:`numpy.ndarray` the final terrain multiplier value</span>
+<span class="sd">    &quot;&quot;&quot;</span>   
+    
+    <span class="n">outdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="c"># calculate average for each pixel     </span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>      
+        <span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>            
+            <span class="n">neighbour_sum</span> <span class="o">=</span> <span class="mi">0</span>   
+            <span class="c"># for pixels whose south neighbour amount is less than defined value.</span>
+            <span class="c"># e.g in terrian for each hori and vert direction, for 25m resolution, the amount is 39</span>
+            <span class="n">starting_less</span> <span class="o">=</span> <span class="n">rows</span> <span class="o">-</span> <span class="n">filter_width</span>            
+            <span class="k">if</span> <span class="n">jj</span> <span class="o">&gt;=</span> <span class="n">starting_less</span><span class="p">:</span>            
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">jj</span><span class="p">,</span> <span class="n">rows</span><span class="p">):</span>
+                    <span class="n">neighbour_sum</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">m</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="n">neighbour_sum</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">rows</span> <span class="o">-</span> <span class="n">jj</span><span class="p">)</span>                    
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">jj</span><span class="p">,</span> <span class="n">jj</span> <span class="o">+</span> <span class="n">filter_width</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">neighbour_sum</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">m</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="n">neighbour_sum</span> <span class="o">/</span> <span class="p">(</span><span class="n">filter_width</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    
+            <span class="c"># get the calculated pixel value                </span>
+            <span class="n">outdata</span><span class="p">[</span><span class="n">jj</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">average</span>
+    <span class="k">return</span> <span class="n">outdata</span>
+
+
+</div>
+<div class="viewcode-block" id="convo_nw"><a class="viewcode-back" href="../docs/terrain.html#terrain1.convo_nw">[docs]</a><span class="k">def</span> <span class="nf">convo_nw</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">filter_width</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convolute the initial terrain multplier to final one for north-west direction</span>
+
+<span class="sd">    :param data: :class:`numpy.ndarray` the initial terrain multiplier values</span>
+<span class="sd">    :param filter_width: :`int` the number of cells within upwind buffer </span>
+<span class="sd">        </span>
+<span class="sd">    :returns: outdata: :class:`numpy.ndarray` the final terrain multiplier value</span>
+<span class="sd">    &quot;&quot;&quot;</span>   
+    
+    <span class="n">outdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="c"># calculate average for each pixel</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span> 
+        <span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>            
+            <span class="n">neighbour_sum</span> <span class="o">=</span> <span class="mi">0</span>   
+            <span class="c"># for pixels whose north west neighbour amount is less than defined value.</span>
+            <span class="c"># e.g in terrian for each hori and vert direction, for 25m resolution, the amount is 29    </span>
+            <span class="n">less_boundary</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">jj</span><span class="p">)</span>            
+            <span class="k">if</span> <span class="n">less_boundary</span> <span class="o">&lt;</span> <span class="n">filter_width</span><span class="p">:</span>            
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">less_boundary</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">neighbour_sum</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">m</span><span class="p">,</span> <span class="n">jj</span><span class="o">-</span><span class="n">m</span><span class="p">]</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="n">neighbour_sum</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">less_boundary</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>                    
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">filter_width</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">neighbour_sum</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">m</span><span class="p">,</span> <span class="n">jj</span><span class="o">-</span><span class="n">m</span><span class="p">]</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="n">neighbour_sum</span> <span class="o">/</span> <span class="p">(</span><span class="n">filter_width</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+            <span class="c"># get the calculated pixel value                 </span>
+            <span class="n">outdata</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">jj</span><span class="p">]</span> <span class="o">=</span> <span class="n">average</span>
+    <span class="k">return</span> <span class="n">outdata</span>
+
+</div>
+<div class="viewcode-block" id="convo_ne"><a class="viewcode-back" href="../docs/terrain.html#terrain1.convo_ne">[docs]</a><span class="k">def</span> <span class="nf">convo_ne</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">filter_width</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convolute the initial terrain multplier to final one for north direction</span>
+
+<span class="sd">    :param data: :class:`numpy.ndarray` the initial terrain multiplier values</span>
+<span class="sd">    :param filter_width: :`int` the number of cells within upwind buffer </span>
+<span class="sd">    </span>
+<span class="sd">    :returns: outdata: :class:`numpy.ndarray` the final terrain multiplier value</span>
+<span class="sd">    &quot;&quot;&quot;</span>   
+    
+    <span class="n">outdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+   
+    <span class="c"># calculate average for each pixel   </span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span> 
+        <span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>            
+            <span class="n">neighbour_sum</span> <span class="o">=</span> <span class="mi">0</span>   
+            <span class="c"># for pixels whose north east neighbour amount is less than defined value.</span>
+            <span class="c"># e.g in terrian for each hori and vert direction, for 25m resolution, the amount is 29    </span>
+            <span class="n">less_boundary</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">cols</span><span class="o">-</span><span class="n">jj</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>            
+            <span class="k">if</span> <span class="n">less_boundary</span> <span class="o">&lt;</span> <span class="n">filter_width</span><span class="p">:</span>            
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">less_boundary</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">neighbour_sum</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">m</span><span class="p">,</span> <span class="n">jj</span><span class="o">+</span><span class="n">m</span><span class="p">]</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="n">neighbour_sum</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">less_boundary</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>                    
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">filter_width</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">neighbour_sum</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">m</span><span class="p">,</span> <span class="n">jj</span><span class="o">+</span><span class="n">m</span><span class="p">]</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="n">neighbour_sum</span> <span class="o">/</span> <span class="p">(</span><span class="n">filter_width</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+            <span class="c"># get the calculated pixel value                 </span>
+            <span class="n">outdata</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">jj</span><span class="p">]</span> <span class="o">=</span> <span class="n">average</span>
+    <span class="k">return</span> <span class="n">outdata</span>
+
+</div>
+<div class="viewcode-block" id="convo_sw"><a class="viewcode-back" href="../docs/terrain.html#terrain1.convo_sw">[docs]</a><span class="k">def</span> <span class="nf">convo_sw</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">filter_width</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convolute the initial terrain multplier to final one for south-west direction</span>
+
+<span class="sd">    :param data: :class:`numpy.ndarray` the initial terrain multiplier values</span>
+<span class="sd">    :param filter_width: :`int` the number of cells within upwind buffer</span>
+<span class="sd">        </span>
+<span class="sd">    :returns: outdata: :class:`numpy.ndarray` the final terrain multiplier value</span>
+<span class="sd">    &quot;&quot;&quot;</span>   
+    
+    <span class="n">outdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="c"># calculate average for each pixel     </span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>  
+        <span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>            
+            <span class="n">neighbour_sum</span> <span class="o">=</span> <span class="mi">0</span>   
+            <span class="c"># for pixels whose south west neighbour amount is less than defined value.</span>
+            <span class="c"># e.g in terrian for each hori and vert direction, for 25m resolution, the amount is 29    </span>
+            <span class="n">less_boundary</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">rows</span><span class="o">-</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">jj</span><span class="p">)</span>            
+            <span class="k">if</span> <span class="n">less_boundary</span> <span class="o">&lt;</span> <span class="n">filter_width</span><span class="p">:</span>            
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">less_boundary</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">neighbour_sum</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">m</span><span class="p">,</span> <span class="n">jj</span><span class="o">-</span><span class="n">m</span><span class="p">]</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="n">neighbour_sum</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">less_boundary</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>                    
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">filter_width</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">neighbour_sum</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">m</span><span class="p">,</span> <span class="n">jj</span><span class="o">-</span><span class="n">m</span><span class="p">]</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="n">neighbour_sum</span> <span class="o">/</span> <span class="p">(</span><span class="n">filter_width</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+            <span class="c"># get the calculated pixel value                 </span>
+            <span class="n">outdata</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">jj</span><span class="p">]</span> <span class="o">=</span> <span class="n">average</span>
+    <span class="k">return</span> <span class="n">outdata</span>
+
+</div>
+<div class="viewcode-block" id="convo_se"><a class="viewcode-back" href="../docs/terrain.html#terrain1.convo_se">[docs]</a><span class="k">def</span> <span class="nf">convo_se</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">filter_width</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convolute the initial terrain multplier to final one for south-east direction</span>
+
+<span class="sd">    :param data: :class:`numpy.ndarray` the initial terrain multiplier values</span>
+<span class="sd">    :param filter_width: :`int` the number of cells within upwind buffer</span>
+<span class="sd">        </span>
+<span class="sd">    :returns: outdata: :class:`numpy.ndarray` the final terrain multiplier value</span>
+<span class="sd">    &quot;&quot;&quot;</span>   
+    
+    <span class="n">outdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="c"># calculate average for each pixel </span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>            
+            <span class="n">neighbour_sum</span> <span class="o">=</span> <span class="mi">0</span>   
+            <span class="c"># for pixels whose south east neighbour amount is less than defined value.</span>
+            <span class="c"># e.g in terrian for each hori and vert direction, for 25m resolution, the amount is 29    </span>
+            <span class="n">less_boundary</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">rows</span><span class="o">-</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">cols</span><span class="o">-</span><span class="n">jj</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>            
+            <span class="k">if</span> <span class="n">less_boundary</span> <span class="o">&lt;</span> <span class="n">filter_width</span><span class="p">:</span>            
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">less_boundary</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">neighbour_sum</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">m</span><span class="p">,</span> <span class="n">jj</span><span class="o">+</span><span class="n">m</span><span class="p">]</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="n">neighbour_sum</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">less_boundary</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>                    
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">filter_width</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">neighbour_sum</span> <span class="o">+=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">m</span><span class="p">,</span> <span class="n">jj</span><span class="o">+</span><span class="n">m</span><span class="p">]</span>
+                <span class="n">average</span> <span class="o">=</span> <span class="n">neighbour_sum</span> <span class="o">/</span> <span class="p">(</span><span class="n">filter_width</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+            <span class="c"># get the calculated pixel value                </span>
+            <span class="n">outdata</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">jj</span><span class="p">]</span> <span class="o">=</span> <span class="n">average</span>
+    <span class="k">return</span> <span class="n">outdata</span>
+
+
+</div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">cyclone</span> <span class="o">=</span> <span class="s">r&#39;N:\climate_change\CHARS\B_Wind\Projects\Multipliers\validation\output_work\test_cycl_stat.img&#39;</span>
+    <span class="n">terr</span> <span class="o">=</span> <span class="s">r&#39;N:\climate_change\CHARS\B_Wind\Projects\Multipliers\validation\output_work\test_terr_resamp.img&#39;</span>
+    <span class="n">terrain</span><span class="p">(</span><span class="n">cyclone</span><span class="p">,</span> <span class="n">terr</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">WindMultipliers v1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Geoscience Australia.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

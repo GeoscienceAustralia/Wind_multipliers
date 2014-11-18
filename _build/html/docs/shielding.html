@@ -1,0 +1,458 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>shielding &mdash; WindMultipliers v1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="WindMultipliers v1.0 documentation" href="../index.html" />
+    <link rel="next" title="topographic" href="topographic.html" />
+    <link rel="prev" title="terrain" href="terrain.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="topographic.html" title="topographic"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="terrain.html" title="terrain"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">WindMultipliers v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="shielding">
+<h1>shielding<a class="headerlink" href="#shielding" title="Permalink to this headline">¶</a></h1>
+<p>Sheilding multi docs go here..</p>
+<div class="section" id="module-__init__">
+<span id="init-py"></span><h2>__init__.py<a class="headerlink" href="#module-__init__" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-shield_mult">
+<span id="shielding-py"></span><h2>shielding.py<a class="headerlink" href="#module-shield_mult" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="shielding-calculate-shielding-multiplier">
+<h3><tt class="xref py py-mod docutils literal"><span class="pre">shielding</span></tt> &#8211; Calculate shielding multiplier<a class="headerlink" href="#shielding-calculate-shielding-multiplier" title="Permalink to this headline">¶</a></h3>
+<p>This module is called by the module
+<em class="xref std std-term">all_multipliers</em> to calculate the shielding multiplier for an input tile
+for 8 directions and output as NetCDF format.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">References:</th><td class="field-body">Yang, T., Nadimpalli, K. &amp; Cechet, R.P. 2014. Local wind assessment
+in Australia: computation methodology for wind multipliers. Record 2014/33.
+Geoscience Australia, Canberra.</td>
+</tr>
+<tr class="field"><th class="field-name">moduleauthor:</th><td class="field-body">Tina Yang &lt;<a class="reference external" href="mailto:tina&#46;yang&#37;&#52;&#48;ga&#46;gov&#46;au">tina<span>&#46;</span>yang<span>&#64;</span>ga<span>&#46;</span>gov<span>&#46;</span>au</a>&gt;</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="shield_mult.blur_image">
+<tt class="descclassname">shield_mult.</tt><tt class="descname">blur_image</tt><big>(</big><em>im</em>, <em>kernel</em>, <em>mode='constant'</em><big>)</big><a class="reference internal" href="../_modules/shield_mult.html#blur_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shield_mult.blur_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Blurs the image by convolving with a kernel (e.g. mean or gaussian) of
+typical size n. The optional keyword argument ny allows for a different
+size in the y direction.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>im</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> input data of initial shielding values</li>
+<li><strong>kernel</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the kernel used for convolution</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the output data afer convolution</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="shield_mult.combine">
+<tt class="descclassname">shield_mult.</tt><tt class="descname">combine</tt><big>(</big><em>ms_orig_array</em>, <em>slope_array</em>, <em>aspect_array</em>, <em>one_dir</em><big>)</big><a class="reference internal" href="../_modules/shield_mult.html#combine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shield_mult.combine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used for each direction to derive the shielding multipliers by considering
+slope and aspect after covolution in the previous step. It also will remove
+the conservatism.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ms_orig_array</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> convoluted shielding values</li>
+<li><strong>slope_array</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the input slope values</li>
+<li><strong>aspect_array_reclassify</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> input aspect values</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the output shielding mutipler values</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="shield_mult.convo_combine">
+<tt class="descclassname">shield_mult.</tt><tt class="descname">convo_combine</tt><big>(</big><em>ms_orig</em>, <em>slope_array</em>, <em>aspect_array</em><big>)</big><a class="reference internal" href="../_modules/shield_mult.html#convo_combine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shield_mult.convo_combine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply convolution to the orginal shielding factor for each direction and
+call the <em class="xref std std-term">combine</em> module to consider the slope and aspect and remove
+conservitism to get final shielding multiplier values</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ms_orig</strong> &#8211; <cite>file</cite> the original shidelding factor map</li>
+<li><strong>slope_array</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the input slope values</li>
+<li><strong>aspect_array_reclassify</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> input aspect values</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="shield_mult.get_slope_aspect">
+<tt class="descclassname">shield_mult.</tt><tt class="descname">get_slope_aspect</tt><big>(</big><em>input_dem</em><big>)</big><a class="reference internal" href="../_modules/shield_mult.html#get_slope_aspect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shield_mult.get_slope_aspect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the slope and aspect from the input DEM</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>input_dem</strong> &#8211; <cite>file</cite> the input DEM</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the output slope values</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the output aspect values</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="shield_mult.init_kern">
+<tt class="descclassname">shield_mult.</tt><tt class="descname">init_kern</tt><big>(</big><em>size</em><big>)</big><a class="reference internal" href="../_modules/shield_mult.html#init_kern"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shield_mult.init_kern" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a mean kernel for convolutions, with dimensions
+(2*size+1, 2*size+1), it is north direction</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>size</strong> &#8211; <cite>int</cite> the buffer size of the convolution</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the output kernel used for convolution</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="shield_mult.init_kern_diag">
+<tt class="descclassname">shield_mult.</tt><tt class="descname">init_kern_diag</tt><big>(</big><em>size</em><big>)</big><a class="reference internal" href="../_modules/shield_mult.html#init_kern_diag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shield_mult.init_kern_diag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a mean kernel for convolutions, with dimensions
+(2*size+1, 2*size+1), it is south west direction</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>size</strong> &#8211; <cite>int</cite> the buffer size of the convolution</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the output kernel used for convolution</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="shield_mult.kern_e">
+<tt class="descclassname">shield_mult.</tt><tt class="descname">kern_e</tt><big>(</big><em>size</em><big>)</big><a class="reference internal" href="../_modules/shield_mult.html#kern_e"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shield_mult.kern_e" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a mean kernel for convolutions, with dimensions
+(2*size+1, 2*size+1), it is east direction</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>size</strong> &#8211; <cite>int</cite> the buffer size of the convolution</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the output kernel used for convolution</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="shield_mult.kern_n">
+<tt class="descclassname">shield_mult.</tt><tt class="descname">kern_n</tt><big>(</big><em>size</em><big>)</big><a class="reference internal" href="../_modules/shield_mult.html#kern_n"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shield_mult.kern_n" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a mean kernel for convolutions, with dimensions
+(2*size+1, 2*size+1), it is north direction</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>size</strong> &#8211; <cite>int</cite> the buffer size of the convolution</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the output kernel used for convolution</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="shield_mult.kern_ne">
+<tt class="descclassname">shield_mult.</tt><tt class="descname">kern_ne</tt><big>(</big><em>size</em><big>)</big><a class="reference internal" href="../_modules/shield_mult.html#kern_ne"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shield_mult.kern_ne" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a mean kernel for convolutions, with dimensions
+(2*size+1, 2*size+1), it is north-east direction</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>size</strong> &#8211; <cite>int</cite> the buffer size of the convolution</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the output kernel used for convolution</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="shield_mult.kern_nw">
+<tt class="descclassname">shield_mult.</tt><tt class="descname">kern_nw</tt><big>(</big><em>size</em><big>)</big><a class="reference internal" href="../_modules/shield_mult.html#kern_nw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shield_mult.kern_nw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a mean kernel for convolutions, with dimensions
+(2*size+1, 2*size+1), it is north-west direction</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>size</strong> &#8211; <cite>int</cite> the buffer size of the convolution</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the output kernel used for convolution</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="shield_mult.kern_s">
+<tt class="descclassname">shield_mult.</tt><tt class="descname">kern_s</tt><big>(</big><em>size</em><big>)</big><a class="reference internal" href="../_modules/shield_mult.html#kern_s"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shield_mult.kern_s" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a mean kernel for convolutions, with dimensions
+(2*size+1, 2*size+1), it is south direction</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>size</strong> &#8211; <cite>int</cite> the buffer size of the convolution</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the output kernel used for convolution</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="shield_mult.kern_se">
+<tt class="descclassname">shield_mult.</tt><tt class="descname">kern_se</tt><big>(</big><em>size</em><big>)</big><a class="reference internal" href="../_modules/shield_mult.html#kern_se"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shield_mult.kern_se" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a mean kernel for convolutions, with dimensions
+(2*size+1, 2*size+1), it is south-east direction</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>size</strong> &#8211; <cite>int</cite> the buffer size of the convolution</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the output kernel used for convolution</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="shield_mult.kern_sw">
+<tt class="descclassname">shield_mult.</tt><tt class="descname">kern_sw</tt><big>(</big><em>size</em><big>)</big><a class="reference internal" href="../_modules/shield_mult.html#kern_sw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shield_mult.kern_sw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a mean kernel for convolutions, with dimensions
+(2*size+1, 2*size+1), it is south-west direction</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>size</strong> &#8211; <cite>int</cite> the buffer size of the convolution</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the output kernel used for convolution</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="shield_mult.kern_w">
+<tt class="descclassname">shield_mult.</tt><tt class="descname">kern_w</tt><big>(</big><em>size</em><big>)</big><a class="reference internal" href="../_modules/shield_mult.html#kern_w"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shield_mult.kern_w" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a mean kernel for convolutions, with dimensions
+(2*size+1, 2*size+1), it is west direction</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>size</strong> &#8211; <cite>int</cite> the buffer size of the convolution</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the output kernel used for convolution</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="shield_mult.reclassify_aspect">
+<tt class="descclassname">shield_mult.</tt><tt class="descname">reclassify_aspect</tt><big>(</big><em>data</em><big>)</big><a class="reference internal" href="../_modules/shield_mult.html#reclassify_aspect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shield_mult.reclassify_aspect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reclassify the aspect valus from 0 ~ 360 to 1 ~ 9</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the input aspect values 0 ~ 360</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the output aspect values 1 ~ 9</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="shield_mult.shield">
+<tt class="descclassname">shield_mult.</tt><tt class="descname">shield</tt><big>(</big><em>terrain</em>, <em>input_dem</em><big>)</big><a class="reference internal" href="../_modules/shield_mult.html#shield"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shield_mult.shield" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs core calculations to derive the shielding multiplier</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>terrain</strong> &#8211; <cite>file</cite> the input tile of the terrain class map (landcover).</li>
+<li><strong>input_dem</strong> &#8211; <cite>file</cite> the input tile of the DEM</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="shield_mult.terrain_class2ms_orig">
+<tt class="descclassname">shield_mult.</tt><tt class="descname">terrain_class2ms_orig</tt><big>(</big><em>terrain</em><big>)</big><a class="reference internal" href="../_modules/shield_mult.html#terrain_class2ms_orig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shield_mult.terrain_class2ms_orig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reclassify the terrain classes into initial shielding factors</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>input_dem</strong> &#8211; <cite>file</cite> the input terrain class map</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><cite>file</cite> the output initial shielding value</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">shielding</a><ul>
+<li><a class="reference internal" href="#module-__init__">__init__.py</a></li>
+<li><a class="reference internal" href="#module-shield_mult">shielding.py</a><ul>
+<li><a class="reference internal" href="#shielding-calculate-shielding-multiplier"><tt class="docutils literal"><span class="pre">shielding</span></tt> &#8211; Calculate shielding multiplier</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="terrain.html"
+                        title="previous chapter">terrain</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="topographic.html"
+                        title="next chapter">topographic</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/docs/shielding.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="topographic.html" title="topographic"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="terrain.html" title="terrain"
+             >previous</a> |</li>
+        <li><a href="../index.html">WindMultipliers v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Geoscience Australia.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>
