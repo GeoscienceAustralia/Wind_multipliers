@@ -191,7 +191,7 @@ def nc_save_grid(filename, dimensions, variables, nodata=-9999,
     :param integer lsd: Variable data will be truncated to this number of 
         significant digits. 
 
-    :return: `netCDF4.Dataset` object (if keepfileopen=True) 
+    :return: `netCDF3.Dataset` object (if keepfileopen=True) 
     :rtype: :class:`netCDF4.Dataset` 
 
     :raises KeyError: If input dimension or variable dicts do not have required 

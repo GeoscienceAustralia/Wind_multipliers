@@ -404,7 +404,7 @@ class Multipliers(object):
             # resample the terrain as DEM
             temp_dataset_dem = gdal.Open(temp_tile_dem)
 
-            terrain_resample = pjoin(output_folder, tile_name + '_ter.img')
+            terrain_resample = pjoin(output_folder, tile_name + '.img')
 
             command_string = 'gdal_translate -outsize %i %i' % (
                 temp_dataset_dem.RasterXSize, temp_dataset_dem.RasterYSize

@@ -35,9 +35,7 @@ def terrain(cyclone_area, temp_tile):
     :param temp_tile: `file` the image file of the input tile of the land cover
 
     """
-#    import pdb
-#    pdb.set_trace()
-#
+
     # open the tile
     temp_dataset = gdal.Open(temp_tile)
 

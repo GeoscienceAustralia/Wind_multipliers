@@ -127,7 +127,7 @@ def topomult(input_dem):
         del mhdata
 
         # output format as netCDF4
-        tile_nc = pjoin(nc_folder, os.path.splitext(file_name)[0] + '_' +
+        tile_nc = pjoin(nc_folder, os.path.splitext(file_name)[0][:-4] + '_mt_' +
                         direction + '.nc')
         save_multiplier('Mt', mhsmooth, lat, lon, tile_nc)
         del mhsmooth
