@@ -7,7 +7,6 @@ This module is called by the module :term:`multiplier_calc`
 
 import numpy as np
 
-
 def escarpment_factor(profile, ridge, valley, data_spacing):
     """
     Calculate escarpment factor
