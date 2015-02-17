@@ -111,7 +111,8 @@ def get_slope_aspect(input_dem):
     band = ds.GetRasterBand(1)
     elevation_array = band.ReadAsArray(0, 0, cols, rows)
     elevation_array = elevation_array.astype(float)
-    elevation_array[np.where(elevation_array < -0.001)] = np.nan
+    #elevation_array[np.where(elevation_array < -0.001)] = np.nan
+    elevation_array[np.where(elevation_array < -0.001)] = 0.0
 
     x_m_array, y_m_array = get_pixel_size_grids(ds)
 
@@ -335,8 +336,6 @@ def combine(ms_orig_array, slope_array, aspect_array, one_dir):
 
     :return: :class:`numpy.ndarray` the output shielding mutipler values
     """
-#    import pdb
-#    pdb.set_trace()
 
     dire_aspect = value_lookup.dire_aspect
     aspect_value = dire_aspect[one_dir]
@@ -346,6 +345,9 @@ def combine(ms_orig_array, slope_array, aspect_array, one_dir):
     low_degree = 3.27
 
     out_ms = ms_orig_array
+    
+    mask = np.isnan(out_ms)
+    out_ms[mask] = -99
 
     slope_uplimit = np.where(
         (slope_array >= 12.30) & (
@@ -360,12 +362,14 @@ def combine(ms_orig_array, slope_array, aspect_array, one_dir):
         (1.0 - ms_orig_array[slope_middle]) * (
             slope_array[slope_middle] - low_degree) / (
             up_degree - low_degree)) + ms_orig_array[slope_middle]
-
+   
     ms_smaller = np.where(out_ms < conservatism)
     ms_bigger = np.where(out_ms >= conservatism)
     out_ms[ms_smaller] = out_ms[ms_smaller] * conservatism
     out_ms[ms_bigger] = out_ms[ms_bigger] ** 2
 
+    out_ms[mask] = np.nan
+    
     return out_ms
 
 

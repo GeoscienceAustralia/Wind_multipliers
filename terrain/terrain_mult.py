@@ -71,6 +71,10 @@ def terrain(cyclone_area, temp_tile):
     reclassified_array = terrain_class2mz_orig(cyclone_area, data)
     # if the value is 0, it is nodata
     reclassified_array[reclassified_array == 0] = np.nan
+    
+    # assign nodata area as average non-cycl multiplier value 
+    mask = np.isnan(reclassified_array)
+    reclassified_array[mask] = 0.931 
 
     # convoulution of the original terrain multipler into different directions
     log.info('Moving average for each direction ...')
@@ -95,6 +99,7 @@ def terrain(cyclone_area, temp_tile):
 
         convo_dir = globals()['convo_' + one_dir]
         outdata = convo_dir(reclassified_array, filter_width)
+        outdata[mask] = np.nan
 
         # find output folder
         tile_folder = os.path.dirname(temp_tile)
