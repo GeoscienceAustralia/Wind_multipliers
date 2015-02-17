@@ -23,11 +23,11 @@ import logging as log
 import terrain.terrain_mult
 import shielding.shield_mult
 import topographic.topomult
-import ConfigParser
+import ConfigParser 
 from osgeo.gdalconst import GA_ReadOnly
 from utilities.files import fl_start_log
 from utilities._execute import execute
-from os.path import join as pjoin
+from os.path import join as pjoin, realpath, isdir, dirname
 from functools import wraps
 #from functools import reduce
 import itertools
@@ -267,7 +267,10 @@ class Multipliers(object):
 
         """
 
-        tile_name = tile_info[0]
+        #import pdb
+	#pdb.set_trace()	
+
+	tile_name = tile_info[0]
         tile_extents = tile_info[1]
 
         # get the tile name without buffer using coordinates with 4 decimals
@@ -443,11 +446,17 @@ class Multipliers(object):
             log.info('producing Topographic multipliers ...')
             topographic.topomult.topomult(temp_tile_dem)
 
+ 	    log.info('deleting the temporary files after calculation ...')
+	    log.info('deleteing the temporary DEM: {0}'.format(temp_tile_dem))
             os.remove(temp_tile_dem)
+	    log.info('deleteing the temporary landcover: {0}'.format(temp_tile))
             os.remove(temp_tile)
+	    log.info('deleteing the temporary resampled landcover: {0}'.format(terrain_resample))
             os.remove(terrain_resample)
+	    log.info('deleteing the temporary cyclone: {0}'.format(temp_tile_cyclone))
             os.remove(temp_tile_cyclone)
         else:
+	    log.info('deleteing the temporary empty landcover: {0}'.format(temp_tile))
             if os.path.exists(temp_tile):
                 os.remove(temp_tile)
 
@@ -467,8 +476,8 @@ class Multipliers(object):
             for d in range(1, pp.size()):
                 if w < len(tiles):
                     pp.send(tiles[w], destination=d, tag=work_tag)
-                    log.debug("Processing tile {0} of {1}".format(w, 
-                              len(tiles)))
+                    log.debug("Processing tile {0}({1}) of {2} on {3}".format(w, 
+                              tiles[w],len(tiles),d))
                     w += 1
                 else:
                     pp.send(None, destination=d, tag=work_tag)
@@ -482,11 +491,12 @@ class Multipliers(object):
                                             return_status=True)[1]
                 
                 d = status.source
+		log.debug("Returned from {0}".format(d))
 
                 if w < len(tiles):
                     pp.send(tiles[w], destination=d, tag=work_tag)
-                    log.debug("Processing tile {0} of {1}".format(w, 
-                              len(tiles)))
+		    log.debug("Processing tile {0}({1}) of {2} on {3}".format(w,
+                              tiles[w],len(tiles),d))
                     w += 1
                 else:
                     pp.send(None, destination=d, tag=work_tag)
@@ -759,9 +769,18 @@ def run():
     root = config.get('inputValues', 'root')
     upwind_length = float(config.get('inputValues', 'upwind_length'))
 
-    logfile = 'multipliers.log'
-    loglevel = 'INFO'
-    verbose = False
+    logfile = config.get('Logging', 'LogFile')
+    logdir = dirname(realpath(logfile)) 
+
+    # If log file directory does not exist, create it 
+    if not isdir(logdir):
+        try: 
+            os.makedirs(logdir)
+        except OSError: 
+            logfile = pjoin(os.getcwd(), 'multipliers.log') 
+   
+    loglevel = config.get('Logging', 'LogLevel')
+    verbose = config.getboolean('Logging', 'Verbose')
 
     attempt_parallel()
 
