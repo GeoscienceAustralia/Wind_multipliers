@@ -26,7 +26,7 @@ from scipy import signal
 from osgeo import gdal
 
 from utilities.get_pixel_size_grid import get_pixel_size_grids
-from utilities.nctools import save_multiplier, get_lat_lon
+from utilities.nctools import save_multiplier, get_lat_lon, clip_array
 
 import make_path
 import multiplier_calc
@@ -35,7 +35,7 @@ __version__ = '1.0 - intergarate with terrian and shileding multiplier for \
                tiling and parallelisation'
 
 
-def topomult(input_dem):
+def topomult(input_dem, tile_extents_nobuffer):
     """
     Executes core topographic multiplier functionality
 
@@ -45,7 +45,7 @@ def topomult(input_dem):
     # find output folder
     mh_folder = pjoin(os.path.dirname(input_dem), 'topographic')
     file_name = os.path.basename(input_dem)
-    nc_folder = pjoin(mh_folder, 'netcdf')
+    #nc_folder = pjoin(mh_folder, 'netcdf')
 
     ds = gdal.Open(input_dem)
     nc = ds.RasterXSize
@@ -57,11 +57,18 @@ def topomult(input_dem):
     pixelwidth = geotransform[1]
     pixelheight = -geotransform[5]
 
-    lon, lat = get_lat_lon(x_left, y_upper, pixelwidth, pixelheight, nc, nr)
+    #lon, lat = get_lat_lon(x_left, y_upper, pixelwidth, pixelheight, nc, nr)
+    lon, lat = get_lat_lon(tile_extents_nobuffer, pixelwidth, pixelheight)
 
     band = ds.GetRasterBand(1)
     elevation_array = band.ReadAsArray(0, 0, nc, nr)
-    elevation_array[np.where(elevation_array < -0.001)] = np.nan
+    #elevation_array[np.where(elevation_array < -0.001)] = np.nan
+    
+    nodata_value = band.GetNoDataValue()
+    if nodata_value is not None:
+        elevation_array[np.where(elevation_array = nodata_value)] = np.nan
+    else:
+        elevation_array[np.where(elevation_array is None)] = np.nan
 
     elevation_array_tran = np.transpose(elevation_array)
     data = elevation_array_tran.flatten()
@@ -127,9 +134,13 @@ def topomult(input_dem):
         del mhdata
 
         # output format as netCDF4
-        tile_nc = pjoin(nc_folder, os.path.splitext(file_name)[0][:-4] + '_mt_' +
+        tile_nc = pjoin(mh_folder, os.path.splitext(file_name)[0][:-4] + '_mt_' +
                         direction + '.nc')
-        save_multiplier('Mt', mhsmooth, lat, lon, tile_nc)
+                        
+        mhsmooth_nobuffer = clip_array(mhsmooth, x_left, y_upper, pixelwidth, 
+                                      pixelheight, tile_extents_nobuffer)
+                                      
+        save_multiplier('Mt', mhsmooth_nobuffer, lat, lon, tile_nc)
         del mhsmooth
 
         log.info('Finished direction {0}'.format(direction))
