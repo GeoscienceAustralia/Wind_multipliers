@@ -66,7 +66,7 @@ def topomult(input_dem, tile_extents_nobuffer):
     
     nodata_value = band.GetNoDataValue()
     if nodata_value is not None:
-        elevation_array[np.where(elevation_array = nodata_value)] = np.nan
+        elevation_array[np.where(elevation_array == nodata_value)] = np.nan
     else:
         elevation_array[np.where(elevation_array is None)] = np.nan
 
