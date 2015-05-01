@@ -20,7 +20,34 @@ LOGGER.addHandler(logging.NullHandler())
 ISO_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 
-def get_lat_lon(x_left, y_upper, pixelwidth, pixelheight, cols, rows):
+#def get_lat_lon1(x_left, y_upper, pixelwidth, pixelheight, cols, rows):
+#    """
+#    Return the longitude and latitude values that lie within
+#    the modelled domain
+#
+#    :param x_left: :class:`numpy.ndarray` containing longitude values
+#    :param y_upper: :class:`numpy.ndarray` containing latitude values
+#    :param pixelwidth: :class:`numpy.ndarray` containing longitude values
+#    :param pixelheightr: :class:`numpy.ndarray` containing latitude values
+#    :param cols: :class:`numpy.ndarray` containing longitude values
+#    :param rows: :class:`numpy.ndarray` containing latitude values
+#
+#    :return: lon: :class:`numpy.ndarray` containing longitude values
+#    :return: lat: :class:`numpy.ndarray` containing latitude values
+#
+#    """
+#    lon = np.array(cols)
+#    lat = np.array(rows)
+#
+#    lon = [x_left + 0.5 * pixelwidth + x * pixelwidth for x in range(0, cols)]
+#    lat = [-y_upper - 0.5 * pixelheight -
+#           y * pixelheight for y in range(0, rows)]
+#
+#    return lon, lat
+
+
+def clip_array(outdata, x_left, y_upper, pixelwidth, pixelheight, extent):
+                                          
     """
     Return the longitude and latitude values that lie within
     the modelled domain
@@ -36,16 +63,52 @@ def get_lat_lon(x_left, y_upper, pixelwidth, pixelheight, cols, rows):
     :return: lat: :class:`numpy.ndarray` containing latitude values
 
     """
+#    import pdb
+#    pdb.set_trace()
+    
+    lon_start = int(np.around((extent[0] - x_left)/pixelwidth))
+    lat_start = int(np.around((-y_upper - extent[1])/pixelheight))
+    
+    cols = int(np.ceil((extent[2] - extent[0])/pixelwidth))
+    rows = int(np.ceil((extent[1] - extent[3])/pixelheight))
+    
+    lon_end = lon_start + cols
+    lat_end = lat_start + rows
+
+    outdata_clip = outdata[lat_start:lat_end, lon_start:lon_end]
+
+    return outdata_clip  
+                                    
+
+def get_lat_lon(extent, pixelwidth, pixelheight):
+    """
+    Return the longitude and latitude values that lie within
+    the modelled domain
+
+    :param x_left: :class:`numpy.ndarray` containing longitude values
+    :param y_upper: :class:`numpy.ndarray` containing latitude values
+    :param pixelwidth: :class:`numpy.ndarray` containing longitude values
+    :param pixelheightr: :class:`numpy.ndarray` containing latitude values
+    :param cols: :class:`numpy.ndarray` containing longitude values
+    :param rows: :class:`numpy.ndarray` containing latitude values
+
+    :return: lon: :class:`numpy.ndarray` containing longitude values
+    :return: lat: :class:`numpy.ndarray` containing latitude values
+
+    """
+    
+    x_left = extent[0]
+    y_upper = -extent[1]
+    
+    cols = int(np.ceil((extent[2] - extent[0])/pixelwidth))
+    rows = int(np.ceil((extent[1] - extent[3])/pixelheight))  
+    
     lon = np.array(cols)
     lat = np.array(rows)
 
     lon = [x_left + 0.5 * pixelwidth + x * pixelwidth for x in range(0, cols)]
-    lat = [-
-           y_upper -
-           0.5 *
-           pixelheight -
-           y *
-           pixelheight for y in range(0, rows)]
+    lat = [-y_upper - 0.5 * pixelheight -
+           y * pixelheight for y in range(0, rows)]
 
     return lon, lat
 
