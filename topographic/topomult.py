@@ -126,6 +126,11 @@ def topomult(input_dem, tile_extents_nobuffer):
         # Reshape the result to matrix like
         mhdata = np.reshape(mhdata, (nc, nr))
         mhdata = np.transpose(mhdata)
+        
+        # consider the Tasmania factor  
+        if x_left > 143.0 and y_upper > 40.0:
+            mhdata = tasmania(mhdata, elevation_array)               
+        
 
         # smooth
         g = np.ones((3, 3)) / 9.
@@ -134,8 +139,8 @@ def topomult(input_dem, tile_extents_nobuffer):
         del mhdata
 
         # output format as netCDF4
-        tile_nc = pjoin(mh_folder, os.path.splitext(file_name)[0][:-4] + '_mt_' +
-                        direction + '.nc')
+        tile_nc = pjoin(mh_folder, os.path.splitext(file_name)[0][:-4] + '_mt_' 
+                        + direction + '.nc')
                         
         mhsmooth_nobuffer = clip_array(mhsmooth, x_left, y_upper, pixelwidth, 
                                       pixelheight, tile_extents_nobuffer)
@@ -146,3 +151,12 @@ def topomult(input_dem, tile_extents_nobuffer):
         log.info('Finished direction {0}'.format(direction))
 
     ds = None
+
+
+def tasmania(mh_in, dem):     
+    mh_out = mh_in
+    above_500m = np.where(dem > 500.0)
+    mh_out[above_500m] = mh_in[above_500m]*(1.0 + 0.00015*dem[above_500m])
+
+    return mh_out
+        
