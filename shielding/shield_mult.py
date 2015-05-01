@@ -28,10 +28,10 @@ from osgeo import gdal
 from utilities import value_lookup
 from utilities.get_pixel_size_grid import get_pixel_size_grids
 from utilities.get_pixel_size_grid import RADIANS_PER_DEGREE
-from utilities.nctools import save_multiplier, get_lat_lon
+from utilities.nctools import save_multiplier, get_lat_lon, clip_array
 
 
-def shield(terrain, input_dem):
+def shield(terrain, input_dem, tile_extents_nobuffer):
     """
     Performs core calculations to derive the shielding multiplier
 
@@ -52,7 +52,7 @@ def shield(terrain, input_dem):
 
     log.info(
         'Moving average and combine slope and aspect for each direction ...')
-    convo_combine(ms_orig, slope_array, aspect_array)
+    convo_combine(ms_orig, slope_array, aspect_array, tile_extents_nobuffer)
 
     os.remove(ms_orig)
     del slope_array, aspect_array
@@ -101,8 +101,12 @@ def get_slope_aspect(input_dem):
 #    pdb.set_trace()
 
     np.seterr(divide='ignore')
-
-    ds = gdal.Open(input_dem)
+    
+    if type(input_dem) == str:
+        ds = gdal.Open(input_dem)
+    else:
+        ds = input_dem
+    
     cols = ds.RasterXSize
     rows = ds.RasterYSize
     geotransform = ds.GetGeoTransform()
@@ -238,7 +242,7 @@ def terrain_class2ms_orig(terrain):
     return ms_orig
 
 
-def convo_combine(ms_orig, slope_array, aspect_array):
+def convo_combine(ms_orig, slope_array, aspect_array, tile_extents_nobuffer):
     """
     Apply convolution to the orginal shielding factor for each direction and
     call the :term:`combine` module to consider the slope and aspect and remove
@@ -263,7 +267,8 @@ def convo_combine(ms_orig, slope_array, aspect_array):
     pixelwidth = geotransform[1]
     pixelheight = -geotransform[5]
 
-    lon, lat = get_lat_lon(x_left, y_upper, pixelwidth, pixelheight, cols, rows)
+    #lon, lat = get_lat_lon(x_left, y_upper, pixelwidth, pixelheight, cols, rows)
+    lon, lat = get_lat_lon(tile_extents_nobuffer, pixelwidth, pixelheight)
 
     band = ms_orig_ds.GetRasterBand(1)
     data = band.ReadAsArray(0, 0, cols, rows)
@@ -273,12 +278,12 @@ def convo_combine(ms_orig, slope_array, aspect_array):
         sys.exit(1)
 
     x_m_array, y_m_array = get_pixel_size_grids(ms_orig_ds)
-    pixelwidth = 0.5 * (np.mean(x_m_array) + np.mean(y_m_array))
+    gridwidth = 0.5 * (np.mean(x_m_array) + np.mean(y_m_array))
 
-    log.info('pixelwidth is {0}'.format(pixelwidth))
+    log.info('gridwidth is {0}'.format(gridwidth))
 
     ms_folder = os.path.dirname(ms_orig)
-    nc_folder = pjoin(ms_folder, 'netcdf')
+    #nc_folder = pjoin(ms_folder, 'netcdf')
     file_name = os.path.basename(ms_orig)
 
     dire = ['w', 'e', 'n', 's', 'nw', 'ne', 'se', 'sw']
@@ -287,11 +292,11 @@ def convo_combine(ms_orig, slope_array, aspect_array):
 
         log.info(one_dir)
         
-        kernel_size = int(100.0 / pixelwidth)
+        kernel_size = int(100.0 / gridwidth)
 #        if one_dir in ['w', 'e', 'n', 's']:
-#            kernel_size = int(100.0 / pixelwidth)
+#            kernel_size = int(100.0 / gridwidth)
 #        else:
-#            kernel_size = int(100.0 / pixelwidth)
+#            kernel_size = int(100.0 / gridwidth)
 
         log.info('convolution kernel size is {0}'.format(str(kernel_size)))
 
@@ -311,13 +316,17 @@ def convo_combine(ms_orig, slope_array, aspect_array):
 
         # output format as netCDF4
         tile_nc = pjoin(
-            nc_folder,
+            ms_folder,
             os.path.splitext(file_name)[0] +
             '_' +
             one_dir +
             '.nc')
-        log.info("Saving terrain multiplier in netCDF file")
-        save_multiplier('Ms', result, lat, lon, tile_nc)
+        log.info("Saving shielding multiplier in netCDF file")
+        
+        result_nobuffer = clip_array(result, x_left, y_upper, pixelwidth, 
+                                      pixelheight, tile_extents_nobuffer)
+                                      
+        save_multiplier('Ms', result_nobuffer, lat, lon, tile_nc)
 
         del result
 
@@ -383,7 +392,7 @@ def init_kern_diag(size):
     :return: :class:`numpy.ndarray` the output kernel used for convolution
     """
     kernel = np.zeros((2 * size + 1, 2 * size + 1))
-    kernel[size, size] = 1.0
+    #kernel[size, size] = 1.0
 
     for i in range(1, size + 1):
         kernel[i - 1:size, size + i] = 1.0
@@ -403,7 +412,8 @@ def init_kern(size):
 
     kernel = np.zeros((2 * size + 1, 2 * size + 1))
 
-    for i in range(0, size + 1):
+    #for i in range(0, size + 1):
+    for i in range(1, size + 1):
         kernel[i + size, size] = 1.0
     for i in range(2, size + 1):
         kernel[size + i:, size - 1:size + 2] = 1.0
