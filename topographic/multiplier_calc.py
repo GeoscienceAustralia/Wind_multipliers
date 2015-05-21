@@ -49,12 +49,12 @@ def multiplier_calc(line, data_spacing):
         if ridge_ind[0] == 0:    # (1) down up down up ....
             for i in range(1, np.size(ridge_ind)):
                 m = mh.mh_calc(fwd_line, ridge_ind[i], valley_ind[i - 1],
-                          data_spacing)
+                               data_spacing)
                 m_array = np.maximum(m_array, m)
 
         else:                    # (2) up dowm up dowm ....
             for i in range(0, np.size(ridge_ind)):
-                m = mh.mh_calc(fwd_line, ridge_ind[i], valley_ind[i], 
+                m = mh.mh_calc(fwd_line, ridge_ind[i], valley_ind[i],
                                data_spacing)
                 m_array = np.maximum(m_array, m)
 

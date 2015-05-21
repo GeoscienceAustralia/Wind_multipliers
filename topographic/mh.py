@@ -7,6 +7,7 @@ This module is called by the module :term:`multiplier_calc`
 
 import numpy as np
 
+
 def escarpment_factor(profile, ridge, valley, data_spacing):
     """
     Calculate escarpment factor
@@ -82,7 +83,7 @@ def mh_calc(profile, ridge, valley, data_spacing):
     if slope < 0.05 or h < h_threshold or lu < lu_threshold:
         return m
 
-    # calculate the mh from the front l2_capital to the back l2_capital with 
+    # calculate the mh from the front l2_capital to the back l2_capital with
     # the escarpment factor considered:
     l1 = int(np.floor(fl2_ind)) - 1
     l2 = int(
@@ -102,14 +103,14 @@ def mh_calc(profile, ridge, valley, data_spacing):
 
         # within the region of l2_capital up to the ridge
         if x >= 0 and x < l2_capital:
-            m[k] = 1 + (h / (3.5 * (z + l1_capital))) * (1 - abs(x) / 
-                                                             l2_capital)
+            m[k] = 1 + (h / (3.5 * (z + l1_capital))) * (1 - abs(x) /
+                                                         l2_capital)
 
             # --------------------------------------------------------
             # for larger slopes, you still use the formula to calculate M,
             # then re-value to 1.71 when it is larger. If use 1.71 for any
-            # slope greater than 0.45, then all the points within the 
-            # l2_capital zone will have 1.71 rather than a gradual increasing, 
+            # slope greater than 0.45, then all the points within the
+            # l2_capital zone will have 1.71 rather than a gradual increasing,
             # peaks and decreasing pattern.
             # --------------------------------------------------------
 
@@ -124,7 +125,8 @@ def mh_calc(profile, ridge, valley, data_spacing):
         # within the region from the ridge2 up to the back l2_capital
         elif x < 0 and x > -escarp_factor * l2_capital:
             m[k] = 1 + (h / (3.5 * (z + l1_capital))) * (1 - abs(x) /
-                                                 (escarp_factor * l2_capital))
+                                                         (escarp_factor *
+                                                          l2_capital))
             if m[k] > 1.71:
                 m[k] = 1.71
 

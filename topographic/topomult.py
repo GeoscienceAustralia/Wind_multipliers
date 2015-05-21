@@ -40,12 +40,12 @@ def topomult(input_dem, tile_extents_nobuffer):
     Executes core topographic multiplier functionality
 
     :param input_dem: `file` the input tile of the DEM
+    :param tile_extents_nobuffer: `tuple` the input tile extent without buffer
     """
 
     # find output folder
     mh_folder = pjoin(os.path.dirname(input_dem), 'topographic')
     file_name = os.path.basename(input_dem)
-    #nc_folder = pjoin(mh_folder, 'netcdf')
 
     ds = gdal.Open(input_dem)
     nc = ds.RasterXSize
@@ -57,13 +57,11 @@ def topomult(input_dem, tile_extents_nobuffer):
     pixelwidth = geotransform[1]
     pixelheight = -geotransform[5]
 
-    #lon, lat = get_lat_lon(x_left, y_upper, pixelwidth, pixelheight, nc, nr)
     lon, lat = get_lat_lon(tile_extents_nobuffer, pixelwidth, pixelheight)
 
     band = ds.GetRasterBand(1)
     elevation_array = band.ReadAsArray(0, 0, nc, nr)
-    #elevation_array[np.where(elevation_array < -0.001)] = np.nan
-    
+
     nodata_value = band.GetNoDataValue()
     if nodata_value is not None:
         elevation_array[np.where(elevation_array == nodata_value)] = np.nan
@@ -126,11 +124,10 @@ def topomult(input_dem, tile_extents_nobuffer):
         # Reshape the result to matrix like
         mhdata = np.reshape(mhdata, (nc, nr))
         mhdata = np.transpose(mhdata)
-        
-        # consider the Tasmania factor  
+
+        # consider the Tasmania factor
         if x_left > 143.0 and y_upper > 40.0:
-            mhdata = tasmania(mhdata, elevation_array)               
-        
+            mhdata = tasmania(mhdata, elevation_array)
 
         # smooth
         g = np.ones((3, 3)) / 9.
@@ -139,12 +136,12 @@ def topomult(input_dem, tile_extents_nobuffer):
         del mhdata
 
         # output format as netCDF4
-        tile_nc = pjoin(mh_folder, os.path.splitext(file_name)[0][:-4] + '_mt_' 
+        tile_nc = pjoin(mh_folder, os.path.splitext(file_name)[0][:-4] + '_mt_'
                         + direction + '.nc')
-                        
-        mhsmooth_nobuffer = clip_array(mhsmooth, x_left, y_upper, pixelwidth, 
-                                      pixelheight, tile_extents_nobuffer)
-                                      
+
+        mhsmooth_nobuffer = clip_array(mhsmooth, x_left, y_upper, pixelwidth,
+                                       pixelheight, tile_extents_nobuffer)
+
         save_multiplier('Mt', mhsmooth_nobuffer, lat, lon, tile_nc)
         del mhsmooth
 
@@ -153,10 +150,18 @@ def topomult(input_dem, tile_extents_nobuffer):
     ds = None
 
 
-def tasmania(mh_in, dem):     
+def tasmania(mh_in, dem):
+    """
+    Apply the Tasmania factor for the topographic multiplier
+
+    :param mh_in: :class:`numpy.ndarray` the input topographic multiplier
+    :param dem: :class:`numpy.ndarray` the input DEM value
+
+    :return: :class:`numpy.ndarray` the output topographic multiplier
+    """
+
     mh_out = mh_in
     above_500m = np.where(dem > 500.0)
     mh_out[above_500m] = mh_in[above_500m]*(1.0 + 0.00015*dem[above_500m])
 
     return mh_out
-        
