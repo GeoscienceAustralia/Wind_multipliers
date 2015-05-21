@@ -18,6 +18,7 @@ for 8 directions and output as NetCDF format.
 # Import system & process modules
 import sys
 import os
+import glob
 import logging as log
 import numexpr
 from scipy import ndimage
@@ -37,11 +38,9 @@ def shield(terrain, input_dem, tile_extents_nobuffer):
 
     :param terrain: `file` the input tile of the terrain class map (landcover).
     :param input_dem: `file` the input tile of the DEM
+    :param tile_extents_nobuffer: `tuple` the input tile extent without buffer
 
     """
-
-#    import pdb
-#    pdb.set_trace()
 
     log.info('Derive slope and reclassified aspect ...   ')
     slope_array, aspect_array = get_slope_aspect(input_dem)
@@ -54,7 +53,6 @@ def shield(terrain, input_dem, tile_extents_nobuffer):
         'Moving average and combine slope and aspect for each direction ...')
     convo_combine(ms_orig, slope_array, aspect_array, tile_extents_nobuffer)
 
-    os.remove(ms_orig)
     del slope_array, aspect_array
 
     log.info(
@@ -69,9 +67,6 @@ def reclassify_aspect(data):
 
     :return: :class:`numpy.ndarray` the output aspect values 1 ~ 9
     """
-
-#    import pdb
-#    pdb.set_trace()
 
     outdata = np.zeros_like(data, dtype=np.int)
     outdata.fill(9)
@@ -97,16 +92,13 @@ def get_slope_aspect(input_dem):
     :return: :class:`numpy.ndarray` the output aspect values
     """
 
-#    import pdb
-#    pdb.set_trace()
-
     np.seterr(divide='ignore')
-    
+
     if type(input_dem) == str:
         ds = gdal.Open(input_dem)
     else:
         ds = input_dem
-    
+
     cols = ds.RasterXSize
     rows = ds.RasterYSize
     geotransform = ds.GetGeoTransform()
@@ -115,8 +107,17 @@ def get_slope_aspect(input_dem):
     band = ds.GetRasterBand(1)
     elevation_array = band.ReadAsArray(0, 0, cols, rows)
     elevation_array = elevation_array.astype(float)
-    #elevation_array[np.where(elevation_array < -0.001)] = np.nan
-    elevation_array[np.where(elevation_array < -0.001)] = 0.0
+    # elevation_array[np.where(elevation_array < -0.001)] = np.nan
+    #elevation_array[np.where(elevation_array < -0.001)] = 0.0
+    
+    nodata_value = band.GetNoDataValue()
+    if nodata_value is not None:
+        elevation_array[np.where(elevation_array == nodata_value)] = np.nan
+    else:
+        elevation_array[np.where(elevation_array is None)] = np.nan
+        
+    mask = np.isnan(elevation_array)
+    #elevation_array[mask] = 0.0
 
     x_m_array, y_m_array = get_pixel_size_grids(ds)
 
@@ -132,6 +133,7 @@ def get_slope_aspect(input_dem):
     hypotenuse_array = np.hypot(dzdx_array, dzdy_array)
     slope_array = numexpr.evaluate(
         "arctan(hypotenuse_array) / RADIANS_PER_DEGREE")
+    slope_array[mask] = np.nan
     del hypotenuse_array
 
     # Aspect
@@ -140,42 +142,8 @@ def get_slope_aspect(input_dem):
         "(450 - arctan2(dzdy_array, -dzdx_array) / RADIANS_PER_DEGREE) % 360")
     # Derive reclassifed aspect...
     aspect_array_reclassify = reclassify_aspect(aspect_array)
+    #aspect_array_reclassify[mask] = np.nan
     del aspect_array
-
-
-#    ms_folder = pjoin(os.path.dirname(input_dem), 'shielding')
-#    file_name = os.path.basename(input_dem)
-#    driver = gdal.GetDriverByName('HFA')
-#
-#    slope = pjoin(ms_folder, os.path.splitext(file_name)[0] + '_slope.img')
-#    slope_ds = driver.Create(
-#                      slope, ds.RasterXSize, ds.RasterYSize, 1, GDT_Float32)
-#    slope_ds.SetGeoTransform(ds.GetGeoTransform())
-#    slope_ds.SetProjection(ds.GetProjection())
-#
-#    outBand_slope = slope_ds.GetRasterBand(1)
-#    outBand_slope.WriteArray(slope_array)
-#
-# flush data to disk, set the NoData value and calculate stats
-#    outBand_slope.FlushCache()
-#    outBand_slope.SetNoDataValue(-99)
-#    outBand_slope.GetStatistics(0,1)
-#
-#
-#    aspect = pjoin(ms_folder, os.path.splitext(file_name)[0] + '_aspect.img')
-#    aspect_ds = driver.Create(aspect, ds.RasterXSize, ds.RasterYSize, 
-#                               1, GDT_Float32)
-#    aspect_ds.SetGeoTransform(ds.GetGeoTransform())
-#    aspect_ds.SetProjection(ds.GetProjection())
-#
-#    outBand_aspect = aspect_ds.GetRasterBand(1)
-#    outBand_aspect.WriteArray(aspect_array_reclassify)
-#
-# flush data to disk, set the NoData value and calculate stats
-#    outBand_aspect.FlushCache()
-#    outBand_aspect.SetNoDataValue(-99)
-#    outBand_aspect.GetStatistics(0,1)
-#
 
     ds = None
 
@@ -186,12 +154,10 @@ def terrain_class2ms_orig(terrain):
     """
     Reclassify the terrain classes into initial shielding factors
 
-    :param input_dem: `file` the input terrain class map
+    :param terrain: `file` the input terrain class map
 
     :return: `file` the output initial shielding value
     """
-#    import pdb
-#    pdb.set_trace()
 
     ms_folder = pjoin(os.path.dirname(terrain), 'shielding')
     file_name = os.path.basename(terrain)
@@ -208,6 +174,14 @@ def terrain_class2ms_orig(terrain):
     # get georeference info
     band = terrain_resample_ds.GetRasterBand(1)
     data = band.ReadAsArray(0, 0, cols, rows)
+    
+    nodata_value = band.GetNoDataValue()
+    if nodata_value is not None:
+        data[np.where(data == nodata_value)] = np.nan
+    else:
+        data[np.where(data is None)] = np.nan
+        
+    mask = np.isnan(data)
 
     ms_init = value_lookup.ms_init
 
@@ -216,7 +190,8 @@ def terrain_class2ms_orig(terrain):
     for i in [1, 3, 4, 5]:
         outdata[data == i] = ms_init[i] / 100.0
 
-    outdata[np.where(data == 0)] = np.nan
+    #outdata[np.where(data == 0)] = np.nan
+    outdata[mask] = np.nan
 
     ms_orig = pjoin(ms_folder, os.path.splitext(file_name)[0] + '_ms.img')
     ms_orig_ds = driver.Create(
@@ -250,11 +225,10 @@ def convo_combine(ms_orig, slope_array, aspect_array, tile_extents_nobuffer):
 
     :param ms_orig: `file` the original shidelding factor map
     :param slope_array: :class:`numpy.ndarray` the input slope values
-    :param aspect_array_reclassify: :class:`numpy.ndarray` input aspect values
+    :param aspect_array: :class:`numpy.ndarray` the input aspect values
+    :param tile_extents_nobuffer: `tuple` the input tile extent without buffer
 
     """
-#    import pdb
-#    pdb.set_trace()
 
     ms_orig_ds = gdal.Open(ms_orig)
 
@@ -267,7 +241,6 @@ def convo_combine(ms_orig, slope_array, aspect_array, tile_extents_nobuffer):
     pixelwidth = geotransform[1]
     pixelheight = -geotransform[5]
 
-    #lon, lat = get_lat_lon(x_left, y_upper, pixelwidth, pixelheight, cols, rows)
     lon, lat = get_lat_lon(tile_extents_nobuffer, pixelwidth, pixelheight)
 
     band = ms_orig_ds.GetRasterBand(1)
@@ -283,7 +256,6 @@ def convo_combine(ms_orig, slope_array, aspect_array, tile_extents_nobuffer):
     log.info('gridwidth is {0}'.format(gridwidth))
 
     ms_folder = os.path.dirname(ms_orig)
-    #nc_folder = pjoin(ms_folder, 'netcdf')
     file_name = os.path.basename(ms_orig)
 
     dire = ['w', 'e', 'n', 's', 'nw', 'ne', 'se', 'sw']
@@ -291,12 +263,8 @@ def convo_combine(ms_orig, slope_array, aspect_array, tile_extents_nobuffer):
     for one_dir in dire:
 
         log.info(one_dir)
-        
+
         kernel_size = int(100.0 / gridwidth)
-#        if one_dir in ['w', 'e', 'n', 's']:
-#            kernel_size = int(100.0 / gridwidth)
-#        else:
-#            kernel_size = int(100.0 / gridwidth)
 
         log.info('convolution kernel size is {0}'.format(str(kernel_size)))
 
@@ -322,26 +290,33 @@ def convo_combine(ms_orig, slope_array, aspect_array, tile_extents_nobuffer):
             one_dir +
             '.nc')
         log.info("Saving shielding multiplier in netCDF file")
-        
-        result_nobuffer = clip_array(result, x_left, y_upper, pixelwidth, 
-                                      pixelheight, tile_extents_nobuffer)
-                                      
+
+        result_nobuffer = clip_array(result, x_left, y_upper, pixelwidth,
+                                     pixelheight, tile_extents_nobuffer)
+
         save_multiplier('Ms', result_nobuffer, lat, lon, tile_nc)
 
         del result
 
     ms_orig_ds = None
 
+    os.remove(ms_orig)
+    os.chdir(ms_folder)
+    filelist = glob.glob('*.xml')
+    for f in filelist:
+        os.remove(f)
+
 
 def combine(ms_orig_array, slope_array, aspect_array, one_dir):
     """
     Used for each direction to derive the shielding multipliers by considering
-    slope and aspect after covolution in the previous step. It also will remove
+    slope and aspect after covolution in the previous step. It will also remove
     the conservatism.
 
     :param ms_orig_array: :class:`numpy.ndarray` convoluted shielding values
     :param slope_array: :class:`numpy.ndarray` the input slope values
     :param aspect_array_reclassify: :class:`numpy.ndarray` input aspect values
+    :param one_dir: `str` the direction of wind
 
     :return: :class:`numpy.ndarray` the output shielding mutipler values
     """
@@ -354,7 +329,7 @@ def combine(ms_orig_array, slope_array, aspect_array, one_dir):
     low_degree = 3.27
 
     out_ms = ms_orig_array
-    
+
     mask = np.isnan(out_ms)
     out_ms[mask] = -99
 
@@ -371,14 +346,14 @@ def combine(ms_orig_array, slope_array, aspect_array, one_dir):
         (1.0 - ms_orig_array[slope_middle]) * (
             slope_array[slope_middle] - low_degree) / (
             up_degree - low_degree)) + ms_orig_array[slope_middle]
-   
+
     ms_smaller = np.where(out_ms < conservatism)
     ms_bigger = np.where(out_ms >= conservatism)
     out_ms[ms_smaller] = out_ms[ms_smaller] * conservatism
     out_ms[ms_bigger] = out_ms[ms_bigger] ** 2
 
     out_ms[mask] = np.nan
-    
+
     return out_ms
 
 
@@ -392,7 +367,7 @@ def init_kern_diag(size):
     :return: :class:`numpy.ndarray` the output kernel used for convolution
     """
     kernel = np.zeros((2 * size + 1, 2 * size + 1))
-    #kernel[size, size] = 1.0
+    # kernel[size, size] = 1.0
 
     for i in range(1, size + 1):
         kernel[i - 1:size, size + i] = 1.0
@@ -412,7 +387,7 @@ def init_kern(size):
 
     kernel = np.zeros((2 * size + 1, 2 * size + 1))
 
-    #for i in range(0, size + 1):
+    # for i in range(0, size + 1):
     for i in range(1, size + 1):
         kernel[i + size, size] = 1.0
     for i in range(2, size + 1):
