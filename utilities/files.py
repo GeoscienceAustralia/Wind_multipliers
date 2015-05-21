@@ -34,8 +34,9 @@ def fl_module_path(level=1):
 
     :returns: path, basename and extension of the file containing the module
 
-    :Example: path, base, ext = fl_module_path( ), Calling fl_module_path() from
-              "/foo/bar/baz.py" produces the result "/foo/bar", "baz", ".py"
+    :Example: path, base, ext = fl_module_path( ), Calling fl_module_path()
+              from "/foo/bar/baz.py" produces the result "/foo/bar", "baz",
+              ".py"
     """
 
     filename = os.path.realpath(sys._getframe(level).f_code.co_filename)
@@ -212,7 +213,8 @@ def fl_config_file(extension='.ini', prefix='', level=None):
     return config_file
 
 
-def fl_start_log(log_file, log_level, verbose=False, datestamp=False, newlog=True):
+def fl_start_log(log_file, log_level, verbose=False, datestamp=False,
+                 newlog=True):
     """
     Start logging to log_file all messages of log_level and higher.
     Setting ``verbose=True`` will report all messages to STDOUT as well.
@@ -277,7 +279,8 @@ def fl_start_log(log_file, log_level, verbose=False, datestamp=False, newlog=Tru
             console.setFormatter(formatter)
             logger.addHandler(console)
 
-    logger.info('Started log file %s (detail level %s)' % (log_file, log_level))
+    logger.info('Started log file %s (detail level %s)' % 
+                (log_file, log_level))
     logger.info('Running %s (pid %d)' % (sys.argv[0], os.getpid()))
     logger.info('Version %s' % (fl_program_version()))
     return logger

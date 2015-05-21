@@ -20,89 +20,56 @@ LOGGER.addHandler(logging.NullHandler())
 ISO_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 
-#def get_lat_lon1(x_left, y_upper, pixelwidth, pixelheight, cols, rows):
-#    """
-#    Return the longitude and latitude values that lie within
-#    the modelled domain
-#
-#    :param x_left: :class:`numpy.ndarray` containing longitude values
-#    :param y_upper: :class:`numpy.ndarray` containing latitude values
-#    :param pixelwidth: :class:`numpy.ndarray` containing longitude values
-#    :param pixelheightr: :class:`numpy.ndarray` containing latitude values
-#    :param cols: :class:`numpy.ndarray` containing longitude values
-#    :param rows: :class:`numpy.ndarray` containing latitude values
-#
-#    :return: lon: :class:`numpy.ndarray` containing longitude values
-#    :return: lat: :class:`numpy.ndarray` containing latitude values
-#
-#    """
-#    lon = np.array(cols)
-#    lat = np.array(rows)
-#
-#    lon = [x_left + 0.5 * pixelwidth + x * pixelwidth for x in range(0, cols)]
-#    lat = [-y_upper - 0.5 * pixelheight -
-#           y * pixelheight for y in range(0, rows)]
-#
-#    return lon, lat
-
-
-def clip_array(outdata, x_left, y_upper, pixelwidth, pixelheight, extent):
-                                          
-    """
-    Return the longitude and latitude values that lie within
-    the modelled domain
-
-    :param x_left: :class:`numpy.ndarray` containing longitude values
-    :param y_upper: :class:`numpy.ndarray` containing latitude values
-    :param pixelwidth: :class:`numpy.ndarray` containing longitude values
-    :param pixelheightr: :class:`numpy.ndarray` containing latitude values
-    :param cols: :class:`numpy.ndarray` containing longitude values
-    :param rows: :class:`numpy.ndarray` containing latitude values
-
-    :return: lon: :class:`numpy.ndarray` containing longitude values
-    :return: lat: :class:`numpy.ndarray` containing latitude values
+def clip_array(data, x_left, y_upper, pixelwidth, pixelheight, extent):
 
     """
-#    import pdb
-#    pdb.set_trace()
-    
+    Return the clipped area of the input array according to an sub-extent
+
+    :param data: :class:`numpy.ndarray` the input array
+    :param x_left: `float` the left-most longitude vlaue
+    :param y_upper: `float` the upper-most latitude values
+    :param pixelwidth: `float` the pixel width
+    :param pixelheight: `float` the pixel height
+    :param extent: `tuple` the clipping extent
+
+    :return: :class:`numpy.ndarray` the clipped array
+
+    """
+
     lon_start = int(np.around((extent[0] - x_left)/pixelwidth))
     lat_start = int(np.around((-y_upper - extent[1])/pixelheight))
-    
+
     cols = int(np.ceil((extent[2] - extent[0])/pixelwidth))
     rows = int(np.ceil((extent[1] - extent[3])/pixelheight))
-    
+
     lon_end = lon_start + cols
     lat_end = lat_start + rows
 
-    outdata_clip = outdata[lat_start:lat_end, lon_start:lon_end]
+    data_clip = data[lat_start:lat_end, lon_start:lon_end]
 
-    return outdata_clip  
-                                    
+    return data_clip
+
 
 def get_lat_lon(extent, pixelwidth, pixelheight):
     """
     Return the longitude and latitude values that lie within
-    the modelled domain
+    the given extent
 
-    :param x_left: :class:`numpy.ndarray` containing longitude values
-    :param y_upper: :class:`numpy.ndarray` containing latitude values
-    :param pixelwidth: :class:`numpy.ndarray` containing longitude values
-    :param pixelheightr: :class:`numpy.ndarray` containing latitude values
-    :param cols: :class:`numpy.ndarray` containing longitude values
-    :param rows: :class:`numpy.ndarray` containing latitude values
+    :param extent: `tuple` the clipping extent
+    :param pixelwidth: `float` the pixel width
+    :param pixelheight: `float` the pixel height
 
     :return: lon: :class:`numpy.ndarray` containing longitude values
     :return: lat: :class:`numpy.ndarray` containing latitude values
 
     """
-    
+
     x_left = extent[0]
     y_upper = -extent[1]
-    
+
     cols = int(np.ceil((extent[2] - extent[0])/pixelwidth))
-    rows = int(np.ceil((extent[1] - extent[3])/pixelheight))  
-    
+    rows = int(np.ceil((extent[1] - extent[3])/pixelheight))
+
     lon = np.array(cols)
     lat = np.array(rows)
 
@@ -179,92 +146,91 @@ def nc_create_dim(ncobj, name, values, dtype, atts=None):
 
 
 def nc_save_grid(filename, dimensions, variables, nodata=-9999,
-               datatitle=None, gatts={}, writedata=True,
-               keepfileopen=False, zlib=True, complevel=4, lsd=None):
+                 datatitle=None, gatts={}, writedata=True,
+                 keepfileopen=False, zlib=True, complevel=4, lsd=None):
 
-    """ 
-    Save a gridded dataset to a netCDF file using NetCDF4. 
-    
-    :param str filename: Full path to the file to write to. 
+    """
+    Save a gridded dataset to a netCDF file using NetCDF4.
+
+    :param str filename: Full path to the file to write to.
     :param dimensions: :class:`dict`
-        The input dict 'dimensions' has a strict structure, to 
-        permit insertion of multiple dimensions. The dimensions should be keyed 
+        The input dict 'dimensions' has a strict structure, to
+        permit insertion of multiple dimensions. The dimensions should be keyed
         with the slowest varying dimension as dimension 0.
-        
-        :: 
- 
-            dimesions = {0:{'name': 
-                            'values': 
-                            'dtype': 
-                            'atts':{'long_name': 
-                                    'units':  ...} }, 
-                         1:{'name': 
-                            'values': 
-                            'type': 
-                            'atts':{'long_name': 
+
+        ::
+
+            dimesions = {0:{'name':
+                            'values':
+                            'dtype':
+                            'atts':{'long_name':
                                     'units':  ...} },
-                                  ...} 
+                         1:{'name':
+                            'values':
+                            'type':
+                            'atts':{'long_name':
+                                    'units':  ...} },
+                                  ...}
 
-    :param variables: :class:`dict` 
-        The input dict 'variables' similarly requires a strict structure: 
-            
-        :: 
+    :param variables: :class:`dict`
+        The input dict 'variables' similarly requires a strict structure:
 
-            variables = {0:{'name': 
-                            'dims': 
-                            'values': 
-                            'dtype': 
-                            'atts':{'long_name': 
-                                    'units': 
-                                    ...} }, 
-                         1:{'name': 
-                            'dims': 
-                            'values': 
-                            'dtype': 
-                            'atts':{'long_name': 
-                                    'units': 
-                                    ...} }, 
-                             ...} 
+        ::
 
-        The value for the 'dims' key must be a tuple that is a subset of 
-        the dimensions specified above. 
+            variables = {0:{'name':
+                            'dims':
+                            'values':
+                            'dtype':
+                            'atts':{'long_name':
+                                    'units':
+                                    ...} },
+                         1:{'name':
+                            'dims':
+                            'values':
+                            'dtype':
+                            'atts':{'long_name':
+                                    'units':
+                                    ...} },
+                             ...}
 
-    :param float nodata: Value to assign to missing data, default is -9999. 
-    :param str datatitle: Optional title to give the stored dataset. 
-    :param gatts: Optional dictionary of global attributes to include in the 
-                  file. 
-    :type gatts: `dict` or None 
-    :param dtype: The data type of the missing value. If not given, infer from 
-                  other input arguments. 
-    :type dtype: :class:`numpy.dtype` 
-    :param bool writedata: If true, then the function will write the provided 
-        data (passed in via the variables dict) to the file. Otherwise, no data 
-        is written. 
-        
-    :param bool keepfileopen:  If True, return a netcdf object and keep the 
-        file open, so that data can be written by the calling program. 
-        Otherwise, flush data to disk and close the file. 
-    
-    :param bool zlib: If true, compresses data in variables using gzip 
-        compression. 
-    
-    :param integer complevel: Value between 1 and 9, describing level of 
-        compression desired. Ignored if zlib=False. 
+        The value for the 'dims' key must be a tuple that is a subset of
+        the dimensions specified above.
 
-    :param integer lsd: Variable data will be truncated to this number of 
-        significant digits. 
+    :param float nodata: Value to assign to missing data, default is -9999.
+    :param str datatitle: Optional title to give the stored dataset.
+    :param gatts: Optional dictionary of global attributes to include in the
+                  file.
+    :type gatts: `dict` or None
+    :param dtype: The data type of the missing value. If not given, infer from
+                  other input arguments.
+    :type dtype: :class:`numpy.dtype`
+    :param bool writedata: If true, then the function will write the provided
+        data (passed in via the variables dict) to the file. Otherwise, no data
+        is written.
 
-    :return: `netCDF3.Dataset` object (if keepfileopen=True) 
-    :rtype: :class:`netCDF4.Dataset` 
+    :param bool keepfileopen:  If True, return a netcdf object and keep the
+        file open, so that data can be written by the calling program.
+        Otherwise, flush data to disk and close the file.
 
-    :raises KeyError: If input dimension or variable dicts do not have required 
-        keys. 
-    :raises IOError: If output file cannot be created. 
-    :raises ValueError: if there is a mismatch between dimensions and shape of 
-        values to write. 
+    :param bool zlib: If true, compresses data in variables using gzip
+        compression.
 
-    """ 
+    :param integer complevel: Value between 1 and 9, describing level of
+        compression desired. Ignored if zlib=False.
 
+    :param integer lsd: Variable data will be truncated to this number of
+        significant digits.
+
+    :return: `netCDF4.Dataset` object (if keepfileopen=True)
+    :rtype: :class:`netCDF4.Dataset`
+
+    :raises KeyError: If input dimension or variable dicts do not have required
+        keys.
+    :raises IOError: If output file cannot be created.
+    :raises ValueError: if there is a mismatch between dimensions and shape of
+        values to write.
+
+    """
 
     try:
         ncobj = Dataset(filename, 'w', format='NETCDF3_CLASSIC', clobber=True)
@@ -344,9 +310,6 @@ def save_multiplier(multiplier_name, multiplier_values, lat, lon, nc_name):
     :param nc_name: `string` the netcdf file name
 
     """
-#
-#    import pdb
-#    pdb.set_trace()
 
     direction = os.path.splitext(nc_name)[0][-2:]
 
@@ -365,10 +328,10 @@ def save_multiplier(multiplier_name, multiplier_values, lat, lon, nc_name):
                                'national dynamic land cover dataset v1 and '
                                '1 second SRTM level 2 derived digtial '
                                'models (DEM-S) version 1.0. Methodology is '
-                               'based on the reference: Yang, T., Nadimpalli, ' 
+                               'based on the reference: Yang, T., Nadimpalli, '
                                'K. & Cechet, R.P. 2014. Local wind assessment '
-                               'in Australia: computation methodology for wind '
-                               'multipliers. Record 2014/33. Geoscience '
+                               'in Australia: computation methodology for wind'
+                               ' multipliers. Record 2014/33. Geoscience '
                                'Australia, Canberra.'),
                    'Version': fl_program_version(),
                    'Python_ver': sys.version,
@@ -447,7 +410,7 @@ def save_multiplier(multiplier_name, multiplier_values, lat, lon, nc_name):
     }
 
     nc_save_grid(nc_name,
-               dimensions, variables,
-               nodata=-9999,
-               datatitle=multiplier_name + ' multiplier',
-               gatts=global_atts)
+                 dimensions, variables,
+                 nodata=-9999,
+                 datatitle=multiplier_name + ' multiplier',
+                 gatts=global_atts)

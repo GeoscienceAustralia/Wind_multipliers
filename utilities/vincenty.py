@@ -303,7 +303,7 @@ def vinc_pt(f, a, phi1, lembda1, alpha12, s):
     """
     Returns the lat and long of projected point and reverse azimuth
     given a reference point and a distance and azimuth to project.
-    
+
     :parameters: lats, longs and azimuths passed in decimal degrees
 
     :Returns: ( phi2,  lambda2,  alpha21 ) as a tuple
