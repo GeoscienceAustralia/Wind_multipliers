@@ -1,6 +1,6 @@
 """
-:mod:`all_multipliers` -- Calculate terrain, shielding & topographic multipliers
-================================================================================
+:mod:`all_multipliers` - Calculate terrain, shielding & topographic multipliers
+===============================================================================
 
 This module can be run in parallel using MPI if the
 :term:`pypar` library is found and all_multipliers is run using the
@@ -18,18 +18,17 @@ import time
 import inspect
 import shutil
 import numpy as np
-import osgeo.gdal as gdal
+from osgeo import osr, gdal
 import logging as log
 import terrain.terrain_mult
 import shielding.shield_mult
 import topographic.topomult
-import ConfigParser 
-from osgeo.gdalconst import GA_ReadOnly
+import ConfigParser
+from osgeo.gdalconst import GA_ReadOnly, GRA_NearestNeighbour
+from osgeo.gdalconst import GDT_Float32, GDT_Int32
 from utilities.files import fl_start_log
-from utilities._execute import execute
 from os.path import join as pjoin, realpath, isdir, dirname
 from functools import wraps
-#from functools import reduce
 import itertools
 
 __version__ = '1.0'
@@ -42,12 +41,12 @@ class TileGrid(object):
 
     """
 
-    def __init__(self, upwind_length, terrain_map):
+    def __init__(self, upwind_length, raster_ds):
         """
-        Initialise the tile grid for dividing up the input landcover raster
+        Initialise the tile grid for dividing up the input raster
 
         :param upwind_length: `float` buffer size of a tile
-        :param terrain_map: `file` the input landcover file.
+        :param raster_ds: `file` the input raster file.
 
         """
 
@@ -55,16 +54,16 @@ class TileGrid(object):
         gdal.AllRegister()
 
         # open the image
-        ds = gdal.Open(terrain_map, GA_ReadOnly)
+        ds = gdal.Open(raster_ds, GA_ReadOnly)
         if ds is None:
-            log.info('Could not open ' + terrain_map)
+            log.info('Could not open ' + raster_ds)
             sys.exit(1)
 
         # get image size, format, projection
         self.x_dim = ds.RasterXSize
         self.y_dim = ds.RasterYSize
         log.info(
-            'The input land cover raster format is %s' %
+            'The input raster format is %s' %
             ds.GetDriver().ShortName +
             '/ %s' %
             ds.GetDriver().LongName)
@@ -101,7 +100,7 @@ class TileGrid(object):
                  str(self.x_buffer) +
                  ', %s' %
                  str(self.y_buffer))
-                 
+
         self.subset_maxcols = int(np.ceil(self.x_dim / float(self.x_step)))
         self.subset_maxrows = int(np.ceil(self.y_dim / float(self.y_step)))
         self.num_tiles = self.subset_maxcols * self.subset_maxrows
@@ -112,6 +111,8 @@ class TileGrid(object):
 
         self.tile_grid()
 
+        ds = None
+
     def tile_grid(self):
         """
         Defines the indices required to subset a 2D array into smaller
@@ -119,7 +120,7 @@ class TileGrid(object):
         size for each side if available).
 
         """
-        
+
         k = 0
 
         for i in xrange(self.subset_maxcols):
@@ -237,6 +238,26 @@ class TileGrid(object):
 
         return tile_x_start, tile_y_start, tile_x_end, tile_y_end
 
+    def get_tile_extent(self, k):
+        """
+        Return the exntent without buffer for tile `k`. x corresponds to the
+        east-west coordinate, y corresponds to the north-south
+        coordinate.
+
+        :param k: `int` tile number
+
+        :return: minimum, maximum x and y coordinate for tile `k`
+
+        """
+
+        limits = self.get_gridlimit(k)
+        tile_x_start = self.x_left + limits[0] * self.pixelwidth
+        tile_y_start = -(self.y_upper + limits[2] * self.pixelheight)
+        tile_x_end = self.x_left + limits[1] * self.pixelwidth
+        tile_y_end = -(self.y_upper + limits[3] * self.pixelheight)
+
+        return tile_x_start, tile_y_start, tile_x_end, tile_y_end
+
 
 class Multipliers(object):
 
@@ -245,220 +266,158 @@ class Multipliers(object):
 
     """
 
-    def __init__(self, terrain_map, dem, cyclone_area):
+    def __init__(self, landcover, dem):
         """
         Initialise the tile grid for dividing up the input landcover raster
 
-        :param terrain_map: `file` the input landcover file.
+        :param landcover: `file` the input landcover file.
         :param dem: `file` the input dem file.
-        :param cyclone_area: `file` the input cyclone area file.
 
         """
 
-        self.input_img = terrain_map
+        # initialising the multiplier class
+        self.lc = landcover
         self.dem = dem
-        self.cyclone_area = cyclone_area
+        self.dem_ds = None
 
-    def multipliers_calculate(self, tile_info):
+    def open_dem(self):
+        """
+        Open the DEM file
+
+        """
+
+        self.dem_ds = gdal.Open(self.dem, GA_ReadOnly)
+        if self.dem_ds is None:
+            log.info('Could not open ' + self.dem)
+            sys.exit(1)
+
+        # get georeference info
+        geotransform = self.dem_ds.GetGeoTransform()
+        self.pixelwidth = geotransform[1]
+        self.pixelheight = -geotransform[5]
+
+        dem_band = self.dem_ds.GetRasterBand(1)
+        self.dem_type = dem_band.ReadAsArray().dtype
+
+        self.dem_proj = self.dem_ds.GetProjection()
+
+    def cut_dem(self, tile_info):
+        """
+        Cut from the input DEM for a tile
+
+        :param tile_info: `tuple` the input tile info
+
+        :return: `file` the output dem for a tile
+
+        """
+
+        tile_name = tile_info[0]
+        tile_extents = tile_info[1]
+
+        # get the tile name without buffer using coordinates with 4 decimals
+        log.info('The working tile is {0}'.format(tile_name))
+        log.info('tile_extents = %s', tile_extents)
+        log.info('Extract the working tile from the input DEM')
+
+        # extract the temporary tile from the dem
+        temp_tile_dem = pjoin(output_folder, tile_name + '_dem.img')
+        self.clip_dataset(tile_extents, temp_tile_dem)
+
+        return temp_tile_dem
+
+    def clip_dataset(self, extent, dst_filename):
+        """
+        Clip the DEM using an extent and save the clipped to a new file.
+
+        :param extent: `tuple` the input tile extent with buffer
+        :param str dst_filename: Destination filename.
+
+        """
+
+        log.debug("Clipping the DEM using extent: {0}".format(repr(extent)))
+        log.debug("into output raster: {0}".format(dst_filename))
+
+        if self.dem_type == 'int32':
+            dst_type = GDT_Int32
+        else:
+            dst_type = GDT_Float32
+
+        origin_x, origin_y = extent[0], extent[1]
+
+        wide = int(np.ceil((extent[2] - extent[0])/self.pixelwidth))
+        high = int(np.ceil((extent[1] - extent[3])/self.pixelheight))
+
+        # Output / destination
+        drv = gdal.GetDriverByName('HFA')
+        dst = drv.Create(dst_filename, wide, high, 1, dst_type)
+        dst.SetGeoTransform((origin_x, self.pixelwidth, 0, origin_y, 0,
+                             -self.pixelheight))
+        dst.SetProjection(self.dem_proj)
+
+        # Do the work
+        gdal.ReprojectImage(self.dem_ds, dst, self.dem_proj, self.dem_proj)
+
+        del dst  # Flush
+
+        return
+
+    def multipliers_calculate(self, temp_tile_dem, tile_info):
         """
         Calculate the multiplier values for a specific tile
 
+        :param temp_tile_dem: `file` the input DEM tile
         :param tile_info: `tuple` the input tile info
 
         """
 
-        #import pdb
-	#pdb.set_trace()	
-
-	tile_name = tile_info[0]
-        tile_extents = tile_info[1]
-
-        # get the tile name without buffer using coordinates with 4 decimals
-        #log.info('The working tile is  %s' % tile_name)
-        log.info('The working tile is {0}'.format(tile_name))
-
-        # extract the temporary tile from terrain class map
-        temp_tile = pjoin(output_folder, tile_name + '_input.img')
-
-        log.info('tile_extents = %s', tile_extents)
-
-        command_string = 'gdal_translate -projwin %f %f %f %f ' % (
-            tile_extents[0], tile_extents[1], tile_extents[2], tile_extents[3]
-        )
-        command_string += ' -a_ullr %f %f %f %f ' % (
-            tile_extents[0], tile_extents[1], tile_extents[2], tile_extents[3]
-        )
-        command_string += ' -of HFA'
-        command_string += ' %s %s' % (
-            self.input_img,
-            temp_tile
-        )
-
-        log.info(
-            'Extract the working tile from the input landcover:\n %s',
-            command_string)
-        result = execute(command_string=command_string)
-        if result['stdout']:
-            log.info(
-                result['stdout'] +
-                'stdout from %s' %
-                command_string +
-                '\t')
-        if result['returncode']:
-            log.error(
-                result['stderr'] +
-                'stderr from %s' %
-                command_string +
-                '\t')
-            raise Exception('%s failed' % command_string)
+        tile_name = tile_info[0]
+        tile_extents_nobuffer = tile_info[2]
 
         # check the checksum value of the terrain map tile, if it is greater
         # than 0, go ahead
-        temp_dataset = gdal.Open(temp_tile)
-        assert temp_dataset, 'Unable to open dataset %s' % temp_tile
+        temp_dataset = gdal.Open(temp_tile_dem)
+        assert temp_dataset, 'Unable to open dataset %s' % temp_tile_dem
         band = temp_dataset.GetRasterBand(1)
         checksum = band.Checksum()
-        log.info('This landcover tile checksum is {0}'.format(str(checksum)))
+        log.info('This DEM tile checksum is {0}'.format(str(checksum)))
 
         if checksum > 0:
-            # extract the temporary tile from DEM
-            temp_tile_dem = pjoin(output_folder, tile_name + '_dem.img')
-
-            command_string = 'gdal_translate -projwin %f %f %f %f ' % (
-                tile_extents[0], tile_extents[1],
-                tile_extents[2], tile_extents[3]
-            )
-            command_string += ' -a_ullr %f %f %f %f ' % (
-                tile_extents[0], tile_extents[1],
-                tile_extents[2], tile_extents[3]
-            )
-            command_string += ' -of HFA'
-            command_string += ' %s %s' % (
-                self.dem,
-                temp_tile_dem
-            )
-
-            log.info(
-                'Extract the working tile from the input DEM:\n %s',
-                command_string)
-            result = execute(command_string=command_string)
-            if result['stdout']:
-                log.info(
-                    result['stdout'] +
-                    'stdout from %s' %
-                    command_string +
-                    '\t')
-            if result['returncode']:
-                log.error(
-                    result['stderr'] +
-                    'stderr from %s' %
-                    command_string +
-                    '\t')
-                raise Exception('%s failed' % command_string)
-
-            # extract the temporary tile from Cyclone area
-            temp_tile_cyclone = pjoin(output_folder, tile_name + '_cyc.img')
-
-            command_string = 'gdal_translate -projwin %f %f %f %f ' % (
-                tile_extents[0], tile_extents[1],
-                tile_extents[2], tile_extents[3]
-            )
-            command_string += ' -a_ullr %f %f %f %f ' % (
-                tile_extents[0], tile_extents[1],
-                tile_extents[2], tile_extents[3]
-            )
-            command_string += ' -of HFA'
-            command_string += ' %s %s' % (
-                self.cyclone_area,
-                temp_tile_cyclone
-            )
-
-            log.info(
-                'Extract the working tile from input cyclonic region:\n %s',
-                command_string)
-            result = execute(command_string=command_string)
-            if result['stdout']:
-                log.info(
-                    result['stdout'] +
-                    'stdout from %s' %
-                    command_string +
-                    '\t')
-            if result['returncode']:
-                log.error(
-                    result['stderr'] +
-                    'stderr from %s' %
-                    command_string +
-                    '\t')
-                raise Exception('%s failed' % command_string)
-
-            # check the checksum value of the cyclone map tile, if it greater
-            # than 0, it is cyclone area
-            temp_dataset_cycl = gdal.Open(temp_tile_cyclone)
-            band = temp_dataset_cycl.GetRasterBand(1)
-            checksum = band.Checksum()
-            log.info(
-                'This cyclonic region tile checksum is {0}'.format(checksum))
-
-            if checksum > 0:
-                cyclone_area = temp_tile_cyclone
-            else:
-                cyclone_area = None
-
-            # resample the terrain as DEM
-            temp_dataset_dem = gdal.Open(temp_tile_dem)
-
+            # extract the temporary tile from landcover
             terrain_resample = pjoin(output_folder, tile_name + '.img')
 
-            command_string = 'gdal_translate -outsize %i %i' % (
-                temp_dataset_dem.RasterXSize, temp_dataset_dem.RasterYSize
-            )
-            command_string += ' -of HFA'
-            command_string += ' %s %s' % (
-                temp_tile,
-                terrain_resample
-            )
-
-            log.info(
-                'Resample the landcover tile the same as the DEM tile:\n %s',
-                command_string)
-            result = execute(command_string=command_string)
-            if result['stdout']:
-                log.info(
-                    result['stdout'] +
-                    'stdout from %s' %
-                    command_string +
-                    '\t')
-            if result['returncode']:
-                log.error(
-                    result['stderr'] +
-                    'stderr from %s' %
-                    command_string +
-                    '\t')
-                raise Exception('%s failed' % command_string)
+            log.info('Extract the working tile from the input landcover to '
+                     'match the DEM tile')
+            reproject_dataset(self.lc, temp_dataset, terrain_resample)
 
             # start to calculate the multipliers
             log.info('producing Terrain multipliers ...')
-            terrain.terrain_mult.terrain(cyclone_area, terrain_resample)
+
+            terrain.terrain_mult.terrain(terrain_resample,
+                                         tile_extents_nobuffer)
 
             log.info('producing Shielding multipliers ...')
-            shielding.shield_mult.shield(terrain_resample, temp_tile_dem)
+            shielding.shield_mult.shield(terrain_resample, temp_tile_dem,
+                                         tile_extents_nobuffer)
 
             log.info('producing Topographic multipliers ...')
-            topographic.topomult.topomult(temp_tile_dem)
+            #topographic.topomult.topomult(temp_tile_dem, tile_extents_nobuffer)
 
- 	    log.info('deleting the temporary files after calculation ...')
-	    log.info('deleteing the temporary DEM: {0}'.format(temp_tile_dem))
+            log.info('deleting the temporary files after calculation ...')
+            log.info('deleteing the temporary DEM: {0}'
+                     .format(temp_tile_dem))
             os.remove(temp_tile_dem)
-	    log.info('deleteing the temporary landcover: {0}'.format(temp_tile))
-            os.remove(temp_tile)
-	    log.info('deleteing the temporary resampled landcover: {0}'.format(terrain_resample))
+            log.info('deleteing the temporary resampled landcover: {0}'
+                     .format(terrain_resample))
             os.remove(terrain_resample)
-	    log.info('deleteing the temporary cyclone: {0}'.format(temp_tile_cyclone))
-            os.remove(temp_tile_cyclone)
+
+            temp_dataset = None
         else:
-	    log.info('deleteing the temporary empty landcover: {0}'.format(temp_tile))
-            if os.path.exists(temp_tile):
-                os.remove(temp_tile)
+            log.info('deleteing the temporary empty DEM: {0}'.
+                     format(temp_tile_dem))
+            if os.path.exists(temp_tile_dem):
+                os.remove(temp_tile_dem)
+
+            temp_dataset = None
 
     def parallelise_on_tiles(self, tiles, progress_callback=None):
         """
@@ -471,13 +430,17 @@ class Multipliers(object):
         work_tag = 0
         result_tag = 1
         if (pp.rank() == 0) and (pp.size() > 1):
+
+            if not self.dem_ds:
+                self.open_dem()
             w = 0
             p = pp.size() - 1
             for d in range(1, pp.size()):
                 if w < len(tiles):
-                    pp.send(tiles[w], destination=d, tag=work_tag)
-                    log.debug("Processing tile {0}({1}) of {2} on {3}".format(w, 
-                              tiles[w],len(tiles),d))
+                    dem_tile = self.cut_dem(tiles[w])
+                    pp.send([dem_tile, tiles[w]], destination=d, tag=work_tag)
+                    log.debug("Processing tile {0}({1}) of {2} on {3}".format(
+                              w, tiles[w], len(tiles), d))
                     w += 1
                 else:
                     pp.send(None, destination=d, tag=work_tag)
@@ -486,24 +449,25 @@ class Multipliers(object):
             terminated = 0
 
             while(terminated < p):
-                
+
                 status = pp.receive(pp.any_source, tag=result_tag,
-                                            return_status=True)[1]
-                
+                                    return_status=True)[1]
+
                 d = status.source
-		log.debug("Returned from {0}".format(d))
+                log.debug("Returned from {0}".format(d))
 
                 if w < len(tiles):
-                    pp.send(tiles[w], destination=d, tag=work_tag)
-		    log.debug("Processing tile {0}({1}) of {2} on {3}".format(w,
-                              tiles[w],len(tiles),d))
+                    dem_tile = self.cut_dem(tiles[w])
+                    pp.send([dem_tile, tiles[w]], destination=d, tag=work_tag)
+                    log.debug("Processing tile {0}({1}) of {2} on {3}".format(
+                              w, tiles[w], len(tiles), d))
                     w += 1
                 else:
                     pp.send(None, destination=d, tag=work_tag)
                     terminated += 1
 
-                log.debug("Number of terminated threads is {0}".format(
-                                                                terminated))
+                    log.debug("Number of terminated threads is {0}".format(
+                              terminated))
 
                 if progress_callback:
                     progress_callback(w)
@@ -513,15 +477,18 @@ class Multipliers(object):
                 ww = pp.receive(source=0, tag=work_tag)
                 if ww is None:
                     break
-                status = self.multipliers_calculate(ww)
+                status = self.multipliers_calculate(ww[0], ww[1])
                 pp.send(status, destination=0, tag=result_tag)
 
         elif pp.size() == 1 and pp.rank() == 0:
             # Assumed no Pypar - helps avoid the need to extend DummyPypar()
+            if not self.dem_ds:
+                self.open_dem()
             for i, tile in enumerate(tiles):
-                log.debug("Processing tile {0} of {1}".format(i, 
-                              len(tiles)))
-                self.multipliers_calculate(tile)
+                dem_tile = self.cut_dem(tile)
+                log.debug("Processing tile {0} of {1}".format(i,
+                          len(tiles)))
+                self.multipliers_calculate(dem_tile, tile)
 
                 if progress_callback:
                     progress_callback(i)
@@ -551,8 +518,8 @@ def get_tileinfo(tilegrid, tilenums):
     """
 
     tile_info = [
-        [tilegrid.get_tilename(t), tilegrid.get_tile_extent_buffer(t)]
-        for t in tilenums]
+        [tilegrid.get_tilename(t), tilegrid.get_tile_extent_buffer(t),
+         tilegrid.get_tile_extent(t)] for t in tilenums]
     return tile_info
 
 
@@ -564,9 +531,9 @@ def timer(f):
     @wraps(f)
     def wrap(*args, **kwargs):
         """
-        Wrap 
+        Wrap
         """
-        
+
         t1 = time.time()
         res = f(*args, **kwargs)
 
@@ -591,7 +558,7 @@ def disable_on_workers(f):
         """
         wrap
         """
-        
+
         if pp.size() > 1 and pp.rank() > 0:
             return
         else:
@@ -614,7 +581,6 @@ def do_output_directory_creation(root):
     log.info('Output will be stored under %s', output)
 
     subdirs_1 = ['terrain', 'shielding', 'topographic']
-    subdirs_2 = ['netcdf']
 
     if os.path.exists(output):
         shutil.rmtree(output)
@@ -632,14 +598,78 @@ def do_output_directory_creation(root):
         except OSError:
             raise
 
-        for sub2 in subdirs_2:
-            out_sub2 = pjoin(out_sub1, sub2)
-            if os.path.exists(out_sub2):
-                shutil.rmtree(out_sub2)
-            try:
-                os.makedirs(out_sub2)
-            except OSError:
-                raise
+
+@timer
+def reproject_dataset(src_file, match_filename, dst_filename,
+                      resampling_method=GRA_NearestNeighbour,
+                      match_projection=None):
+    """
+    Clip and reproject a source dataset to match the projection of another
+    dataset and save the projected dataset to a new file.
+
+    :param src_filename: Filename of the source raster dataset, or an
+                         open :class:`gdal.Dataset`
+    :param match_filename: Filename of the dataset to match to, or an
+                           open :class:`gdal.Dataset`
+    :param str dst_filename: Destination filename.
+    :param resampling_method: Resampling method. Default is bilinear
+                              interpolation.
+    :param match_projection: Projection of the output
+
+    """
+
+    log.debug("Reprojecting {0}".format(repr(src_file)))
+    log.debug("Match raster: {0}".format(repr(match_filename)))
+    log.debug("Output raster: {0}".format(dst_filename))
+
+    if type(src_file) == str:
+        src = gdal.Open(src_file, GA_ReadOnly)
+    else:
+        src = src_file
+
+    src_band = src.GetRasterBand(1)
+    src_type = src_band.ReadAsArray().dtype
+
+    if src_type == 'int32':
+        dst_type = GDT_Int32
+    else:
+        dst_type = GDT_Float32
+
+    src_proj = src.GetProjection()
+
+    # We want a section of source that matches this:
+    if type(match_filename) == str:
+        match_ds = gdal.Open(match_filename, GA_ReadOnly)
+    else:
+        match_ds = match_filename
+
+    if match_projection:
+        srs = osr.SpatialReference()
+        srs.ImportFromEPSG(match_projection)
+        match_proj = srs.ExportToWkt()
+    else:
+        match_proj = match_ds.GetProjection()
+
+    match_geotrans = match_ds.GetGeoTransform()
+    wide = match_ds.RasterXSize
+    high = match_ds.RasterYSize
+
+    # Output / destination
+    drv = gdal.GetDriverByName('HFA')
+    dst = drv.Create(dst_filename, wide, high, 1, dst_type)
+    dst.SetGeoTransform(match_geotrans)
+    dst.SetProjection(match_proj)
+
+    # Do the work
+    gdal.ReprojectImage(src, dst, src_proj, match_proj, resampling_method)
+
+    del dst  # Flush
+    if type(match_filename) == str:
+        del match_ds
+    if type(src_file) == str:
+        del src
+
+    return
 
 
 def balanced(iterable):
@@ -721,9 +751,7 @@ def attempt_parallel():
                 define finalize
                 """
                 pass
-            
-           
-            
+
         pp = DummyPypar()
 
 
@@ -770,17 +798,22 @@ def run():
     upwind_length = float(config.get('inputValues', 'upwind_length'))
 
     logfile = config.get('Logging', 'LogFile')
-    logdir = dirname(realpath(logfile)) 
+    logdir = dirname(realpath(logfile))
 
-    # If log file directory does not exist, create it 
+    # If log file directory does not exist, create it
     if not isdir(logdir):
-        try: 
+        try:
             os.makedirs(logdir)
-        except OSError: 
-            logfile = pjoin(os.getcwd(), 'multipliers.log') 
-   
+        except OSError:
+            logfile = pjoin(os.getcwd(), 'multipliers.log')
+
     loglevel = config.get('Logging', 'LogLevel')
     verbose = config.getboolean('Logging', 'Verbose')
+
+    if verbose:
+        verbose = True
+    else:
+        verbose = False
 
     attempt_parallel()
 
@@ -794,21 +827,21 @@ def run():
 
     # set input maps and output folder
     terrain_map = pjoin(pjoin(root, 'input'), "lc_terrain_class.img")
-    dem = pjoin(pjoin(root, 'input'), "dems1_whole.img")
-    cyclone_area = pjoin(pjoin(root, 'input'), "cyclone_dem_extent.img")
+    #dem = pjoin(pjoin(root, 'input'), "dems1_whole.img")
+    dem = pjoin(pjoin(root, 'input'), "dems1_whole_test_1.img")
 
     do_output_directory_creation(root)
     global output_folder
     output_folder = pjoin(root, 'output')
 
-    log.info("get the tiles")
-    tg = TileGrid(upwind_length, terrain_map)
+    log.info("get the tiles based on the DEM")
+    tg = TileGrid(upwind_length, dem)
     tiles = get_tiles(tg)
     log.info('the number of tiles is {0}'.format(str(len(tiles))))
 
     pp.barrier()
 
-    multiplier = Multipliers(terrain_map, dem, cyclone_area)
+    multiplier = Multipliers(terrain_map, dem)
     multiplier.parallelise_on_tiles(tiles)
 
     pp.barrier()
