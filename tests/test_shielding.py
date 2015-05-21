@@ -47,96 +47,138 @@ class TestShieldingMultiplier(unittest.TestCase):
         self.aspect_array[:,520:560] = 7
         self.aspect_array[:,560:600] = 3
         
-    def test_combine(self):
-        
-#        import pdb
-#        pdb.set_trace()
+#    def test_combine(self):
+#        
+##        import pdb
+##        pdb.set_trace()
+#
+#        ms_engineered = np.ones(640)
+#        ms_engineered[160] = 0.963
+#        ms_engineered[161] = 0.926
+#        ms_engineered[162] = 0.821
+#        ms_engineered[163:200] = 0.765
+#        ms_engineered[200] = 0.771
+#        ms_engineered[201] = 0.776
+#        ms_engineered[202] = 0.793
+#        ms_engineered[203:240] = 0.810
+#        ms_engineered[240] = 0.833
+#        ms_engineered[241] = 0.856
+#        ms_engineered[242] = 0.926
+#        ms_engineered[243:320] = 1.0
+#        ms_engineered[320] = 0.963
+#        ms_engineered[321] = 0.926
+#        ms_engineered[322] = 0.821
+#        ms_engineered[323:340] = 0.765
+#        ms_engineered[340:360] = 0.769
+#        ms_engineered[360] = 0.768
+#        ms_engineered[361] = 0.772
+#        ms_engineered[362] = 0.782
+#        ms_engineered[363:400] = 0.792
+#        ms_engineered[400] = 0.794
+#        ms_engineered[401] = 0.797
+#        ms_engineered[402] = 0.803
+#        ms_engineered[403:440] = 0.810
+#        ms_engineered[440] = 0.833
+#        ms_engineered[441] = 0.856
+#        ms_engineered[442] = 0.926
+#        ms_engineered[443:520] = 1.0
+##        ms_engineered[520] = 0.963
+##        ms_engineered[521] = 0.926
+##        ms_engineered[522] = 0.821
+##        ms_engineered[523:528] = 0.765
+##        ms_engineered[528:532] = 0.794
+##        ms_engineered[532:536] = 0.851
+##        ms_engineered[536:540] = 0.929
+##        ms_engineered[540:560] = 1.000
+#        ms_engineered[560] = 0.768
+#        ms_engineered[561] = 0.772
+#        ms_engineered[562] = 0.782
+#        ms_engineered[563:600] = 0.792
+#        ms_engineered[600] = 0.806
+#        ms_engineered[601] = 0.828
+#        ms_engineered[602] = 0.912
+#        ms_engineered[603:640] = 1.0
+#        
+#                
+#        cmd_folder = os.path.realpath(
+#                     os.path.abspath(os.path.split(
+#                     getfile(currentframe()))[0]))         
+#        
+#        parent = os.path.abspath(os.path.join(cmd_folder, os.pardir))
+#            
+#        if parent not in sys.path:
+#            sys.path.insert(0, parent) 
+#            
+#        from shielding.shield_mult import kern_w, blur_image, combine        
+#        
+#        kernel_size = int(100.0 / self.pixelwidth) - 1
+#
+#        if kernel_size > 0:
+#            outdata = np.zeros_like(self.ms_orig, dtype=np.float32)
+#            mask = kern_w(kernel_size)
+#            outdata = blur_image(self.ms_orig, mask)
+#        else:
+#            outdata = self.ms_orig
+#
+#            
+#        result = combine(outdata, self.slope_array, self.aspect_array, 'w')
+#
+#        #plot the line profile
+##        point_no = result.shape[1]
+##        print point_no
+##        x = np.arange(point_no)
+##        y = result[1,:].flatten()
+##        print y
+##        pyplot.plot(x, y, 'g')
+##        pyplot.show()
+#
+#        # get the computed mz from scripts using the test line total
+#        mh_scripts = result[1,:].flatten()        
+#        
+#        assert_almost_equal(mh_scripts, ms_engineered, decimal=2, err_msg='',verbose=True)
+#        #assert_allclose(mh_scripts, ms_engineered, rtol=0.005, atol=0, err_msg='',verbose=True)
 
-        ms_engineered = np.ones(640)
-        ms_engineered[160] = 0.963
-        ms_engineered[161] = 0.926
-        ms_engineered[162] = 0.821
-        ms_engineered[163:200] = 0.765
-        ms_engineered[200] = 0.771
-        ms_engineered[201] = 0.776
-        ms_engineered[202] = 0.793
-        ms_engineered[203:240] = 0.810
-        ms_engineered[240] = 0.833
-        ms_engineered[241] = 0.856
-        ms_engineered[242] = 0.926
-        ms_engineered[243:320] = 1.0
-        ms_engineered[320] = 0.963
-        ms_engineered[321] = 0.926
-        ms_engineered[322] = 0.821
-        ms_engineered[323:340] = 0.765
-        ms_engineered[340:360] = 0.769
-        ms_engineered[360] = 0.768
-        ms_engineered[361] = 0.772
-        ms_engineered[362] = 0.782
-        ms_engineered[363:400] = 0.792
-        ms_engineered[400] = 0.794
-        ms_engineered[401] = 0.797
-        ms_engineered[402] = 0.803
-        ms_engineered[403:440] = 0.810
-        ms_engineered[440] = 0.833
-        ms_engineered[441] = 0.856
-        ms_engineered[442] = 0.926
-        ms_engineered[443:520] = 1.0
-#        ms_engineered[520] = 0.963
-#        ms_engineered[521] = 0.926
-#        ms_engineered[522] = 0.821
-#        ms_engineered[523:528] = 0.765
-#        ms_engineered[528:532] = 0.794
-#        ms_engineered[532:536] = 0.851
-#        ms_engineered[536:540] = 0.929
-#        ms_engineered[540:560] = 1.000
-        ms_engineered[560] = 0.768
-        ms_engineered[561] = 0.772
-        ms_engineered[562] = 0.782
-        ms_engineered[563:600] = 0.792
-        ms_engineered[600] = 0.806
-        ms_engineered[601] = 0.828
-        ms_engineered[602] = 0.912
-        ms_engineered[603:640] = 1.0
+
+    def test_init_kern(self):
         
-                
         cmd_folder = os.path.realpath(
                      os.path.abspath(os.path.split(
                      getfile(currentframe()))[0]))         
         
         parent = os.path.abspath(os.path.join(cmd_folder, os.pardir))
-            
+        
         if parent not in sys.path:
             sys.path.insert(0, parent) 
             
-        from shielding.shield_mult import kern_w, blur_image, combine        
+        from shielding.shield_mult import init_kern, init_kern_diag    
+
+
+        init_kernel_expect = np.array([[ 0.,    0.,    0.,    0.,    0.  ],
+                                [ 0.,    0.,    0.,    0.,    0.  ],
+                                [ 0.,    0.,    0.,    0.,    0.  ],
+                                [ 0.,    0.,    0.25,  0.,    0.  ],
+                                [ 0.,    0.25,  0.25,  0.25,  0.  ]])         
         
-        kernel_size = int(100.0 / self.pixelwidth) - 1
-
-        if kernel_size > 0:
-            outdata = np.zeros_like(self.ms_orig, dtype=np.float32)
-            mask = kern_w(kernel_size)
-            outdata = blur_image(self.ms_orig, mask)
-        else:
-            outdata = self.ms_orig
-
-            
-        result = combine(outdata, self.slope_array, self.aspect_array, 'w')
-
-        #plot the line profile
-#        point_no = result.shape[1]
-#        print point_no
-#        x = np.arange(point_no)
-#        y = result[1,:].flatten()
-#        print y
-#        pyplot.plot(x, y, 'g')
-#        pyplot.show()
-
-        # get the computed mz from scripts using the test line total
-        mh_scripts = result[1,:].flatten()        
+        init_kernel_diag_expect = np.array([[ 0.,  0.,  0.,  0.33,  0.],
+                                             [ 0.,  0.,  0.,  0.33,  0.33],
+                                             [ 0.,  0.,  0.,  0.,  0.],
+                                             [ 0.,  0.,  0.,  0.,  0.],
+                                             [ 0.,  0.,  0.,  0.,  0.]])    
         
-        assert_almost_equal(mh_scripts, ms_engineered, decimal=2, err_msg='',verbose=True)
-        #assert_allclose(mh_scripts, ms_engineered, rtol=0.005, atol=0, err_msg='',verbose=True)
+        
+        kernel_size = 2
+        
+        
+        init_kernel = init_kern(kernel_size)
+        init_kernel_diag = init_kern_diag(kernel_size)
+        
+#        print init_kernel
+#        print '\n\n'
+#        print init_kernel_diag 
+        
+        assert_almost_equal(init_kernel, init_kernel_expect, decimal=2, err_msg='',verbose=True)
+        assert_almost_equal(init_kernel_diag, init_kernel_diag_expect, decimal=2, err_msg='',verbose=True)
+        
 
 
 if __name__ == "__main__":
