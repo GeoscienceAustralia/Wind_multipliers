@@ -99,6 +99,7 @@ Code Documentation
    docs/shielding
    docs/topographic
    docs/utilities
+   docs/tests
      
 
 Module Index
