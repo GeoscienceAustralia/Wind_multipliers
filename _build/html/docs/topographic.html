@@ -230,14 +230,39 @@ Histroical authors: Xunguo Lin, Chris Thomas, Wenping Jiang, Craig Arthur</td>
 </tbody>
 </table>
 <dl class="function">
+<dt id="topomult.tasmania">
+<tt class="descclassname">topomult.</tt><tt class="descname">tasmania</tt><big>(</big><em>mh_in</em>, <em>dem</em><big>)</big><a class="headerlink" href="#topomult.tasmania" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply the Tasmania factor for the topographic multiplier</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mh_in</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the input topographic multiplier</li>
+<li><strong>dem</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the input DEM value</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the output topographic multiplier</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="topomult.topomult">
-<tt class="descclassname">topomult.</tt><tt class="descname">topomult</tt><big>(</big><em>input_dem</em><big>)</big><a class="reference internal" href="../_modules/topomult.html#topomult"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#topomult.topomult" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">topomult.</tt><tt class="descname">topomult</tt><big>(</big><em>input_dem</em>, <em>tile_extents_nobuffer</em><big>)</big><a class="reference internal" href="../_modules/topomult.html#topomult"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#topomult.topomult" title="Permalink to this definition">¶</a></dt>
 <dd><p>Executes core topographic multiplier functionality</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>input_dem</strong> &#8211; <cite>file</cite> the input tile of the DEM</td>
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>input_dem</strong> &#8211; <cite>file</cite> the input tile of the DEM</li>
+<li><strong>tile_extents_nobuffer</strong> &#8211; <cite>tuple</cite> the input tile extent without buffer</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>

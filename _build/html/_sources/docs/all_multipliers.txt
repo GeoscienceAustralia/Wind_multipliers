@@ -5,8 +5,6 @@ All_multipliers
 
 
 
-
-
 all_multipliers.py
 ===========================================
 

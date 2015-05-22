@@ -4,9 +4,6 @@ shielding
 ************
 
 
-Sheilding multi docs go here..
-
-
 __init__.py
 ===========================================
 

@@ -54,7 +54,6 @@ topographic module includes:
 
 utilities module includes supporting tools such as:
  
-* _execute.py;
 * blrb.py;
 * files.py;
 * get_pixel_size_grid.py;
@@ -69,7 +68,7 @@ utilities module includes supporting tools such as:
 	* **root:** the working directory of the task.
 	* **upwind_length:** the upwind buffer distance
 
-	Then copy the input files (dem and terrain classes) into the input folder (created beforehand manually) under **root**, and start to run **all_multipliers.py**. The resutls are respectively located under output folder (created automatically during the process) under **root**.
+	Then copy the input files (dem and terrain classes) into the input folder (created beforehand manually) under **root**, and start to run **all_multipliers.py**. The results are respectively located under output folder (created automatically during the process) under **root**.
 
 
 Background
@@ -100,7 +99,6 @@ Code Documentation
    docs/shielding
    docs/topographic
    docs/utilities
-   docs/tests
      
 
 Module Index

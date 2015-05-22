@@ -1,0 +1,223 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>mh &mdash; WindMultipliers v1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="WindMultipliers v1.0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">WindMultipliers v1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for mh</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">:mod:`mh` -- Calculate the topographic multipliers</span>
+<span class="sd">===============================================================================</span>
+
+<span class="sd">This module is called by the module :term:`multiplier_calc`</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="escarpment_factor"><a class="viewcode-back" href="../docs/topographic.html#mh.escarpment_factor">[docs]</a><span class="k">def</span> <span class="nf">escarpment_factor</span><span class="p">(</span><span class="n">profile</span><span class="p">,</span> <span class="n">ridge</span><span class="p">,</span> <span class="n">valley</span><span class="p">,</span> <span class="n">data_spacing</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate escarpment factor</span>
+
+<span class="sd">    :param profile: :class:`numpy.ndarray` the elevation of a line</span>
+<span class="sd">    :param ridge: :class:`numpy.ndarray` the indices of the ridges of a line</span>
+<span class="sd">    :param valley: :class:`numpy.ndarray` the indices of the valleys of a line</span>
+<span class="sd">    :param data_spacing: `float` distance between neighbour points of a line</span>
+
+<span class="sd">    :return: `float` the escarpment factor</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">max_escarp</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">min_escarp</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">nrow</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">profile</span><span class="p">)</span>
+
+    <span class="n">h</span> <span class="o">=</span> <span class="n">profile</span><span class="p">[</span><span class="n">ridge</span><span class="p">]</span> <span class="o">-</span> <span class="n">profile</span><span class="p">[</span><span class="n">valley</span><span class="p">]</span>
+    <span class="n">lu</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">ridge</span> <span class="o">-</span> <span class="n">valley</span><span class="p">)</span> <span class="o">*</span> <span class="n">data_spacing</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">slope</span> <span class="o">=</span> <span class="n">h</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">lu</span><span class="p">)</span>
+    <span class="n">beta_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">nrow</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">ridge</span> <span class="o">+</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">lu</span> <span class="o">/</span> <span class="n">data_spacing</span><span class="p">)))</span>
+    <span class="n">h_r2beta</span> <span class="o">=</span> <span class="n">profile</span><span class="p">[</span><span class="n">ridge</span><span class="p">]</span> <span class="o">-</span> <span class="n">profile</span><span class="p">[</span><span class="n">beta_ind</span><span class="p">]</span>
+    <span class="n">d_r2beta</span> <span class="o">=</span> <span class="p">(</span><span class="n">beta_ind</span> <span class="o">-</span> <span class="n">ridge</span><span class="p">)</span> <span class="o">*</span> <span class="n">data_spacing</span>
+    <span class="k">if</span> <span class="n">d_r2beta</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>                 <span class="c"># d_r2beta can be 0, 25, 50, ...</span>
+        <span class="n">slope_r2ml2</span> <span class="o">=</span> <span class="n">h_r2beta</span> <span class="o">/</span> <span class="n">d_r2beta</span>
+
+        <span class="c"># when a symmetrical ridge slope_r2ml2=slope so escarp_factor=1</span>
+        <span class="c"># If slope_r2ml2=0, escarp_factor=2.5</span>
+        <span class="n">escarp_factor</span> <span class="o">=</span> <span class="mf">2.5</span> <span class="o">-</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="n">slope_r2ml2</span> <span class="o">/</span> <span class="n">slope</span>
+
+        <span class="k">if</span> <span class="n">escarp_factor</span> <span class="o">&lt;</span> <span class="n">min_escarp</span><span class="p">:</span>
+            <span class="n">escarp_factor</span> <span class="o">=</span> <span class="n">min_escarp</span>
+        <span class="k">elif</span> <span class="n">escarp_factor</span> <span class="o">&gt;</span> <span class="n">max_escarp</span><span class="p">:</span>
+            <span class="n">escarp_factor</span> <span class="o">=</span> <span class="n">max_escarp</span>
+
+    <span class="k">else</span><span class="p">:</span>      <span class="c"># the ridge is on the end</span>
+        <span class="n">slope_r2ml2</span> <span class="o">=</span> <span class="mi">999</span>
+        <span class="n">escarp_factor</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">escarp_factor</span>
+
+</div>
+<div class="viewcode-block" id="mh_calc"><a class="viewcode-back" href="../docs/topographic.html#mh.mh_calc">[docs]</a><span class="k">def</span> <span class="nf">mh_calc</span><span class="p">(</span><span class="n">profile</span><span class="p">,</span> <span class="n">ridge</span><span class="p">,</span> <span class="n">valley</span><span class="p">,</span> <span class="n">data_spacing</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate topographic multiplier</span>
+
+<span class="sd">    :param profile: :class:`numpy.ndarray` the elevation of a line</span>
+<span class="sd">    :param ridge: :class:`numpy.ndarray` the indices of the ridges of a line</span>
+<span class="sd">    :param valley: :class:`numpy.ndarray` the indices of the valleys of a line</span>
+<span class="sd">    :param data_spacing: `float` distance between neighbour points of a line</span>
+
+<span class="sd">    :return: :class:`numpy.ndarray` the topogrpahic multiplier of the line</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c"># --------------------------------------------------------</span>
+    <span class="c"># initialise parameters</span>
+    <span class="c"># --------------------------------------------------------</span>
+
+    <span class="n">h_threshold</span> <span class="o">=</span> <span class="mi">10</span>     <span class="c"># height threshold for mh calculation</span>
+    <span class="n">lu_threshold</span> <span class="o">=</span> <span class="n">data_spacing</span>    <span class="c"># half distance threshold for mh calculation</span>
+
+    <span class="n">z</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c"># building height</span>
+    <span class="n">nrow</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">profile</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">nrow</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="n">h</span> <span class="o">=</span> <span class="n">profile</span><span class="p">[</span><span class="n">ridge</span><span class="p">]</span> <span class="o">-</span> <span class="n">profile</span><span class="p">[</span><span class="n">valley</span><span class="p">]</span>
+    <span class="n">lu</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">ridge</span> <span class="o">-</span> <span class="n">valley</span><span class="p">)</span> <span class="o">*</span> <span class="n">data_spacing</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">slope</span> <span class="o">=</span> <span class="n">h</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">lu</span><span class="p">)</span>
+    <span class="n">l1_capital</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="mf">0.36</span> <span class="o">*</span> <span class="n">lu</span><span class="p">,</span> <span class="mf">0.4</span> <span class="o">*</span> <span class="n">h</span><span class="p">)</span>
+    <span class="n">l2_capital</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">l1_capital</span>
+
+    <span class="n">escarp_factor</span> <span class="o">=</span> <span class="n">escarpment_factor</span><span class="p">(</span><span class="n">profile</span><span class="p">,</span> <span class="n">ridge</span><span class="p">,</span> <span class="n">valley</span><span class="p">,</span> <span class="n">data_spacing</span><span class="p">)</span>
+    <span class="n">fl2_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ridge</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">l2_capital</span> <span class="o">/</span> <span class="n">data_spacing</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">slope</span> <span class="o">&lt;</span> <span class="mf">0.05</span> <span class="ow">or</span> <span class="n">h</span> <span class="o">&lt;</span> <span class="n">h_threshold</span> <span class="ow">or</span> <span class="n">lu</span> <span class="o">&lt;</span> <span class="n">lu_threshold</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">m</span>
+
+    <span class="c"># calculate the mh from the front l2_capital to the back l2_capital with </span>
+    <span class="c"># the escarpment factor considered:</span>
+    <span class="n">l1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">fl2_ind</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">l2</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span>
+                <span class="n">nrow</span> <span class="o">-</span>
+                <span class="mi">1</span><span class="p">,</span>
+                <span class="n">ridge</span> <span class="o">+</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span>
+                    <span class="n">escarp_factor</span> <span class="o">*</span>
+                    <span class="n">l2_capital</span> <span class="o">/</span>
+                    <span class="n">data_spacing</span><span class="p">))</span> <span class="o">+</span>
+            <span class="mi">1</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">ridge</span> <span class="o">-</span> <span class="n">k</span><span class="p">)</span> <span class="o">*</span> <span class="n">data_spacing</span>
+
+        <span class="c"># within the region of l2_capital up to the ridge</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">l2_capital</span><span class="p">:</span>
+            <span class="n">m</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="n">h</span> <span class="o">/</span> <span class="p">(</span><span class="mf">3.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">z</span> <span class="o">+</span> <span class="n">l1_capital</span><span class="p">)))</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">/</span> 
+                                                             <span class="n">l2_capital</span><span class="p">)</span>
+
+            <span class="c"># --------------------------------------------------------</span>
+            <span class="c"># for larger slopes, you still use the formula to calculate M,</span>
+            <span class="c"># then re-value to 1.71 when it is larger. If use 1.71 for any</span>
+            <span class="c"># slope greater than 0.45, then all the points within the </span>
+            <span class="c"># l2_capital zone will have 1.71 rather than a gradual increasing, </span>
+            <span class="c"># peaks and decreasing pattern.</span>
+            <span class="c"># --------------------------------------------------------</span>
+
+            <span class="k">if</span> <span class="n">m</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">1.71</span><span class="p">:</span>
+                <span class="n">m</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.71</span>
+
+        <span class="c"># more or less a symmetrical hill</span>
+        <span class="k">elif</span> <span class="p">((</span><span class="n">slope</span> <span class="o">&gt;</span> <span class="mf">0.45</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">x</span> <span class="o">&gt;</span> <span class="o">-</span><span class="n">h</span> <span class="o">/</span> <span class="mi">4</span><span class="p">)</span> <span class="ow">and</span>
+              <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">escarp_factor</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.2</span><span class="p">)):</span>
+            <span class="n">m</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="mf">0.71</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">escarp_factor</span> <span class="o">*</span> <span class="n">l2_capital</span><span class="p">))</span>
+
+        <span class="c"># within the region from the ridge2 up to the back l2_capital</span>
+        <span class="k">elif</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="o">-</span><span class="n">escarp_factor</span> <span class="o">*</span> <span class="n">l2_capital</span><span class="p">:</span>
+            <span class="n">m</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="n">h</span> <span class="o">/</span> <span class="p">(</span><span class="mf">3.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">z</span> <span class="o">+</span> <span class="n">l1_capital</span><span class="p">)))</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">/</span>
+                                                 <span class="p">(</span><span class="n">escarp_factor</span> <span class="o">*</span> <span class="n">l2_capital</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">m</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">1.71</span><span class="p">:</span>
+                <span class="n">m</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.71</span>
+
+    <span class="k">return</span> <span class="n">m</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">WindMultipliers v1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Geoscience Australia.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

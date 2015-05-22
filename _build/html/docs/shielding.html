@@ -53,7 +53,6 @@
             
   <div class="section" id="shielding">
 <h1>shielding<a class="headerlink" href="#shielding" title="Permalink to this headline">¶</a></h1>
-<p>Sheilding multi docs go here..</p>
 <div class="section" id="module-__init__">
 <span id="init-py"></span><h2>__init__.py<a class="headerlink" href="#module-__init__" title="Permalink to this headline">¶</a></h2>
 </div>
@@ -103,7 +102,7 @@ size in the y direction.</p>
 <dt id="shield_mult.combine">
 <tt class="descclassname">shield_mult.</tt><tt class="descname">combine</tt><big>(</big><em>ms_orig_array</em>, <em>slope_array</em>, <em>aspect_array</em>, <em>one_dir</em><big>)</big><a class="reference internal" href="../_modules/shield_mult.html#combine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shield_mult.combine" title="Permalink to this definition">¶</a></dt>
 <dd><p>Used for each direction to derive the shielding multipliers by considering
-slope and aspect after covolution in the previous step. It also will remove
+slope and aspect after covolution in the previous step. It will also remove
 the conservatism.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -113,6 +112,7 @@ the conservatism.</p>
 <li><strong>ms_orig_array</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> convoluted shielding values</li>
 <li><strong>slope_array</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the input slope values</li>
 <li><strong>aspect_array_reclassify</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> input aspect values</li>
+<li><strong>one_dir</strong> &#8211; <cite>str</cite> the direction of wind</li>
 </ul>
 </td>
 </tr>
@@ -125,7 +125,7 @@ the conservatism.</p>
 
 <dl class="function">
 <dt id="shield_mult.convo_combine">
-<tt class="descclassname">shield_mult.</tt><tt class="descname">convo_combine</tt><big>(</big><em>ms_orig</em>, <em>slope_array</em>, <em>aspect_array</em><big>)</big><a class="reference internal" href="../_modules/shield_mult.html#convo_combine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shield_mult.convo_combine" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">shield_mult.</tt><tt class="descname">convo_combine</tt><big>(</big><em>ms_orig</em>, <em>slope_array</em>, <em>aspect_array</em>, <em>tile_extents_nobuffer</em><big>)</big><a class="reference internal" href="../_modules/shield_mult.html#convo_combine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shield_mult.convo_combine" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply convolution to the orginal shielding factor for each direction and
 call the <em class="xref std std-term">combine</em> module to consider the slope and aspect and remove
 conservitism to get final shielding multiplier values</p>
@@ -136,7 +136,8 @@ conservitism to get final shielding multiplier values</p>
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>ms_orig</strong> &#8211; <cite>file</cite> the original shidelding factor map</li>
 <li><strong>slope_array</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the input slope values</li>
-<li><strong>aspect_array_reclassify</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> input aspect values</li>
+<li><strong>aspect_array</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the input aspect values</li>
+<li><strong>tile_extents_nobuffer</strong> &#8211; <cite>tuple</cite> the input tile extent without buffer</li>
 </ul>
 </td>
 </tr>
@@ -350,7 +351,7 @@ conservitism to get final shielding multiplier values</p>
 
 <dl class="function">
 <dt id="shield_mult.shield">
-<tt class="descclassname">shield_mult.</tt><tt class="descname">shield</tt><big>(</big><em>terrain</em>, <em>input_dem</em><big>)</big><a class="reference internal" href="../_modules/shield_mult.html#shield"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shield_mult.shield" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">shield_mult.</tt><tt class="descname">shield</tt><big>(</big><em>terrain</em>, <em>input_dem</em>, <em>tile_extents_nobuffer</em><big>)</big><a class="reference internal" href="../_modules/shield_mult.html#shield"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shield_mult.shield" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs core calculations to derive the shielding multiplier</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -359,6 +360,7 @@ conservitism to get final shielding multiplier values</p>
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>terrain</strong> &#8211; <cite>file</cite> the input tile of the terrain class map (landcover).</li>
 <li><strong>input_dem</strong> &#8211; <cite>file</cite> the input tile of the DEM</li>
+<li><strong>tile_extents_nobuffer</strong> &#8211; <cite>tuple</cite> the input tile extent without buffer</li>
 </ul>
 </td>
 </tr>
@@ -374,7 +376,7 @@ conservitism to get final shielding multiplier values</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>input_dem</strong> &#8211; <cite>file</cite> the input terrain class map</td>
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>terrain</strong> &#8211; <cite>file</cite> the input terrain class map</td>
 </tr>
 <tr class="field"><th class="field-name">Returns:</th><td class="field-body"><cite>file</cite> the output initial shielding value</td>
 </tr>

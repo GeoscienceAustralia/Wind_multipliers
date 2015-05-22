@@ -76,188 +76,23 @@ Geoscience Australia, Canberra.</td>
 </tbody>
 </table>
 <dl class="function">
-<dt id="terrain_mult.convo_e">
-<tt class="descclassname">terrain_mult.</tt><tt class="descname">convo_e</tt><big>(</big><em>data</em>, <em>filter_width</em><big>)</big><a class="reference internal" href="../_modules/terrain_mult.html#convo_e"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#terrain_mult.convo_e" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convolute the initial terrain multplier to final one for east direction</p>
+<dt id="terrain_mult.convo">
+<tt class="descclassname">terrain_mult.</tt><tt class="descname">convo</tt><big>(</big><em>one_dir</em>, <em>data</em>, <em>avg_width</em>, <em>lag_width</em><big>)</big><a class="headerlink" href="#terrain_mult.convo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convolute the initial terrain multplier to final values for one of the
+eight directions</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>one_dir</strong> &#8211; <cite>str</cite> the direction</li>
 <li><strong>data</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the initial terrain multiplier values</li>
-<li><strong>filter_width</strong> &#8211; :<cite>int</cite> the number of cells within upwind buffer</li>
+<li><strong>avg_width</strong> &#8211; :<cite>int</cite> the number of cells within the upwind buffer</li>
+<li><strong>lag_width</strong> &#8211; :<cite>int</cite> the number of cells within the lag distance</li>
 </ul>
 </td>
 </tr>
 <tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the final terrain multiplier value</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="terrain_mult.convo_n">
-<tt class="descclassname">terrain_mult.</tt><tt class="descname">convo_n</tt><big>(</big><em>data</em>, <em>filter_width</em><big>)</big><a class="reference internal" href="../_modules/terrain_mult.html#convo_n"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#terrain_mult.convo_n" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convolute the initial terrain multplier to final one for north direction</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>data</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the initial terrain multiplier values</li>
-<li><strong>filter_width</strong> &#8211; :<cite>int</cite> the number of cells within upwind buffer</li>
-</ul>
-</td>
-</tr>
-<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the final terrain multiplier value</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="terrain_mult.convo_ne">
-<tt class="descclassname">terrain_mult.</tt><tt class="descname">convo_ne</tt><big>(</big><em>data</em>, <em>filter_width</em><big>)</big><a class="reference internal" href="../_modules/terrain_mult.html#convo_ne"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#terrain_mult.convo_ne" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convolute initial terrain multplier to final one for north east direction</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>data</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the initial terrain multiplier values</li>
-<li><strong>filter_width</strong> &#8211; :<cite>int</cite> the number of cells within upwind buffer</li>
-</ul>
-</td>
-</tr>
-<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the final terrain multiplier value</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="terrain_mult.convo_nw">
-<tt class="descclassname">terrain_mult.</tt><tt class="descname">convo_nw</tt><big>(</big><em>data</em>, <em>filter_width</em><big>)</big><a class="reference internal" href="../_modules/terrain_mult.html#convo_nw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#terrain_mult.convo_nw" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convolute initial terrain multplier to final one for north-west direction</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>data</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the initial terrain multiplier values</li>
-<li><strong>filter_width</strong> &#8211; :<cite>int</cite> the number of cells within upwind buffer</li>
-</ul>
-</td>
-</tr>
-<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the final terrain multiplier value</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="terrain_mult.convo_s">
-<tt class="descclassname">terrain_mult.</tt><tt class="descname">convo_s</tt><big>(</big><em>data</em>, <em>filter_width</em><big>)</big><a class="reference internal" href="../_modules/terrain_mult.html#convo_s"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#terrain_mult.convo_s" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convolute the initial terrain multplier to final one for south direction</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>data</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the initial terrain multiplier values</li>
-<li><strong>filter_width</strong> &#8211; :<cite>int</cite> the number of cells within upwind buffer</li>
-</ul>
-</td>
-</tr>
-<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the final terrain multiplier value</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="terrain_mult.convo_se">
-<tt class="descclassname">terrain_mult.</tt><tt class="descname">convo_se</tt><big>(</big><em>data</em>, <em>filter_width</em><big>)</big><a class="reference internal" href="../_modules/terrain_mult.html#convo_se"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#terrain_mult.convo_se" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convolute initial terrain multplier to final one for south-east direction</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>data</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the initial terrain multiplier values</li>
-<li><strong>filter_width</strong> &#8211; :<cite>int</cite> the number of cells within upwind buffer</li>
-</ul>
-</td>
-</tr>
-<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the final terrain multiplier value</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="terrain_mult.convo_sw">
-<tt class="descclassname">terrain_mult.</tt><tt class="descname">convo_sw</tt><big>(</big><em>data</em>, <em>filter_width</em><big>)</big><a class="reference internal" href="../_modules/terrain_mult.html#convo_sw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#terrain_mult.convo_sw" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convolute initial terrain multplier to final one for south-west direction</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>data</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the initial terrain multiplier values</li>
-<li><strong>filter_width</strong> &#8211; :<cite>int</cite> the number of cells within upwind buffer</li>
-</ul>
-</td>
-</tr>
-<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the final terrain multiplier value</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="terrain_mult.convo_w">
-<tt class="descclassname">terrain_mult.</tt><tt class="descname">convo_w</tt><big>(</big><em>data</em>, <em>filter_width</em><big>)</big><a class="reference internal" href="../_modules/terrain_mult.html#convo_w"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#terrain_mult.convo_w" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convolute the initial terrain multplier to final one for west direction</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>data</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the initial terrain multiplier values</li>
-<li><strong>filter_width</strong> &#8211; :<cite>int</cite> the number of cells within upwind buffer</li>
-</ul>
-</td>
-</tr>
-<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the final terrain multiplier value</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="terrain_mult.tc2mz_orig">
-<tt class="descclassname">terrain_mult.</tt><tt class="descname">tc2mz_orig</tt><big>(</big><em>cycl</em>, <em>data</em><big>)</big><a class="reference internal" href="../_modules/terrain_mult.html#tc2mz_orig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#terrain_mult.tc2mz_orig" title="Permalink to this definition">¶</a></dt>
-<dd><p>Transfer the landsat classified image into original terrain multiplier</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>cycl</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the cyclone value of the tile</li>
-<li><strong>data</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the input terrain class values</li>
-</ul>
-</td>
-</tr>
-<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the initial terrain multiplier value</p>
 </td>
 </tr>
 </tbody>
@@ -266,15 +101,15 @@ Geoscience Australia, Canberra.</td>
 
 <dl class="function">
 <dt id="terrain_mult.terrain">
-<tt class="descclassname">terrain_mult.</tt><tt class="descname">terrain</tt><big>(</big><em>cyclone_area</em>, <em>temp_tile</em><big>)</big><a class="reference internal" href="../_modules/terrain_mult.html#terrain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#terrain_mult.terrain" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">terrain_mult.</tt><tt class="descname">terrain</tt><big>(</big><em>temp_tile</em>, <em>tile_extents_nobuffer</em><big>)</big><a class="reference internal" href="../_modules/terrain_mult.html#terrain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#terrain_mult.terrain" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs core calculations to derive the terrain multiplier</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>cyclone_area</strong> &#8211; none or <cite>file</cite> input tile of the cyclone area file.</li>
 <li><strong>temp_tile</strong> &#8211; <cite>file</cite> the image file of the input tile of the land cover</li>
+<li><strong>tile_extents_nobuffer</strong> &#8211; <cite>tuple</cite> the input tile extent without buffer</li>
 </ul>
 </td>
 </tr>
@@ -284,20 +119,15 @@ Geoscience Australia, Canberra.</td>
 
 <dl class="function">
 <dt id="terrain_mult.terrain_class2mz_orig">
-<tt class="descclassname">terrain_mult.</tt><tt class="descname">terrain_class2mz_orig</tt><big>(</big><em>cyclone_area</em>, <em>data</em><big>)</big><a class="reference internal" href="../_modules/terrain_mult.html#terrain_class2mz_orig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#terrain_mult.terrain_class2mz_orig" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">terrain_mult.</tt><tt class="descname">terrain_class2mz_orig</tt><big>(</big><em>data</em><big>)</big><a class="reference internal" href="../_modules/terrain_mult.html#terrain_class2mz_orig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#terrain_mult.terrain_class2mz_orig" title="Permalink to this definition">¶</a></dt>
 <dd><p>Transfer the landsat classified image into original terrain multiplier</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>cyclone_area</strong> &#8211; none or <cite>file</cite> the input tile of the cyclone area file</li>
-<li><strong>data</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the input terrain class values</li>
-</ul>
-</td>
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> &#8211; <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the input terrain class values</td>
 </tr>
-<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the initial terrain multiplier value</p>
-</td>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt> the initial terrain multiplier value</td>
 </tr>
 </tbody>
 </table>
