@@ -41,7 +41,7 @@ Version 2.0 has several improvements compared to Version 1.0:
 
 Status 
 ====== 
-.. image:: https://travis-ci.org/GeoscienceAustralia/tcrm.svg?branch=new0315
+.. image:: https://travis-ci.org/GeoscienceAustralia/Wind_multipliers.svg?branch=new0315
   :target: https://travis-ci.org/GeoscienceAustralia/Wind_multipliers 
 
 
