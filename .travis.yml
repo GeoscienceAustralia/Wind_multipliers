@@ -15,7 +15,7 @@ before_install:
 install:
   - sudo pip install conda 
   - sudo conda init 
-  - deps='pip numpy scipy matplotlib nose coverage numexpr osgeo' 
+  - deps='pip numpy scipy matplotlib nose coverage numexpr gdal' 
   - conda create -p $HOME/py --yes $deps "python=$TRAVIS_PYTHON_VERSION" 
   - export PATH=$HOME/py/bin:$PATH 
   - pip install pycurl
