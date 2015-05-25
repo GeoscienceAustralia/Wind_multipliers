@@ -1,7 +1,6 @@
 language: python 
 python:
   - "2.7"
-  - "2.6" 
 # install system dependencies 
 before_install: 
   - sudo apt-get update -qq
@@ -16,12 +15,10 @@ before_install:
 install:
   - sudo pip install conda 
   - sudo conda init 
-  - deps='pip numpy scipy matplotlib basemap shapely nose coverage' 
+  - deps='pip numpy scipy matplotlib nose coverage' 
   - conda create -p $HOME/py --yes $deps "python=$TRAVIS_PYTHON_VERSION" 
   - export PATH=$HOME/py/bin:$PATH 
-  - if [[ $TRAVIS_PYTHON_VERSION == 2.6 ]]; then pip install ordereddict; fi
   - pip install pycurl
   - pip -v install -r requirements.txt 
 script: 
-  - python installer/setup.py build_ext -i 
   - nosetests -v --with-coverage --exe
