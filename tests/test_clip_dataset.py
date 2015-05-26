@@ -23,10 +23,12 @@ class TestClip(unittest.TestCase):
 
     def setUp(self):
         
-        self.cmd_folder = os.path.realpath(os.path.abspath(
-                                    os.path.split(getfile(currentframe()))[0]))         
+        cmd_folder = os.path.realpath(os.path.abspath(
+                                    os.path.split(getfile(currentframe()))[0]))
+                                    
+        self.testdata_folder = os.path.join(cmd_folder, 'test_data')
         
-        parent = os.path.abspath(os.path.join(self.cmd_folder, os.pardir))
+        parent = os.path.abspath(os.path.join(cmd_folder, os.pardir))
                 
         if parent not in sys.path:
             sys.path.insert(0, parent)
@@ -37,15 +39,15 @@ class TestClip(unittest.TestCase):
 #        print self.source_ds
         
            
-    def test_clip(self):  
+    def test_clip(self):    
 
-        dem = os.path.join(self.cmd_folder, "test_raster_dem.img") 
-        dem_expect_result = os.path.join(self.cmd_folder,
+        dem = os.path.join(self.testdata_folder, "test_raster_dem.img") 
+        dem_expect_result = os.path.join(self.testdata_folder,
                                           'test_raster_expect_clip_dem.img')
         
         extent = [142.94, -22.97, 143.96, -23.98]
         
-        lc = os.path.join(self.cmd_folder, "test_raster_lc.img")
+        lc = os.path.join(self.testdata_folder, "test_raster_lc.img")
         
         
         from all_multipliers import Multipliers
@@ -54,7 +56,7 @@ class TestClip(unittest.TestCase):
         
         extent = [143.2, -23.2, 143.4, -23.4] 
         
-        scripts_result = 'test_raster_clip_dem.img'
+        scripts_result = os.path.join(self.testdata_folder, 'test_raster_clip_dem.img')
         
         mp.open_dem()        
         mp.clip_dataset(extent, scripts_result) 
@@ -83,12 +85,12 @@ class TestClip(unittest.TestCase):
         
     def test_reproject(self): 
         
-        lc = os.path.join(self.cmd_folder, "test_raster_lc.img")        
-        match_ds = os.path.join(self.cmd_folder, "test_raster_clip_dem.img")
+        lc = os.path.join(self.testdata_folder, "test_raster_lc.img")        
+        match_ds = os.path.join(self.testdata_folder, "test_raster_clip_dem.img")
         
         from all_multipliers import reproject_dataset
         
-        dst_file = 'test_raster_dem_lc.img'        
+        dst_file = os.path.join(self.testdata_folder,'test_raster_dem_lc.img')        
         
         reproject_dataset(lc, match_ds, dst_file) 
         
