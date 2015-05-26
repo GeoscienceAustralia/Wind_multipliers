@@ -400,7 +400,7 @@ class Multipliers(object):
                                          tile_extents_nobuffer)
 
             log.info('producing Topographic multipliers ...')
-            #topographic.topomult.topomult(temp_tile_dem, tile_extents_nobuffer)
+            topographic.topomult.topomult(temp_tile_dem, tile_extents_nobuffer)
 
             log.info('deleting the temporary files after calculation ...')
             log.info('deleteing the temporary DEM: {0}'

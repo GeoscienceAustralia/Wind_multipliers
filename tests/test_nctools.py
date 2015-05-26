@@ -2,7 +2,8 @@
  Title: test_combine.py 
  Author: Tina Yang, tina.yang@ga.gov.au 
  CreationDate: 2014-06-02
- Description: Unit testing module for combine function in shield_mult.py 
+ Description: Unit testing module for get_lat_lon and clip function
+ in nctools.py 
  Version: $Rev$ 
  $Id$
 """

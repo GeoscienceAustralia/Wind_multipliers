@@ -2,8 +2,8 @@
     Title: testmultipliercalc.py 
     Author: Tina Yang, tina.yang@ga.gov.au 
     CreationDate: 2014-05-01
-    Description: Unit testing module for multiplier_cal function in 
-                 multiplier_calc.py 
+    Description: Unit testing module for init_kern and init_kern_diag functions
+    in shield_mult.py 
     Version: $Rev$ 
     $Id$
 """
@@ -15,8 +15,6 @@ import numpy as np
 from numpy.testing import assert_allclose, assert_almost_equal
 from matplotlib import pyplot
 from inspect import getfile, currentframe
-
-#import terrain.terrain_mult as convo_w
 
 
 class TestShieldingMultiplier(unittest.TestCase):

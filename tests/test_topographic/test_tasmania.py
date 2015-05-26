@@ -2,8 +2,8 @@
     Title: testmultipliercalc.py 
     Author: Tina Yang, tina.yang@ga.gov.au 
     CreationDate: 2014-05-01
-    Description: Unit testing module for multiplier_cal function in 
-                 multiplier_calc.py 
+    Description: Unit testing module for tasmania function in 
+                 topomult.py 
     Version: $Rev$ 
     $Id$
 """
