@@ -21,7 +21,7 @@ This package is used to produce wind terrain, shielding and topographic multipli
 Dependencies
 ===========================================
 
-Python 2.7, NumPy, SciPy, and GDAL are needed. 
+Python 2.7, NumPy, SciPy, NetCDF4 and GDAL are needed. 
 
 
 
@@ -79,7 +79,7 @@ It includes terrain, shielding, topographic and direction multipliers. Except th
 Australian wind loading standard AS/NZS 1170.2. Terrain, shielding and topographic multiplers are calculated using this software package based on the 
 principles and formulae defined in the AS/NZS 1170.2. The wind multipliers are primarily used for assessment of wind hazard at individual building locations.
 Further details on wind multipliers can be found in Geosicence Australia record: Local Wind Assessment in Australia: Computation Methodology for Wind Multipliers,
-which is avilable here http://www.ga.gov.au/metadata-gateway/metadata/record/75299/
+which is avilable via http://www.ga.gov.au/metadata-gateway/metadata/record/75299/
 
 
 Issues
