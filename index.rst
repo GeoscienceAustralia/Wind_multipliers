@@ -14,7 +14,7 @@ Overview
 ===========================================
 
 
-This package is used to produce wind terrain, shielding and topographic multipliers for national coverage using input of national dynamic land cover dataset v1 and 1 second SRTM level 2 derived digital eleveation models (DEM-S) version 1.0. The output is based on tiles with dimension about 1 by 1 decimal degree in netCDF format. It includes terrain, shielding and topographic multiplier respectively. Each multiplier further contains 8 directions. 
+This package is used to produce wind terrain, shielding and topographic multipliers for national coverage using the input of National Dynamic Land Cover Dataset of Australia Version 1.0 (http://www.ga.gov.au/scientific-topics/earth-obs/landcover) and 1 second Shuttle Radar Topography Mission (SRTM) Smoothed Digital Eleveation Models (DEM-S) Version 1.0 (http://www.ga.gov.au/metadata-gateway/metadata/record/gcat_72759). The output is based on tiles with dimension about 1 by 1 degree in netCDF format. It includes terrain, shielding and topographic multiplier respectively. Each multiplier further contains 8 directions. 
 
 
 
@@ -36,15 +36,15 @@ The script for deriving terrain, shielding and topographic multipliers is
 3. topographic; and
 4. utilities
 
-terrain module includes: 
+**Terrain** module includes: 
 
 * **terrain_mult.py:** produce the terrain multiplier for a given tile 
 
-shielding module includes:
+**Shielding** module includes:
  
 * **shield_mult.py:** produce the shielding multiplier for a given tile
 
-topographic module includes:
+**Topographic** module includes:
  
 * **topomult.py:** produce the topographic multiplier for a given tile
     * make_path.py: generate indices of a data line depending on the direction    
@@ -52,7 +52,7 @@ topographic module includes:
         * mh.py: calculate Mh 
         * findpeaks.py: get the indices of the ridges in a data line Directory
 
-utilities module includes supporting tools such as:
+**Utilities** module includes supporting tools such as:
  
 * blrb.py;
 * files.py;
@@ -79,7 +79,7 @@ It includes terrain, shielding, topographic and direction multipliers. Except th
 Australian wind loading standard AS/NZS 1170.2. Terrain, shielding and topographic multiplers are calculated using this software package based on the 
 principles and formulae defined in the AS/NZS 1170.2. The wind multipliers are primarily used for assessment of wind hazard at individual building locations.
 Further details on wind multipliers can be found in Geosicence Australia record: Local Wind Assessment in Australia: Computation Methodology for Wind Multipliers,
-which is avilable via http://www.ga.gov.au/metadata-gateway/metadata/record/75299/
+which is avilable via http://www.ga.gov.au/metadata-gateway/metadata/record/75299 
 
 
 Issues
