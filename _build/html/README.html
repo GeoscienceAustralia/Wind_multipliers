@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>&lt;no title&gt; &mdash; WindMultipliers v1.0 documentation</title>
+    <title>The Wind Multipler Computation Software &mdash; WindMultipliers v1.0 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -43,27 +43,53 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <p>This package is used to produce wind terrain, shielding and topographic
-multipliers.</p>
-<p>Python 2.7, NumPy, SciPy and GDAL are needed.</p>
+  <div class="section" id="the-wind-multipler-computation-software">
+<h1>The Wind Multipler Computation Software<a class="headerlink" href="#the-wind-multipler-computation-software" title="Permalink to this headline">¶</a></h1>
+<p>This package is used to produce wind multipliers including terrain, shielding and topographic multipliers.</p>
+</div>
+<div class="section" id="dependencies">
+<h1>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference external" href="https://www.python.org/">Python (2.7 preferred)</a>, <a class="reference external" href="http://www.numpy.org/">Numpy</a>, <a class="reference external" href="http://www.scipy.org/">Scipy</a>, <a class="reference external" href="http://www.gdal.org/">GDAL</a>, <a class="reference external" href="https://code.google.com/p/netcdf4-python">netcdf4-python</a>;</li>
+<li>For parallel execution, <a class="reference external" href="http://github.com/daleroberts/pypar">Pypar</a> is required;</li>
+</ul>
+</div>
+<div class="section" id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
 <p>The script for deriving terrain, shielding and topographic multipliers is
-all_multipliers.py that links three modules: terrain, shielding and topographic.</p>
+all_multipliers.py that links four modules: terrain, shielding, topographic and utilities.</p>
 <p>Before running all_multipliers.py to produce terrain, shielding and topographic
 multipliers, the configuration file named multiplier_conf.cfg needs to be
-configured. There are some variables to be pre-defined:</p>
+configured. There are two variables to be pre-defined:</p>
 <blockquote>
 <div><ul class="simple">
 <li><strong>root:</strong> the working directory of the task.</li>
 <li><strong>upwind_length:</strong> the upwind buffer distance</li>
 </ul>
 </div></blockquote>
-<p>Then copy the input files (dem and terrain classes) into the input
-folder (created beforehand manually) under root, and start to run
-all_multipliers.py. The resutls are respectively located under output
-folder (created automatically during the process) under root.</p>
-<p>This version is parallel implementation using PyPar for MPI handling. To run it
-in parallel mode: mpirun -np ncpu python all_mulitpliers.py, while ncpu is the
+<p>Then copy the input files (dem and terrain classes) into the input folder (created beforehand manually) under root, and start to run all_multipliers.py. The resutls are respectively located under output folder (created automatically during the process) under root directory.</p>
+<p>This software implements parallelly using PyPar for MPI handling. To run it in parallel mode, use
+mpirun -np ncpu python all_mulitpliers.py, while ncpu is the
 number of CPUs adopted.</p>
+</div>
+<div class="section" id="improvements">
+<h1>Improvements<a class="headerlink" href="#improvements" title="Permalink to this headline">¶</a></h1>
+<p>Version 2.0 has several improvements compared to Version 1.0:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Replaced the sub-processes with GDAL API, so the missing tiles problem on NCI has gone</li>
+<li>Updated the tile output without overlapping areas</li>
+<li>Simplified the output structure</li>
+<li>Updated the terrain multiplier algorithm as per AS/NZS 1170.2 (2011) and recent amendments</li>
+<li>Updated the topographic multiplier algorithm to include the Tasmania factor as per AS/NZS 1170.2 (2011)</li>
+<li>Updated the shielding multiplier convolution mask by condisering the Engineer&#8217;s opinion</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="status">
+<h1>Status<a class="headerlink" href="#status" title="Permalink to this headline">¶</a></h1>
+<a class="reference external image-reference" href="https://travis-ci.org/GeoscienceAustralia/Wind_multipliers"><img alt="https://travis-ci.org/GeoscienceAustralia/Wind_multipliers.svg?branch=new0315" src="https://travis-ci.org/GeoscienceAustralia/Wind_multipliers.svg?branch=new0315" /></a>
+</div>
 
 
           </div>
@@ -71,6 +97,15 @@ number of CPUs adopted.</p>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">The Wind Multipler Computation Software</a></li>
+<li><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#improvements">Improvements</a></li>
+<li><a class="reference internal" href="#status">Status</a></li>
+</ul>
+
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/README.txt"

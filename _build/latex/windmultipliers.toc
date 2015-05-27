@@ -7,45 +7,49 @@
 \contentsline {chapter}{\numberline {6}Code Documentation}{11}{chapter.6}
 \contentsline {section}{\numberline {6.1}All\_multipliers}{11}{section.6.1}
 \contentsline {subsection}{\numberline {6.1.1}all\_multipliers.py}{11}{subsection.6.1.1}
-\contentsline {subsubsection}{\texttt {all\_multipliers} -- Calculate terrain, shielding \& topographic multipliers}{11}{subsubsection*.3}
+\contentsline {subsubsection}{\texttt {all\_multipliers} - Calculate terrain, shielding \& topographic multipliers}{11}{subsubsection*.3}
 \contentsline {section}{\numberline {6.2}terrain}{13}{section.6.2}
 \contentsline {subsection}{\numberline {6.2.1}\_\_init\_\_.py}{13}{subsection.6.2.1}
 \contentsline {subsection}{\numberline {6.2.2}terrain.py}{13}{subsection.6.2.2}
-\contentsline {subsubsection}{\texttt {terrain} -- Calculate terrain multiplier}{13}{subsubsection*.23}
-\contentsline {section}{\numberline {6.3}shielding}{15}{section.6.3}
-\contentsline {subsection}{\numberline {6.3.1}\_\_init\_\_.py}{15}{subsection.6.3.1}
-\contentsline {subsection}{\numberline {6.3.2}shielding.py}{15}{subsection.6.3.2}
-\contentsline {subsubsection}{\texttt {shielding} -- Calculate shielding multiplier}{15}{subsubsection*.35}
+\contentsline {subsubsection}{\texttt {terrain} -- Calculate terrain multiplier}{13}{subsubsection*.28}
+\contentsline {section}{\numberline {6.3}shielding}{14}{section.6.3}
+\contentsline {subsection}{\numberline {6.3.1}\_\_init\_\_.py}{14}{subsection.6.3.1}
+\contentsline {subsection}{\numberline {6.3.2}shielding.py}{14}{subsection.6.3.2}
+\contentsline {subsubsection}{\texttt {shielding} -- Calculate shielding multiplier}{14}{subsubsection*.32}
 \contentsline {section}{\numberline {6.4}topographic}{17}{section.6.4}
 \contentsline {subsection}{\numberline {6.4.1}\_\_init\_\_.py}{17}{subsection.6.4.1}
 \contentsline {subsection}{\numberline {6.4.2}findpeaks.py}{17}{subsection.6.4.2}
-\contentsline {subsubsection}{\texttt {findpeaks} -- Generate the indices of the ridges in a data line}{17}{subsubsection*.53}
-\contentsline {subsection}{\numberline {6.4.3}make\_path.py}{18}{subsection.6.4.3}
-\contentsline {subsubsection}{\texttt {makepath} -- Returns a vector of array indices for a path}{18}{subsubsection*.56}
-\contentsline {subsection}{\numberline {6.4.4}mh.py}{18}{subsection.6.4.4}
-\contentsline {subsubsection}{\texttt {mh} -- Calculate the topographic multipliers}{18}{subsubsection*.58}
-\contentsline {subsection}{\numberline {6.4.5}multiplier\_calc.py}{19}{subsection.6.4.5}
-\contentsline {subsubsection}{\texttt {multiplier\_calc} -- Computes the topographic multipliers for a data line}{19}{subsubsection*.61}
-\contentsline {subsection}{\numberline {6.4.6}topomult.py}{19}{subsection.6.4.6}
-\contentsline {subsubsection}{\texttt {topomult} -- Calculate topographic multiplier}{19}{subsubsection*.63}
+\contentsline {subsubsection}{\texttt {findpeaks} -- Generate the indices of the ridges in a data line}{17}{subsubsection*.50}
+\contentsline {subsection}{\numberline {6.4.3}make\_path.py}{17}{subsection.6.4.3}
+\contentsline {subsubsection}{\texttt {makepath} -- Returns a vector of array indices for a path}{17}{subsubsection*.53}
+\contentsline {subsection}{\numberline {6.4.4}mh.py}{17}{subsection.6.4.4}
+\contentsline {subsubsection}{\texttt {mh} -- Calculate the topographic multipliers}{17}{subsubsection*.55}
+\contentsline {subsection}{\numberline {6.4.5}multiplier\_calc.py}{18}{subsection.6.4.5}
+\contentsline {subsubsection}{\texttt {multiplier\_calc} -- Computes the topographic multipliers for a data line}{18}{subsubsection*.58}
+\contentsline {subsection}{\numberline {6.4.6}topomult.py}{18}{subsection.6.4.6}
+\contentsline {subsubsection}{\texttt {topomult} -- Calculate topographic multiplier}{18}{subsubsection*.60}
 \contentsline {section}{\numberline {6.5}utilities}{19}{section.6.5}
 \contentsline {subsection}{\numberline {6.5.1}\_\_init\_\_.py}{19}{subsection.6.5.1}
-\contentsline {subsection}{\numberline {6.5.2}\_execute.py}{19}{subsection.6.5.2}
-\contentsline {subsection}{\numberline {6.5.3}blrb.py}{20}{subsection.6.5.3}
-\contentsline {subsection}{\numberline {6.5.4}meta.py}{21}{subsection.6.5.4}
-\contentsline {subsection}{\numberline {6.5.5}files.py}{22}{subsection.6.5.5}
-\contentsline {subsection}{\numberline {6.5.6}value\_lookup.py}{24}{subsection.6.5.6}
-\contentsline {subsection}{\numberline {6.5.7}vincenty.py}{24}{subsection.6.5.7}
-\contentsline {subsection}{\numberline {6.5.8}get\_pixel\_size\_grid.py}{25}{subsection.6.5.8}
-\contentsline {subsubsection}{\texttt {get\_pixel\_size\_grid} -- calculate the image pixel size in meter}{25}{subsubsection*.89}
-\contentsline {subsection}{\numberline {6.5.9}nctools.py}{26}{subsection.6.5.9}
-\contentsline {section}{\numberline {6.6}tests}{28}{section.6.6}
-\contentsline {subsection}{\numberline {6.6.1}\_\_init\_\_.py}{28}{subsection.6.6.1}
-\contentsline {subsection}{\numberline {6.6.2}test\_combine.py}{28}{subsection.6.6.2}
-\contentsline {subsection}{\numberline {6.6.3}test\_tc2mz\_orig.py}{28}{subsection.6.6.3}
+\contentsline {subsection}{\numberline {6.5.2}blrb.py}{19}{subsection.6.5.2}
+\contentsline {subsection}{\numberline {6.5.3}meta.py}{20}{subsection.6.5.3}
+\contentsline {subsection}{\numberline {6.5.4}files.py}{21}{subsection.6.5.4}
+\contentsline {subsection}{\numberline {6.5.5}value\_lookup.py}{23}{subsection.6.5.5}
+\contentsline {subsection}{\numberline {6.5.6}vincenty.py}{23}{subsection.6.5.6}
+\contentsline {subsection}{\numberline {6.5.7}get\_pixel\_size\_grid.py}{24}{subsection.6.5.7}
+\contentsline {subsubsection}{\texttt {get\_pixel\_size\_grid} -- calculate the image pixel size in meter}{24}{subsubsection*.86}
+\contentsline {subsection}{\numberline {6.5.8}nctools.py}{24}{subsection.6.5.8}
+\contentsline {section}{\numberline {6.6}tests}{27}{section.6.6}
+\contentsline {subsection}{\numberline {6.6.1}\_\_init\_\_.py}{27}{subsection.6.6.1}
+\contentsline {subsection}{\numberline {6.6.2}test\_clip\_dataset.py}{27}{subsection.6.6.2}
+\contentsline {subsection}{\numberline {6.6.3}test\_combine.py}{27}{subsection.6.6.3}
+\contentsline {subsection}{\numberline {6.6.4}test\_nctools.py}{27}{subsection.6.6.4}
+\contentsline {subsection}{\numberline {6.6.5}test\_shielding.py}{27}{subsection.6.6.5}
+\contentsline {subsection}{\numberline {6.6.6}test\_terrain.py}{28}{subsection.6.6.6}
+\contentsline {subsection}{\numberline {6.6.7}test\_terrain\_class2mz\_orig.py}{28}{subsection.6.6.7}
 \contentsline {section}{\numberline {6.7}test\_topographic}{28}{section.6.7}
 \contentsline {subsection}{\numberline {6.7.1}test\_all\_topo\_engineered\_data.py}{28}{subsection.6.7.1}
 \contentsline {subsection}{\numberline {6.7.2}test\_findpeaks.py}{28}{subsection.6.7.2}
-\contentsline {subsection}{\numberline {6.7.3}testmultipliercalc.py}{29}{subsection.6.7.3}
-\contentsline {chapter}{\numberline {7}Module Index}{31}{chapter.7}
-\contentsline {chapter}{Python Module Index}{33}{section*.98}
+\contentsline {subsection}{\numberline {6.7.3}testmultipliercalc.py}{28}{subsection.6.7.3}
+\contentsline {subsection}{\numberline {6.7.4}test\_tasmania.py}{28}{subsection.6.7.4}
+\contentsline {chapter}{\numberline {7}Module Index}{29}{chapter.7}
+\contentsline {chapter}{Python Module Index}{31}{section*.96}

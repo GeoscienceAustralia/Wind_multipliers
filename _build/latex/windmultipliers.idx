@@ -1,11 +1,15 @@
 \indexentry{all\_multipliers (module)|hyperpage}{11}
 \indexentry{Multipliers (class in all\_multipliers)|hyperpage}{11}
+\indexentry{clip\_dataset() (all\_multipliers.Multipliers method)|hyperpage}{11}
+\indexentry{cut\_dem() (all\_multipliers.Multipliers method)|hyperpage}{11}
 \indexentry{multipliers\_calculate() (all\_multipliers.Multipliers method)|hyperpage}{11}
+\indexentry{open\_dem() (all\_multipliers.Multipliers method)|hyperpage}{11}
 \indexentry{parallelise\_on\_tiles() (all\_multipliers.Multipliers method)|hyperpage}{11}
-\indexentry{TileGrid (class in all\_multipliers)|hyperpage}{11}
-\indexentry{get\_gridlimit() (all\_multipliers.TileGrid method)|hyperpage}{11}
-\indexentry{get\_gridlimit\_buffer() (all\_multipliers.TileGrid method)|hyperpage}{11}
-\indexentry{get\_startcord() (all\_multipliers.TileGrid method)|hyperpage}{11}
+\indexentry{TileGrid (class in all\_multipliers)|hyperpage}{12}
+\indexentry{get\_gridlimit() (all\_multipliers.TileGrid method)|hyperpage}{12}
+\indexentry{get\_gridlimit\_buffer() (all\_multipliers.TileGrid method)|hyperpage}{12}
+\indexentry{get\_startcord() (all\_multipliers.TileGrid method)|hyperpage}{12}
+\indexentry{get\_tile\_extent() (all\_multipliers.TileGrid method)|hyperpage}{12}
 \indexentry{get\_tile\_extent\_buffer() (all\_multipliers.TileGrid method)|hyperpage}{12}
 \indexentry{get\_tilename() (all\_multipliers.TileGrid method)|hyperpage}{12}
 \indexentry{tile\_grid() (all\_multipliers.TileGrid method)|hyperpage}{12}
@@ -13,100 +17,98 @@
 \indexentry{balance() (in module all\_multipliers)|hyperpage}{12}
 \indexentry{balanced() (in module all\_multipliers)|hyperpage}{12}
 \indexentry{disable\_on\_workers() (in module all\_multipliers)|hyperpage}{12}
-\indexentry{do\_output\_directory\_creation() (in module all\_multipliers)|hyperpage}{12}
-\indexentry{get\_tileinfo() (in module all\_multipliers)|hyperpage}{12}
-\indexentry{get\_tiles() (in module all\_multipliers)|hyperpage}{12}
-\indexentry{run() (in module all\_multipliers)|hyperpage}{12}
+\indexentry{do\_output\_directory\_creation() (in module all\_multipliers)|hyperpage}{13}
+\indexentry{get\_tileinfo() (in module all\_multipliers)|hyperpage}{13}
+\indexentry{get\_tiles() (in module all\_multipliers)|hyperpage}{13}
+\indexentry{reproject\_dataset() (in module all\_multipliers)|hyperpage}{13}
+\indexentry{run() (in module all\_multipliers)|hyperpage}{13}
 \indexentry{timer() (in module all\_multipliers)|hyperpage}{13}
 \indexentry{\_\_init\_\_ (module)|hyperpage}{13}
 \indexentry{terrain\_mult (module)|hyperpage}{13}
-\indexentry{convo\_e() (in module terrain\_mult)|hyperpage}{13}
-\indexentry{convo\_n() (in module terrain\_mult)|hyperpage}{13}
-\indexentry{convo\_ne() (in module terrain\_mult)|hyperpage}{13}
-\indexentry{convo\_nw() (in module terrain\_mult)|hyperpage}{13}
-\indexentry{convo\_s() (in module terrain\_mult)|hyperpage}{14}
-\indexentry{convo\_se() (in module terrain\_mult)|hyperpage}{14}
-\indexentry{convo\_sw() (in module terrain\_mult)|hyperpage}{14}
-\indexentry{convo\_w() (in module terrain\_mult)|hyperpage}{14}
-\indexentry{tc2mz\_orig() (in module terrain\_mult)|hyperpage}{14}
+\indexentry{convo() (in module terrain\_mult)|hyperpage}{14}
 \indexentry{terrain() (in module terrain\_mult)|hyperpage}{14}
 \indexentry{terrain\_class2mz\_orig() (in module terrain\_mult)|hyperpage}{14}
-\indexentry{\_\_init\_\_ (module)|hyperpage}{15}
-\indexentry{shield\_mult (module)|hyperpage}{15}
-\indexentry{blur\_image() (in module shield\_mult)|hyperpage}{15}
+\indexentry{\_\_init\_\_ (module)|hyperpage}{14}
+\indexentry{shield\_mult (module)|hyperpage}{14}
+\indexentry{blur\_image() (in module shield\_mult)|hyperpage}{14}
 \indexentry{combine() (in module shield\_mult)|hyperpage}{15}
 \indexentry{convo\_combine() (in module shield\_mult)|hyperpage}{15}
-\indexentry{get\_slope\_aspect() (in module shield\_mult)|hyperpage}{16}
-\indexentry{init\_kern() (in module shield\_mult)|hyperpage}{16}
-\indexentry{init\_kern\_diag() (in module shield\_mult)|hyperpage}{16}
-\indexentry{kern\_e() (in module shield\_mult)|hyperpage}{16}
-\indexentry{kern\_n() (in module shield\_mult)|hyperpage}{16}
-\indexentry{kern\_ne() (in module shield\_mult)|hyperpage}{16}
+\indexentry{get\_slope\_aspect() (in module shield\_mult)|hyperpage}{15}
+\indexentry{init\_kern() (in module shield\_mult)|hyperpage}{15}
+\indexentry{init\_kern\_diag() (in module shield\_mult)|hyperpage}{15}
+\indexentry{kern\_e() (in module shield\_mult)|hyperpage}{15}
+\indexentry{kern\_n() (in module shield\_mult)|hyperpage}{15}
+\indexentry{kern\_ne() (in module shield\_mult)|hyperpage}{15}
 \indexentry{kern\_nw() (in module shield\_mult)|hyperpage}{16}
 \indexentry{kern\_s() (in module shield\_mult)|hyperpage}{16}
 \indexentry{kern\_se() (in module shield\_mult)|hyperpage}{16}
-\indexentry{kern\_sw() (in module shield\_mult)|hyperpage}{17}
-\indexentry{kern\_w() (in module shield\_mult)|hyperpage}{17}
-\indexentry{reclassify\_aspect() (in module shield\_mult)|hyperpage}{17}
-\indexentry{shield() (in module shield\_mult)|hyperpage}{17}
-\indexentry{terrain\_class2ms\_orig() (in module shield\_mult)|hyperpage}{17}
+\indexentry{kern\_sw() (in module shield\_mult)|hyperpage}{16}
+\indexentry{kern\_w() (in module shield\_mult)|hyperpage}{16}
+\indexentry{reclassify\_aspect() (in module shield\_mult)|hyperpage}{16}
+\indexentry{shield() (in module shield\_mult)|hyperpage}{16}
+\indexentry{terrain\_class2ms\_orig() (in module shield\_mult)|hyperpage}{16}
 \indexentry{\_\_init\_\_ (module)|hyperpage}{17}
 \indexentry{findpeaks (module)|hyperpage}{17}
 \indexentry{findpeaks() (in module findpeaks)|hyperpage}{17}
 \indexentry{findvalleys() (in module findpeaks)|hyperpage}{17}
-\indexentry{make\_path (module)|hyperpage}{18}
-\indexentry{make\_path() (in module make\_path)|hyperpage}{18}
-\indexentry{mh (module)|hyperpage}{18}
-\indexentry{escarpment\_factor() (in module mh)|hyperpage}{18}
+\indexentry{make\_path (module)|hyperpage}{17}
+\indexentry{make\_path() (in module make\_path)|hyperpage}{17}
+\indexentry{mh (module)|hyperpage}{17}
+\indexentry{escarpment\_factor() (in module mh)|hyperpage}{17}
 \indexentry{mh\_calc() (in module mh)|hyperpage}{18}
-\indexentry{multiplier\_calc (module)|hyperpage}{19}
-\indexentry{multiplier\_calc() (in module multiplier\_calc)|hyperpage}{19}
-\indexentry{topomult (module)|hyperpage}{19}
-\indexentry{topomult() (in module topomult)|hyperpage}{19}
+\indexentry{multiplier\_calc (module)|hyperpage}{18}
+\indexentry{multiplier\_calc() (in module multiplier\_calc)|hyperpage}{18}
+\indexentry{topomult (module)|hyperpage}{18}
+\indexentry{tasmania() (in module topomult)|hyperpage}{18}
+\indexentry{topomult() (in module topomult)|hyperpage}{18}
 \indexentry{\_\_init\_\_ (module)|hyperpage}{19}
-\indexentry{\_execute (module)|hyperpage}{19}
-\indexentry{execute() (in module \_execute)|hyperpage}{19}
-\indexentry{blrb (module)|hyperpage}{20}
-\indexentry{bilinear() (in module blrb)|hyperpage}{20}
-\indexentry{indices() (in module blrb)|hyperpage}{20}
-\indexentry{interpolate\_block() (in module blrb)|hyperpage}{20}
-\indexentry{interpolate\_grid() (in module blrb)|hyperpage}{21}
-\indexentry{subdivide() (in module blrb)|hyperpage}{21}
-\indexentry{meta (module)|hyperpage}{21}
-\indexentry{Singleton (class in meta)|hyperpage}{21}
-\indexentry{create\_arg\_string() (in module meta)|hyperpage}{21}
-\indexentry{print\_call() (in module meta)|hyperpage}{22}
-\indexentry{utilities.files (module)|hyperpage}{22}
-\indexentry{fl\_config\_file() (in module utilities.files)|hyperpage}{22}
-\indexentry{fl\_get\_stat() (in module utilities.files)|hyperpage}{22}
-\indexentry{fl\_load\_file() (in module utilities.files)|hyperpage}{22}
-\indexentry{fl\_log\_fatal\_error() (in module utilities.files)|hyperpage}{22}
-\indexentry{fl\_mod\_date() (in module utilities.files)|hyperpage}{23}
-\indexentry{fl\_module\_name() (in module utilities.files)|hyperpage}{23}
-\indexentry{fl\_module\_path() (in module utilities.files)|hyperpage}{23}
-\indexentry{fl\_program\_version() (in module utilities.files)|hyperpage}{23}
-\indexentry{fl\_save\_file() (in module utilities.files)|hyperpage}{23}
-\indexentry{fl\_size() (in module utilities.files)|hyperpage}{24}
-\indexentry{fl\_start\_log() (in module utilities.files)|hyperpage}{24}
-\indexentry{value\_lookup (module)|hyperpage}{24}
-\indexentry{vincenty (module)|hyperpage}{24}
-\indexentry{GreatCircle (class in vincenty)|hyperpage}{24}
-\indexentry{points() (vincenty.GreatCircle method)|hyperpage}{24}
-\indexentry{vinc\_dist() (in module vincenty)|hyperpage}{25}
-\indexentry{vinc\_pt() (in module vincenty)|hyperpage}{25}
-\indexentry{get\_pixel\_size\_grid (module)|hyperpage}{25}
-\indexentry{Earth (class in get\_pixel\_size\_grid)|hyperpage}{25}
-\indexentry{get\_pixel\_size() (in module get\_pixel\_size\_grid)|hyperpage}{25}
-\indexentry{get\_pixel\_size\_grids() (in module get\_pixel\_size\_grid)|hyperpage}{25}
-\indexentry{nctools (module)|hyperpage}{26}
-\indexentry{get\_lat\_lon() (in module nctools)|hyperpage}{26}
-\indexentry{nc\_create\_dim() (in module nctools)|hyperpage}{26}
-\indexentry{nc\_create\_var() (in module nctools)|hyperpage}{26}
-\indexentry{nc\_save\_grid() (in module nctools)|hyperpage}{26}
-\indexentry{save\_multiplier() (in module nctools)|hyperpage}{28}
-\indexentry{\_\_init\_\_ (module)|hyperpage}{28}
-\indexentry{test\_combine (module)|hyperpage}{28}
-\indexentry{test\_tc2mz\_orig (module)|hyperpage}{28}
+\indexentry{blrb (module)|hyperpage}{19}
+\indexentry{bilinear() (in module blrb)|hyperpage}{19}
+\indexentry{indices() (in module blrb)|hyperpage}{19}
+\indexentry{interpolate\_block() (in module blrb)|hyperpage}{19}
+\indexentry{interpolate\_grid() (in module blrb)|hyperpage}{20}
+\indexentry{subdivide() (in module blrb)|hyperpage}{20}
+\indexentry{meta (module)|hyperpage}{20}
+\indexentry{Singleton (class in meta)|hyperpage}{20}
+\indexentry{create\_arg\_string() (in module meta)|hyperpage}{20}
+\indexentry{print\_call() (in module meta)|hyperpage}{20}
+\indexentry{utilities.files (module)|hyperpage}{21}
+\indexentry{fl\_config\_file() (in module utilities.files)|hyperpage}{21}
+\indexentry{fl\_get\_stat() (in module utilities.files)|hyperpage}{21}
+\indexentry{fl\_load\_file() (in module utilities.files)|hyperpage}{21}
+\indexentry{fl\_log\_fatal\_error() (in module utilities.files)|hyperpage}{21}
+\indexentry{fl\_mod\_date() (in module utilities.files)|hyperpage}{22}
+\indexentry{fl\_module\_name() (in module utilities.files)|hyperpage}{22}
+\indexentry{fl\_module\_path() (in module utilities.files)|hyperpage}{22}
+\indexentry{fl\_program\_version() (in module utilities.files)|hyperpage}{22}
+\indexentry{fl\_save\_file() (in module utilities.files)|hyperpage}{22}
+\indexentry{fl\_size() (in module utilities.files)|hyperpage}{22}
+\indexentry{fl\_start\_log() (in module utilities.files)|hyperpage}{23}
+\indexentry{value\_lookup (module)|hyperpage}{23}
+\indexentry{vincenty (module)|hyperpage}{23}
+\indexentry{GreatCircle (class in vincenty)|hyperpage}{23}
+\indexentry{points() (vincenty.GreatCircle method)|hyperpage}{23}
+\indexentry{vinc\_dist() (in module vincenty)|hyperpage}{23}
+\indexentry{vinc\_pt() (in module vincenty)|hyperpage}{24}
+\indexentry{get\_pixel\_size\_grid (module)|hyperpage}{24}
+\indexentry{Earth (class in get\_pixel\_size\_grid)|hyperpage}{24}
+\indexentry{get\_pixel\_size() (in module get\_pixel\_size\_grid)|hyperpage}{24}
+\indexentry{get\_pixel\_size\_grids() (in module get\_pixel\_size\_grid)|hyperpage}{24}
+\indexentry{nctools (module)|hyperpage}{24}
+\indexentry{clip\_array() (in module nctools)|hyperpage}{24}
+\indexentry{get\_lat\_lon() (in module nctools)|hyperpage}{25}
+\indexentry{nc\_create\_dim() (in module nctools)|hyperpage}{25}
+\indexentry{nc\_create\_var() (in module nctools)|hyperpage}{25}
+\indexentry{nc\_save\_grid() (in module nctools)|hyperpage}{25}
+\indexentry{save\_multiplier() (in module nctools)|hyperpage}{27}
+\indexentry{\_\_init\_\_ (module)|hyperpage}{27}
+\indexentry{test\_clip\_dataset (module)|hyperpage}{27}
+\indexentry{test\_combine (module)|hyperpage}{27}
+\indexentry{test\_nctools (module)|hyperpage}{27}
+\indexentry{test\_shielding (module)|hyperpage}{27}
+\indexentry{test\_terrain (module)|hyperpage}{28}
+\indexentry{test\_terrain\_class2mz\_orig (module)|hyperpage}{28}
 \indexentry{test\_topographic.test\_all\_topo\_engineered\_data (module)|hyperpage}{28}
 \indexentry{test\_topographic.test\_findpeaks (module)|hyperpage}{28}
-\indexentry{test\_topographic.testmultipliercalc (module)|hyperpage}{29}
+\indexentry{test\_topographic.testmultipliercalc (module)|hyperpage}{28}
+\indexentry{test\_topographic.test\_tasmania (module)|hyperpage}{28}

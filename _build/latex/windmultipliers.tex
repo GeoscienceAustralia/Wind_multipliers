@@ -12,7 +12,7 @@
 
 
 \title{windmultipliers Documentation}
-\date{November 18, 2014}
+\date{May 27, 2015}
 \release{1.0}
 \author{Geoscience Australia}
 \newcommand{\sphinxlogo}{}
@@ -121,7 +121,7 @@ This package is used to produce wind terrain, shielding and topographic multipli
 
 \chapter{Dependencies}
 \label{index:dependencies}
-Python 2.7, NumPy, SciPy, and GDAL are needed.
+Python 2.7, NumPy, SciPy, NetCDF4 and GDAL are needed.
 
 
 \chapter{Package structures}
@@ -185,9 +185,6 @@ findpeaks.py: get the indices of the ridges in a data line Directory
 utilities module includes supporting tools such as:
 \begin{itemize}
 \item {} 
-\_execute.py;
-
-\item {} 
 blrb.py;
 
 \item {} 
@@ -221,7 +218,7 @@ Before running \textbf{all\_multipliers.py} to produce terrain, shielding and to
 
 \end{itemize}
 
-Then copy the input files (dem and terrain classes) into the input folder (created beforehand manually) under \textbf{root}, and start to run \textbf{all\_multipliers.py}. The resutls are respectively located under output folder (created automatically during the process) under \textbf{root}.
+Then copy the input files (dem and terrain classes) into the input folder (created beforehand manually) under \textbf{root}, and start to run \textbf{all\_multipliers.py}. The results are respectively located under output folder (created automatically during the process) under \textbf{root}.
 \end{notice}
 
 
@@ -250,7 +247,7 @@ Issues for this project are currently being tracked through Github
 \label{docs/all_multipliers:module-all_multipliers}\label{docs/all_multipliers:all-multipliers-py}
 \index{all\_multipliers (module)}
 
-\subsubsection{\texttt{all\_multipliers} -- Calculate terrain, shielding \& topographic multipliers}
+\subsubsection{\texttt{all\_multipliers} - Calculate terrain, shielding \& topographic multipliers}
 \label{docs/all_multipliers:all-multipliers-calculate-terrain-shielding-topographic-multipliers}
 This module can be run in parallel using MPI if the
 \emph{pypar} library is found and all\_multipliers is run using the
@@ -268,19 +265,71 @@ Tina Yang \textless{}\href{mailto:tina.yang@ga.gov.au}{tina.yang@ga.gov.au}\text
 \index{Multipliers (class in all\_multipliers)}
 
 \begin{fulllineitems}
-\phantomsection\label{docs/all_multipliers:all_multipliers.Multipliers}\pysiglinewithargsret{\strong{class }\code{all\_multipliers.}\bfcode{Multipliers}}{\emph{terrain\_map}, \emph{dem}, \emph{cyclone\_area}}{}
+\phantomsection\label{docs/all_multipliers:all_multipliers.Multipliers}\pysiglinewithargsret{\strong{class }\code{all\_multipliers.}\bfcode{Multipliers}}{\emph{landcover}, \emph{dem}}{}
 Computing multipliers parallelly based on tiles.
 
-\index{multipliers\_calculate() (all\_multipliers.Multipliers method)}
+\index{clip\_dataset() (all\_multipliers.Multipliers method)}
 
 \begin{fulllineitems}
-\phantomsection\label{docs/all_multipliers:all_multipliers.Multipliers.multipliers_calculate}\pysiglinewithargsret{\bfcode{multipliers\_calculate}}{\emph{tile\_info}}{}
-Calculate the multiplier values for a specific tile
+\phantomsection\label{docs/all_multipliers:all_multipliers.Multipliers.clip_dataset}\pysiglinewithargsret{\bfcode{clip\_dataset}}{\emph{extent}, \emph{dst\_filename}}{}
+Clip the DEM using an extent and save the clipped to a new file.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{extent} -- \emph{tuple} the input tile extent with buffer
+
+\item {} 
+\textbf{dst\_filename} (\emph{str}) -- Destination filename.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+
+\index{cut\_dem() (all\_multipliers.Multipliers method)}
+
+\begin{fulllineitems}
+\phantomsection\label{docs/all_multipliers:all_multipliers.Multipliers.cut_dem}\pysiglinewithargsret{\bfcode{cut\_dem}}{\emph{tile\_info}}{}
+Cut from the input DEM for a tile
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode
 \textbf{tile\_info} -- \emph{tuple} the input tile info
 
+\item[{Returns}] \leavevmode
+\emph{file} the output dem for a tile
+
 \end{description}\end{quote}
+
+\end{fulllineitems}
+
+
+\index{multipliers\_calculate() (all\_multipliers.Multipliers method)}
+
+\begin{fulllineitems}
+\phantomsection\label{docs/all_multipliers:all_multipliers.Multipliers.multipliers_calculate}\pysiglinewithargsret{\bfcode{multipliers\_calculate}}{\emph{temp\_tile\_dem}, \emph{tile\_info}}{}
+Calculate the multiplier values for a specific tile
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{temp\_tile\_dem} -- \emph{file} the input DEM tile
+
+\item {} 
+\textbf{tile\_info} -- \emph{tuple} the input tile info
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+
+\index{open\_dem() (all\_multipliers.Multipliers method)}
+
+\begin{fulllineitems}
+\phantomsection\label{docs/all_multipliers:all_multipliers.Multipliers.open_dem}\pysiglinewithargsret{\bfcode{open\_dem}}{}{}
+Open the DEM file
 
 \end{fulllineitems}
 
@@ -305,7 +354,7 @@ Iterate over tiles to calculate the wind multipliers
 \index{TileGrid (class in all\_multipliers)}
 
 \begin{fulllineitems}
-\phantomsection\label{docs/all_multipliers:all_multipliers.TileGrid}\pysiglinewithargsret{\strong{class }\code{all\_multipliers.}\bfcode{TileGrid}}{\emph{upwind\_length}, \emph{terrain\_map}}{}
+\phantomsection\label{docs/all_multipliers:all_multipliers.TileGrid}\pysiglinewithargsret{\strong{class }\code{all\_multipliers.}\bfcode{TileGrid}}{\emph{upwind\_length}, \emph{raster\_ds}}{}
 Tiling to minimise MemoryErrors and enable parallelisation.
 
 \index{get\_gridlimit() (all\_multipliers.TileGrid method)}
@@ -357,6 +406,25 @@ Return starting longitude and latitude value of the tile without buffer
 
 \item[{Returns}] \leavevmode
 \emph{float} starting x and y coordinate of a tile without buffer
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+
+\index{get\_tile\_extent() (all\_multipliers.TileGrid method)}
+
+\begin{fulllineitems}
+\phantomsection\label{docs/all_multipliers:all_multipliers.TileGrid.get_tile_extent}\pysiglinewithargsret{\bfcode{get\_tile\_extent}}{\emph{k}}{}
+Return the exntent without buffer for tile \emph{k}. x corresponds to the
+east-west coordinate, y corresponds to the north-south
+coordinate.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode
+\textbf{k} -- \emph{int} tile number
+
+\item[{Returns}] \leavevmode
+minimum, maximum x and y coordinate for tile \emph{k}
 
 \end{description}\end{quote}
 
@@ -510,6 +578,39 @@ Helper to obtain a generator that yields tile numbers
 \end{fulllineitems}
 
 
+\index{reproject\_dataset() (in module all\_multipliers)}
+
+\begin{fulllineitems}
+\phantomsection\label{docs/all_multipliers:all_multipliers.reproject_dataset}\pysiglinewithargsret{\code{all\_multipliers.}\bfcode{reproject\_dataset}}{\emph{*args}, \emph{**kwargs}}{}
+Clip and reproject a source dataset to match the projection of another
+dataset and save the projected dataset to a new file.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{src\_filename} -- Filename of the source raster dataset, or an
+open \code{gdal.Dataset}
+
+\item {} 
+\textbf{match\_filename} -- Filename of the dataset to match to, or an
+open \code{gdal.Dataset}
+
+\item {} 
+\textbf{dst\_filename} (\emph{str}) -- Destination filename.
+
+\item {} 
+\textbf{resampling\_method} -- Resampling method. Default is bilinear
+interpolation.
+
+\item {} 
+\textbf{match\_projection} -- Projection of the output
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+
 \index{run() (in module all\_multipliers)}
 
 \begin{fulllineitems}
@@ -560,207 +661,30 @@ Tina Yang \textless{}\href{mailto:tina.yang@ga.gov.au}{tina.yang@ga.gov.au}\text
 
 \end{description}\end{quote}
 
-\index{convo\_e() (in module terrain\_mult)}
+\index{convo() (in module terrain\_mult)}
 
 \begin{fulllineitems}
-\phantomsection\label{docs/terrain:terrain_mult.convo_e}\pysiglinewithargsret{\code{terrain\_mult.}\bfcode{convo\_e}}{\emph{data}, \emph{filter\_width}}{}
-Convolute the initial terrain multplier to final one for east direction
+\phantomsection\label{docs/terrain:terrain_mult.convo}\pysiglinewithargsret{\code{terrain\_mult.}\bfcode{convo}}{\emph{one\_dir}, \emph{data}, \emph{avg\_width}, \emph{lag\_width}}{}
+Convolute the initial terrain multplier to final values for one of the
+eight directions
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{one\_dir} -- \emph{str} the direction
+
 \item {} 
 \textbf{data} -- \code{numpy.ndarray} the initial terrain multiplier values
 
 \item {} 
-\textbf{filter\_width} -- :\emph{int} the number of cells within upwind buffer
+\textbf{avg\_width} -- :\emph{int} the number of cells within the upwind buffer
+
+\item {} 
+\textbf{lag\_width} -- :\emph{int} the number of cells within the lag distance
 
 \end{itemize}
 
 \item[{Returns}] \leavevmode
 \code{numpy.ndarray} the final terrain multiplier value
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-
-\index{convo\_n() (in module terrain\_mult)}
-
-\begin{fulllineitems}
-\phantomsection\label{docs/terrain:terrain_mult.convo_n}\pysiglinewithargsret{\code{terrain\_mult.}\bfcode{convo\_n}}{\emph{data}, \emph{filter\_width}}{}
-Convolute the initial terrain multplier to final one for north direction
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{itemize}
-\item {} 
-\textbf{data} -- \code{numpy.ndarray} the initial terrain multiplier values
-
-\item {} 
-\textbf{filter\_width} -- :\emph{int} the number of cells within upwind buffer
-
-\end{itemize}
-
-\item[{Returns}] \leavevmode
-\code{numpy.ndarray} the final terrain multiplier value
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-
-\index{convo\_ne() (in module terrain\_mult)}
-
-\begin{fulllineitems}
-\phantomsection\label{docs/terrain:terrain_mult.convo_ne}\pysiglinewithargsret{\code{terrain\_mult.}\bfcode{convo\_ne}}{\emph{data}, \emph{filter\_width}}{}
-Convolute initial terrain multplier to final one for north east direction
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{itemize}
-\item {} 
-\textbf{data} -- \code{numpy.ndarray} the initial terrain multiplier values
-
-\item {} 
-\textbf{filter\_width} -- :\emph{int} the number of cells within upwind buffer
-
-\end{itemize}
-
-\item[{Returns}] \leavevmode
-\code{numpy.ndarray} the final terrain multiplier value
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-
-\index{convo\_nw() (in module terrain\_mult)}
-
-\begin{fulllineitems}
-\phantomsection\label{docs/terrain:terrain_mult.convo_nw}\pysiglinewithargsret{\code{terrain\_mult.}\bfcode{convo\_nw}}{\emph{data}, \emph{filter\_width}}{}
-Convolute initial terrain multplier to final one for north-west direction
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{itemize}
-\item {} 
-\textbf{data} -- \code{numpy.ndarray} the initial terrain multiplier values
-
-\item {} 
-\textbf{filter\_width} -- :\emph{int} the number of cells within upwind buffer
-
-\end{itemize}
-
-\item[{Returns}] \leavevmode
-\code{numpy.ndarray} the final terrain multiplier value
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-
-\index{convo\_s() (in module terrain\_mult)}
-
-\begin{fulllineitems}
-\phantomsection\label{docs/terrain:terrain_mult.convo_s}\pysiglinewithargsret{\code{terrain\_mult.}\bfcode{convo\_s}}{\emph{data}, \emph{filter\_width}}{}
-Convolute the initial terrain multplier to final one for south direction
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{itemize}
-\item {} 
-\textbf{data} -- \code{numpy.ndarray} the initial terrain multiplier values
-
-\item {} 
-\textbf{filter\_width} -- :\emph{int} the number of cells within upwind buffer
-
-\end{itemize}
-
-\item[{Returns}] \leavevmode
-\code{numpy.ndarray} the final terrain multiplier value
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-
-\index{convo\_se() (in module terrain\_mult)}
-
-\begin{fulllineitems}
-\phantomsection\label{docs/terrain:terrain_mult.convo_se}\pysiglinewithargsret{\code{terrain\_mult.}\bfcode{convo\_se}}{\emph{data}, \emph{filter\_width}}{}
-Convolute initial terrain multplier to final one for south-east direction
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{itemize}
-\item {} 
-\textbf{data} -- \code{numpy.ndarray} the initial terrain multiplier values
-
-\item {} 
-\textbf{filter\_width} -- :\emph{int} the number of cells within upwind buffer
-
-\end{itemize}
-
-\item[{Returns}] \leavevmode
-\code{numpy.ndarray} the final terrain multiplier value
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-
-\index{convo\_sw() (in module terrain\_mult)}
-
-\begin{fulllineitems}
-\phantomsection\label{docs/terrain:terrain_mult.convo_sw}\pysiglinewithargsret{\code{terrain\_mult.}\bfcode{convo\_sw}}{\emph{data}, \emph{filter\_width}}{}
-Convolute initial terrain multplier to final one for south-west direction
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{itemize}
-\item {} 
-\textbf{data} -- \code{numpy.ndarray} the initial terrain multiplier values
-
-\item {} 
-\textbf{filter\_width} -- :\emph{int} the number of cells within upwind buffer
-
-\end{itemize}
-
-\item[{Returns}] \leavevmode
-\code{numpy.ndarray} the final terrain multiplier value
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-
-\index{convo\_w() (in module terrain\_mult)}
-
-\begin{fulllineitems}
-\phantomsection\label{docs/terrain:terrain_mult.convo_w}\pysiglinewithargsret{\code{terrain\_mult.}\bfcode{convo\_w}}{\emph{data}, \emph{filter\_width}}{}
-Convolute the initial terrain multplier to final one for west direction
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{itemize}
-\item {} 
-\textbf{data} -- \code{numpy.ndarray} the initial terrain multiplier values
-
-\item {} 
-\textbf{filter\_width} -- :\emph{int} the number of cells within upwind buffer
-
-\end{itemize}
-
-\item[{Returns}] \leavevmode
-\code{numpy.ndarray} the final terrain multiplier value
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-
-\index{tc2mz\_orig() (in module terrain\_mult)}
-
-\begin{fulllineitems}
-\phantomsection\label{docs/terrain:terrain_mult.tc2mz_orig}\pysiglinewithargsret{\code{terrain\_mult.}\bfcode{tc2mz\_orig}}{\emph{cycl}, \emph{data}}{}
-Transfer the landsat classified image into original terrain multiplier
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{itemize}
-\item {} 
-\textbf{cycl} -- \code{numpy.ndarray} the cyclone value of the tile
-
-\item {} 
-\textbf{data} -- \code{numpy.ndarray} the input terrain class values
-
-\end{itemize}
-
-\item[{Returns}] \leavevmode
-\code{numpy.ndarray} the initial terrain multiplier value
 
 \end{description}\end{quote}
 
@@ -770,15 +694,15 @@ Transfer the landsat classified image into original terrain multiplier
 \index{terrain() (in module terrain\_mult)}
 
 \begin{fulllineitems}
-\phantomsection\label{docs/terrain:terrain_mult.terrain}\pysiglinewithargsret{\code{terrain\_mult.}\bfcode{terrain}}{\emph{cyclone\_area}, \emph{temp\_tile}}{}
+\phantomsection\label{docs/terrain:terrain_mult.terrain}\pysiglinewithargsret{\code{terrain\_mult.}\bfcode{terrain}}{\emph{temp\_tile}, \emph{tile\_extents\_nobuffer}}{}
 Performs core calculations to derive the terrain multiplier
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{itemize}
 \item {} 
-\textbf{cyclone\_area} -- none or \emph{file} input tile of the cyclone area file.
+\textbf{temp\_tile} -- \emph{file} the image file of the input tile of the land cover
 
 \item {} 
-\textbf{temp\_tile} -- \emph{file} the image file of the input tile of the land cover
+\textbf{tile\_extents\_nobuffer} -- \emph{tuple} the input tile extent without buffer
 
 \end{itemize}
 
@@ -790,17 +714,11 @@ Performs core calculations to derive the terrain multiplier
 \index{terrain\_class2mz\_orig() (in module terrain\_mult)}
 
 \begin{fulllineitems}
-\phantomsection\label{docs/terrain:terrain_mult.terrain_class2mz_orig}\pysiglinewithargsret{\code{terrain\_mult.}\bfcode{terrain\_class2mz\_orig}}{\emph{cyclone\_area}, \emph{data}}{}
+\phantomsection\label{docs/terrain:terrain_mult.terrain_class2mz_orig}\pysiglinewithargsret{\code{terrain\_mult.}\bfcode{terrain\_class2mz\_orig}}{\emph{data}}{}
 Transfer the landsat classified image into original terrain multiplier
 \begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{itemize}
-\item {} 
-\textbf{cyclone\_area} -- none or \emph{file} the input tile of the cyclone area file
-
-\item {} 
+\item[{Parameters}] \leavevmode
 \textbf{data} -- \code{numpy.ndarray} the input terrain class values
-
-\end{itemize}
 
 \item[{Returns}] \leavevmode
 \code{numpy.ndarray} the initial terrain multiplier value
@@ -813,8 +731,6 @@ Transfer the landsat classified image into original terrain multiplier
 
 \section{shielding}
 \label{docs/shielding:shielding}\label{docs/shielding::doc}
-Sheilding multi docs go here..
-
 
 \subsection{\_\_init\_\_.py}
 \label{docs/shielding:init-py}\label{docs/shielding:module-__init__}
@@ -870,7 +786,7 @@ size in the y direction.
 \begin{fulllineitems}
 \phantomsection\label{docs/shielding:shield_mult.combine}\pysiglinewithargsret{\code{shield\_mult.}\bfcode{combine}}{\emph{ms\_orig\_array}, \emph{slope\_array}, \emph{aspect\_array}, \emph{one\_dir}}{}
 Used for each direction to derive the shielding multipliers by considering
-slope and aspect after covolution in the previous step. It also will remove
+slope and aspect after covolution in the previous step. It will also remove
 the conservatism.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{itemize}
@@ -882,6 +798,9 @@ the conservatism.
 
 \item {} 
 \textbf{aspect\_array\_reclassify} -- \code{numpy.ndarray} input aspect values
+
+\item {} 
+\textbf{one\_dir} -- \emph{str} the direction of wind
 
 \end{itemize}
 
@@ -896,7 +815,7 @@ the conservatism.
 \index{convo\_combine() (in module shield\_mult)}
 
 \begin{fulllineitems}
-\phantomsection\label{docs/shielding:shield_mult.convo_combine}\pysiglinewithargsret{\code{shield\_mult.}\bfcode{convo\_combine}}{\emph{ms\_orig}, \emph{slope\_array}, \emph{aspect\_array}}{}
+\phantomsection\label{docs/shielding:shield_mult.convo_combine}\pysiglinewithargsret{\code{shield\_mult.}\bfcode{convo\_combine}}{\emph{ms\_orig}, \emph{slope\_array}, \emph{aspect\_array}, \emph{tile\_extents\_nobuffer}}{}
 Apply convolution to the orginal shielding factor for each direction and
 call the \emph{combine} module to consider the slope and aspect and remove
 conservitism to get final shielding multiplier values
@@ -909,7 +828,10 @@ conservitism to get final shielding multiplier values
 \textbf{slope\_array} -- \code{numpy.ndarray} the input slope values
 
 \item {} 
-\textbf{aspect\_array\_reclassify} -- \code{numpy.ndarray} input aspect values
+\textbf{aspect\_array} -- \code{numpy.ndarray} the input aspect values
+
+\item {} 
+\textbf{tile\_extents\_nobuffer} -- \emph{tuple} the input tile extent without buffer
 
 \end{itemize}
 
@@ -1138,7 +1060,7 @@ Reclassify the aspect valus from 0 \textasciitilde{} 360 to 1 \textasciitilde{} 
 \index{shield() (in module shield\_mult)}
 
 \begin{fulllineitems}
-\phantomsection\label{docs/shielding:shield_mult.shield}\pysiglinewithargsret{\code{shield\_mult.}\bfcode{shield}}{\emph{terrain}, \emph{input\_dem}}{}
+\phantomsection\label{docs/shielding:shield_mult.shield}\pysiglinewithargsret{\code{shield\_mult.}\bfcode{shield}}{\emph{terrain}, \emph{input\_dem}, \emph{tile\_extents\_nobuffer}}{}
 Performs core calculations to derive the shielding multiplier
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{itemize}
@@ -1147,6 +1069,9 @@ Performs core calculations to derive the shielding multiplier
 
 \item {} 
 \textbf{input\_dem} -- \emph{file} the input tile of the DEM
+
+\item {} 
+\textbf{tile\_extents\_nobuffer} -- \emph{tuple} the input tile extent without buffer
 
 \end{itemize}
 
@@ -1162,7 +1087,7 @@ Performs core calculations to derive the shielding multiplier
 Reclassify the terrain classes into initial shielding factors
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode
-\textbf{input\_dem} -- \emph{file} the input terrain class map
+\textbf{terrain} -- \emph{file} the input terrain class map
 
 \item[{Returns}] \leavevmode
 \emph{file} the output initial shielding value
@@ -1384,14 +1309,43 @@ Histroical authors: Xunguo Lin, Chris Thomas, Wenping Jiang, Craig Arthur
 
 \end{description}\end{quote}
 
+\index{tasmania() (in module topomult)}
+
+\begin{fulllineitems}
+\phantomsection\label{docs/topographic:topomult.tasmania}\pysiglinewithargsret{\code{topomult.}\bfcode{tasmania}}{\emph{mh\_in}, \emph{dem}}{}
+Apply the Tasmania factor for the topographic multiplier
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{mh\_in} -- \code{numpy.ndarray} the input topographic multiplier
+
+\item {} 
+\textbf{dem} -- \code{numpy.ndarray} the input DEM value
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+\code{numpy.ndarray} the output topographic multiplier
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+
 \index{topomult() (in module topomult)}
 
 \begin{fulllineitems}
-\phantomsection\label{docs/topographic:topomult.topomult}\pysiglinewithargsret{\code{topomult.}\bfcode{topomult}}{\emph{input\_dem}}{}
+\phantomsection\label{docs/topographic:topomult.topomult}\pysiglinewithargsret{\code{topomult.}\bfcode{topomult}}{\emph{input\_dem}, \emph{tile\_extents\_nobuffer}}{}
 Executes core topographic multiplier functionality
 \begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
 \textbf{input\_dem} -- \emph{file} the input tile of the DEM
+
+\item {} 
+\textbf{tile\_extents\_nobuffer} -- \emph{tuple} the input tile extent without buffer
+
+\end{itemize}
 
 \end{description}\end{quote}
 
@@ -1407,75 +1361,6 @@ These are tools or functions used to support the main computation.!!
 \subsection{\_\_init\_\_.py}
 \label{docs/utilities:init-py}\label{docs/utilities:module-__init__}
 \index{\_\_init\_\_ (module)}
-
-\subsection{\_execute.py}
-\label{docs/utilities:execute-py}\label{docs/utilities:module-_execute}
-\index{\_execute (module)}
-Provides the function {\hyperref[docs/utilities:_execute.execute]{\code{execute()}}}. This needs to be defined in a separate file to avoid
-circular imports.
-
-\index{execute() (in module \_execute)}
-
-\begin{fulllineitems}
-\phantomsection\label{docs/utilities:_execute.execute}\pysiglinewithargsret{\code{\_execute.}\bfcode{execute}}{\emph{command\_string=None}, \emph{shell=True}, \emph{cwd=None}, \emph{env=None}, \emph{stdout=-1}, \emph{stderr=-1}, \emph{preexec\_fn=None}, \emph{close\_fds=False}, \emph{bufsize=-1}, \emph{debug=False}}{}
-Executes a command as a subprocess.
-
-This function is a thin wrapper around \code{subprocess.Popen()} that gathers some extra information
-on the subprocess's execution context and status.  All arguments except `debug' are passed through
-to \code{subprocess.Popen()} as-is.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode\begin{itemize}
-\item {} 
-\textbf{command\_string} -- Commands to be executed.
-
-\item {} 
-\textbf{shell} -- Execute via the shell
-
-\item {} 
-\textbf{cwd} -- Working directory for the subprocess
-
-\item {} 
-\textbf{env} -- Environment for the subprocess
-
-\item {} 
-\textbf{stdout} -- stdout for the subprocess
-
-\item {} 
-\textbf{stderr} -- stdout for the subprocess
-
-\item {} 
-\textbf{close\_fds} -- close open file descriptors before execution
-
-\item {} 
-\textbf{bufsize} -- buffer size
-
-\item {} 
-\textbf{debug} -- debug flag
-
-\end{itemize}
-
-\item[{Returns}] \leavevmode
-\begin{description}
-\item[{Dictionary containing command, execution context and status:}] \leavevmode
-\{ `command': \textless{}str\textgreater{},
-`returncode': \textless{}int\textgreater{},
-`pid': \textless{}int\textgreater{},
-`stdout': \textless{}stdout text\textgreater{},
-`stderr': \textless{}stderr text\textgreater{},
-`caller\_ed': \textless{}caller working directory\textgreater{},
-`env': \textless{}execution environment\textgreater{},\}
-
-\end{description}
-
-
-\item[{Seealso }] \leavevmode
-\code{subprocess.Popen()}
-
-\end{description}\end{quote}
-
-\end{fulllineitems}
-
-
 
 \subsection{blrb.py}
 \label{docs/utilities:module-blrb}\label{docs/utilities:blrb-py}
@@ -1902,8 +1787,9 @@ Get the path of the module \textless{}level\textgreater{} levels above this func
 path, basename and extension of the file containing the module
 
 \item[{Example }] \leavevmode
-path, base, ext = fl\_module\_path( ), Calling fl\_module\_path() from
-``/foo/bar/baz.py'' produces the result ``/foo/bar'', ``baz'', ''.py''
+path, base, ext = fl\_module\_path( ), Calling fl\_module\_path()
+from ``/foo/bar/baz.py'' produces the result ``/foo/bar'', ``baz'',
+''.py''
 
 \end{description}\end{quote}
 
@@ -2207,31 +2093,57 @@ tuple of \code{numpy.ndarray} grid sizes for input dataset
 \index{nctools (module)}
 Tools used to produce output in netCDF format
 
-\index{get\_lat\_lon() (in module nctools)}
+\index{clip\_array() (in module nctools)}
 
 \begin{fulllineitems}
-\phantomsection\label{docs/utilities:nctools.get_lat_lon}\pysiglinewithargsret{\code{nctools.}\bfcode{get\_lat\_lon}}{\emph{x\_left}, \emph{y\_upper}, \emph{pixelwidth}, \emph{pixelheight}, \emph{cols}, \emph{rows}}{}
-Return the longitude and latitude values that lie within
-the modelled domain
+\phantomsection\label{docs/utilities:nctools.clip_array}\pysiglinewithargsret{\code{nctools.}\bfcode{clip\_array}}{\emph{data}, \emph{x\_left}, \emph{y\_upper}, \emph{pixelwidth}, \emph{pixelheight}, \emph{extent}}{}
+Return the clipped area of the input array according to an sub-extent
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{itemize}
 \item {} 
-\textbf{x\_left} -- \code{numpy.ndarray} containing longitude values
+\textbf{data} -- \code{numpy.ndarray} the input array
 
 \item {} 
-\textbf{y\_upper} -- \code{numpy.ndarray} containing latitude values
+\textbf{x\_left} -- \emph{float} the left-most longitude vlaue
 
 \item {} 
-\textbf{pixelwidth} -- \code{numpy.ndarray} containing longitude values
+\textbf{y\_upper} -- \emph{float} the upper-most latitude values
 
 \item {} 
-\textbf{pixelheightr} -- \code{numpy.ndarray} containing latitude values
+\textbf{pixelwidth} -- \emph{float} the pixel width
 
 \item {} 
-\textbf{cols} -- \code{numpy.ndarray} containing longitude values
+\textbf{pixelheight} -- \emph{float} the pixel height
 
 \item {} 
-\textbf{rows} -- \code{numpy.ndarray} containing latitude values
+\textbf{extent} -- \emph{tuple} the clipping extent
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+\code{numpy.ndarray} the clipped array
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+
+\index{get\_lat\_lon() (in module nctools)}
+
+\begin{fulllineitems}
+\phantomsection\label{docs/utilities:nctools.get_lat_lon}\pysiglinewithargsret{\code{nctools.}\bfcode{get\_lat\_lon}}{\emph{extent}, \emph{pixelwidth}, \emph{pixelheight}}{}
+Return the longitude and latitude values that lie within
+the given extent
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\textbf{extent} -- \emph{tuple} the clipping extent
+
+\item {} 
+\textbf{pixelwidth} -- \emph{float} the pixel width
+
+\item {} 
+\textbf{pixelheight} -- \emph{float} the pixel height
 
 \end{itemize}
 
@@ -2334,20 +2246,20 @@ Save a gridded dataset to a netCDF file using NetCDF4.
 \item {} 
 \textbf{dimensions} -- 
 \code{dict}
-The input dict `dimensions' has a strict structure, to 
-permit insertion of multiple dimensions. The dimensions should be keyed 
+The input dict `dimensions' has a strict structure, to
+permit insertion of multiple dimensions. The dimensions should be keyed
 with the slowest varying dimension as dimension 0.
 
 \begin{Verbatim}[commandchars=@\[\]]
-dimesions = {0:{'name': 
-                'values': 
-                'dtype': 
-                'atts':{'long@_name': 
-                        'units':  ...} }, 
-             1:{'name': 
-                'values': 
-                'type': 
-                'atts':{'long@_name': 
+dimesions = {0:{'name':
+                'values':
+                'dtype':
+                'atts':{'long@_name':
+                        'units':  ...} },
+             1:{'name':
+                'values':
+                'type':
+                'atts':{'long@_name':
                         'units':  ...} },
                       ...}
 \end{Verbatim}
@@ -2355,28 +2267,28 @@ dimesions = {0:{'name':
 
 \item {} 
 \textbf{variables} -- 
-\code{dict} 
+\code{dict}
 The input dict `variables' similarly requires a strict structure:
 
 \begin{Verbatim}[commandchars=@\[\]]
-variables = {0:{'name': 
-                'dims': 
-                'values': 
-                'dtype': 
-                'atts':{'long@_name': 
-                        'units': 
-                        ...} }, 
-             1:{'name': 
-                'dims': 
-                'values': 
-                'dtype': 
-                'atts':{'long@_name': 
-                        'units': 
-                        ...} }, 
+variables = {0:{'name':
+                'dims':
+                'values':
+                'dtype':
+                'atts':{'long@_name':
+                        'units':
+                        ...} },
+             1:{'name':
+                'dims':
+                'values':
+                'dtype':
+                'atts':{'long@_name':
+                        'units':
+                        ...} },
                  ...}
 \end{Verbatim}
 
-The value for the `dims' key must be a tuple that is a subset of 
+The value for the `dims' key must be a tuple that is a subset of
 the dimensions specified above.
 
 
@@ -2387,33 +2299,33 @@ the dimensions specified above.
 \textbf{datatitle} (\emph{str}) -- Optional title to give the stored dataset.
 
 \item {} 
-\textbf{gatts} (\emph{dict} or None) -- Optional dictionary of global attributes to include in the 
+\textbf{gatts} (\emph{dict} or None) -- Optional dictionary of global attributes to include in the
 file.
 
 \item {} 
-\textbf{dtype} (\code{numpy.dtype}) -- The data type of the missing value. If not given, infer from 
+\textbf{dtype} (\code{numpy.dtype}) -- The data type of the missing value. If not given, infer from
 other input arguments.
 
 \item {} 
-\textbf{writedata} (\emph{bool}) -- If true, then the function will write the provided 
-data (passed in via the variables dict) to the file. Otherwise, no data 
+\textbf{writedata} (\emph{bool}) -- If true, then the function will write the provided
+data (passed in via the variables dict) to the file. Otherwise, no data
 is written.
 
 \item {} 
-\textbf{keepfileopen} (\emph{bool}) -- If True, return a netcdf object and keep the 
-file open, so that data can be written by the calling program. 
+\textbf{keepfileopen} (\emph{bool}) -- If True, return a netcdf object and keep the
+file open, so that data can be written by the calling program.
 Otherwise, flush data to disk and close the file.
 
 \item {} 
-\textbf{zlib} (\emph{bool}) -- If true, compresses data in variables using gzip 
+\textbf{zlib} (\emph{bool}) -- If true, compresses data in variables using gzip
 compression.
 
 \item {} 
-\textbf{complevel} (\emph{integer}) -- Value between 1 and 9, describing level of 
+\textbf{complevel} (\emph{integer}) -- Value between 1 and 9, describing level of
 compression desired. Ignored if zlib=False.
 
 \item {} 
-\textbf{lsd} (\emph{integer}) -- Variable data will be truncated to this number of 
+\textbf{lsd} (\emph{integer}) -- Variable data will be truncated to this number of
 significant digits.
 
 \end{itemize}
@@ -2426,14 +2338,14 @@ significant digits.
 
 \item[{Raises}] \leavevmode\begin{itemize}
 \item {} 
-\textbf{KeyError} -- If input dimension or variable dicts do not have required 
+\textbf{KeyError} -- If input dimension or variable dicts do not have required
 keys.
 
 \item {} 
 \textbf{IOError} -- If output file cannot be created.
 
 \item {} 
-\textbf{ValueError} -- if there is a mismatch between dimensions and shape of 
+\textbf{ValueError} -- if there is a mismatch between dimensions and shape of
 values to write.
 
 \end{itemize}
@@ -2480,6 +2392,18 @@ Save multiplier data to a netCDF file.
 \label{docs/tests:init-py}\label{docs/tests:module-__init__}
 \index{\_\_init\_\_ (module)}
 
+\subsection{test\_clip\_dataset.py}
+\label{docs/tests:test-clip-dataset-py}\label{docs/tests:module-test_clip_dataset}
+\index{test\_clip\_dataset (module)}
+Title: test\_clip\_dataset.py 
+Author: Tina Yang, \href{mailto:tina.yang@ga.gov.au}{tina.yang@ga.gov.au} 
+CreationDate: 2014-06-02
+Description: Unit testing module for clip\_dataset and reproject\_dataset
+function in all\_multipliers.py 
+Version: \$Rev\$ 
+\$Id\$
+
+
 \subsection{test\_combine.py}
 \label{docs/tests:module-test_combine}\label{docs/tests:test-combine-py}
 \index{test\_combine (module)}
@@ -2491,9 +2415,49 @@ Version: \$Rev\$
 \$Id\$
 
 
-\subsection{test\_tc2mz\_orig.py}
-\label{docs/tests:module-test_tc2mz_orig}\label{docs/tests:test-tc2mz-orig-py}
-\index{test\_tc2mz\_orig (module)}
+\subsection{test\_nctools.py}
+\label{docs/tests:module-test_nctools}\label{docs/tests:test-nctools-py}
+\index{test\_nctools (module)}
+Title: test\_combine.py 
+Author: Tina Yang, \href{mailto:tina.yang@ga.gov.au}{tina.yang@ga.gov.au} 
+CreationDate: 2014-06-02
+Description: Unit testing module for get\_lat\_lon and clip function
+in nctools.py 
+Version: \$Rev\$ 
+\$Id\$
+
+
+\subsection{test\_shielding.py}
+\label{docs/tests:test-shielding-py}\label{docs/tests:module-test_shielding}
+\index{test\_shielding (module)}
+Title: testmultipliercalc.py 
+Author: Tina Yang, \href{mailto:tina.yang@ga.gov.au}{tina.yang@ga.gov.au} 
+CreationDate: 2014-05-01
+Description: Unit testing module for init\_kern and init\_kern\_diag functions
+in shield\_mult.py 
+Version: \$Rev\$ 
+\$Id\$
+
+
+\subsection{test\_terrain.py}
+\label{docs/tests:module-test_terrain}\label{docs/tests:test-terrain-py}
+\index{test\_terrain (module)}
+Title: testmultipliercalc.py 
+Author: Tina Yang, \href{mailto:tina.yang@ga.gov.au}{tina.yang@ga.gov.au} 
+CreationDate: 2014-05-01
+Description: Unit testing module for conv function in
+\begin{quote}
+
+terrain\_mult.py
+\end{quote}
+
+Version: \$Rev\$ 
+\$Id\$
+
+
+\subsection{test\_terrain\_class2mz\_orig.py}
+\label{docs/tests:test-terrain-class2mz-orig-py}\label{docs/tests:module-test_terrain_class2mz_orig}
+\index{test\_terrain\_class2mz\_orig (module)}
 Title: test\_tc2mz\_orig.py 
 Author: Tina Yang, \href{mailto:tina.yang@ga.gov.au}{tina.yang@ga.gov.au} 
 CreationDate: 2014-06-02
@@ -2544,6 +2508,22 @@ Version: \$Rev\$
 \$Id\$
 
 
+\subsection{test\_tasmania.py}
+\label{docs/tests:test-tasmania-py}\label{docs/tests:module-test_topographic.test_tasmania}
+\index{test\_topographic.test\_tasmania (module)}
+Title: testmultipliercalc.py 
+Author: Tina Yang, \href{mailto:tina.yang@ga.gov.au}{tina.yang@ga.gov.au} 
+CreationDate: 2014-05-01
+Description: Unit testing module for tasmania function in
+\begin{quote}
+
+topomult.py
+\end{quote}
+
+Version: \$Rev\$ 
+\$Id\$
+
+
 \chapter{Module Index}
 \label{index:module-index}\begin{itemize}
 \item {} 
@@ -2562,8 +2542,7 @@ Version: \$Rev\$
 \begin{theindex}
 \def\bigletter#1{{\Large\sffamily#1}\nopagebreak\vspace{1mm}}
 \bigletter{\_}
-\item {\texttt{\_\_init\_\_}}, \pageref{docs/topographic:module-__init__}
-\item {\texttt{\_execute}}, \pageref{docs/utilities:module-_execute}
+\item {\texttt{\_\_init\_\_}}, \pageref{docs/utilities:module-__init__}
 \indexspace
 \bigletter{a}
 \item {\texttt{all\_multipliers}}, \pageref{docs/all_multipliers:module-all_multipliers}
@@ -2591,10 +2570,15 @@ Version: \$Rev\$
 \indexspace
 \bigletter{t}
 \item {\texttt{terrain\_mult}}, \pageref{docs/terrain:module-terrain_mult}
+\item {\texttt{test\_clip\_dataset}}, \pageref{docs/tests:module-test_clip_dataset}
 \item {\texttt{test\_combine}}, \pageref{docs/tests:module-test_combine}
-\item {\texttt{test\_tc2mz\_orig}}, \pageref{docs/tests:module-test_tc2mz_orig}
+\item {\texttt{test\_nctools}}, \pageref{docs/tests:module-test_nctools}
+\item {\texttt{test\_shielding}}, \pageref{docs/tests:module-test_shielding}
+\item {\texttt{test\_terrain}}, \pageref{docs/tests:module-test_terrain}
+\item {\texttt{test\_terrain\_class2mz\_orig}}, \pageref{docs/tests:module-test_terrain_class2mz_orig}
 \item {\texttt{test\_topographic.test\_all\_topo\_engineered\_data}}, \pageref{docs/tests:module-test_topographic.test_all_topo_engineered_data}
 \item {\texttt{test\_topographic.test\_findpeaks}}, \pageref{docs/tests:module-test_topographic.test_findpeaks}
+\item {\texttt{test\_topographic.test\_tasmania}}, \pageref{docs/tests:module-test_topographic.test_tasmania}
 \item {\texttt{test\_topographic.testmultipliercalc}}, \pageref{docs/tests:module-test_topographic.testmultipliercalc}
 \item {\texttt{topomult}}, \pageref{docs/topographic:module-topomult}
 \indexspace

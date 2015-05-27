@@ -21,7 +21,7 @@ This package is used to produce wind terrain, shielding and topographic multipli
 Dependencies
 ===========================================
 
-Python 2.7, NumPy, SciPy, and GDAL are needed. 
+Python 2.7, NumPy, SciPy, NetCDF4 and GDAL are needed. 
 
 
 
