@@ -59,17 +59,14 @@ class TileGrid(object):
             log.info('Could not open ' + raster_ds)
             sys.exit(1)
 
-        # get image size, format, projection
+        # get image size, format
         self.x_dim = ds.RasterXSize
         self.y_dim = ds.RasterYSize
-        log.info(
-            'The input raster format is %s' %
-            ds.GetDriver().ShortName +
-            '/ %s' %
-            ds.GetDriver().LongName)
+        log.info('The input raster format is %s' %
+                 ds.GetDriver().ShortName + '/ %s' %
+                 ds.GetDriver().LongName)
         log.info('Image size is %s' %
-                 str(self.x_dim) +
-                 'x %s' %
+                 str(self.x_dim) + 'x %s' %
                  str(self.y_dim))
 
         # get georeference info
@@ -79,26 +76,22 @@ class TileGrid(object):
         self.pixelwidth = geotransform[1]
         self.pixelheight = -geotransform[5]
         log.info('Top left corner X,Y: %s' %
-                 str(self.x_left) +
-                 ' %s' %
+                 str(self.x_left) + ' %s' %
                  str(self.y_upper))
         log.info('Resolution %s' %
-                 str(self.pixelwidth) +
-                 'x %s' %
+                 str(self.pixelwidth) + 'x %s' %
                  str(self.pixelheight))
 
         # calculte the size of a tile and its buffer
         self.x_step = int(np.ceil(1.0 / float(self.pixelwidth)))
         self.y_step = int(np.ceil(1.0 / float(self.pixelheight)))
         log.info('Maximum no. of cells per tile is %s' %
-                 str(self.x_step) +
-                 'x %s' %
+                 str(self.x_step) + 'x %s' %
                  str(self.y_step))
         self.x_buffer = int(upwind_length / self.pixelwidth)
         self.y_buffer = int(upwind_length / self.pixelheight)
         log.info('No. of cells in the buffer of each tile in x and y is %s' %
-                 str(self.x_buffer) +
-                 ', %s' %
+                 str(self.x_buffer) + ', %s' %
                  str(self.y_buffer))
 
         self.subset_maxcols = int(np.ceil(self.x_dim / float(self.x_step)))
@@ -276,7 +269,7 @@ class Multipliers(object):
         """
 
         # initialising the multiplier class
-        self.lc = landcover
+        self.lcv = landcover
         self.dem = dem
         self.dem_ds = None
 
@@ -330,7 +323,7 @@ class Multipliers(object):
         Clip the DEM using an extent and save the clipped to a new file.
 
         :param extent: `tuple` the input tile extent with buffer
-        :param str dst_filename: Destination filename.
+        :param str dst_filename: destination filename.
 
         """
 
@@ -344,8 +337,8 @@ class Multipliers(object):
 
         origin_x, origin_y = extent[0], extent[1]
 
-        wide = int(np.ceil((extent[2] - extent[0])/self.pixelwidth))
-        high = int(np.ceil((extent[1] - extent[3])/self.pixelheight))
+        wide = int(np.around((extent[2] - extent[0])/self.pixelwidth))
+        high = int(np.around((extent[1] - extent[3])/self.pixelheight))
 
         # Output / destination
         drv = gdal.GetDriverByName('HFA')
@@ -387,11 +380,10 @@ class Multipliers(object):
 
             log.info('Extract the working tile from the input landcover to '
                      'match the DEM tile')
-            reproject_dataset(self.lc, temp_dataset, terrain_resample)
+            reproject_dataset(self.lcv, temp_dataset, terrain_resample)
 
             # start to calculate the multipliers
             log.info('producing Terrain multipliers ...')
-
             terrain.terrain_mult.terrain(terrain_resample,
                                          tile_extents_nobuffer)
 
@@ -412,8 +404,8 @@ class Multipliers(object):
 
             temp_dataset = None
         else:
-            log.info('deleteing the temporary empty DEM: {0}'.
-                     format(temp_tile_dem))
+            log.info('deleteing the temporary empty DEM: {0}'
+                     .format(temp_tile_dem))
             if os.path.exists(temp_tile_dem):
                 os.remove(temp_tile_dem)
 
@@ -624,6 +616,9 @@ def reproject_dataset(src_file, match_filename, dst_filename,
 
     if type(src_file) == str:
         src = gdal.Open(src_file, GA_ReadOnly)
+        if src is None:
+            log.info('Could not open ' + src)
+            sys.exit(1)
     else:
         src = src_file
 
@@ -640,6 +635,9 @@ def reproject_dataset(src_file, match_filename, dst_filename,
     # We want a section of source that matches this:
     if type(match_filename) == str:
         match_ds = gdal.Open(match_filename, GA_ReadOnly)
+        if match_ds is None:
+            log.info('Could not open ' + match_ds)
+            sys.exit(1)
     else:
         match_ds = match_filename
 
@@ -827,8 +825,7 @@ def run():
 
     # set input maps and output folder
     terrain_map = pjoin(pjoin(root, 'input'), "lc_terrain_class.img")
-    #dem = pjoin(pjoin(root, 'input'), "dems1_whole.img")
-    dem = pjoin(pjoin(root, 'input'), "dems1_whole_test_1.img")
+    dem = pjoin(pjoin(root, 'input'), "dems1_whole.img")
 
     do_output_directory_creation(root)
     global output_folder
