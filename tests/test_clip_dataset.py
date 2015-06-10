@@ -39,13 +39,11 @@ class TestClip(unittest.TestCase):
 #        print self.source_ds
         
            
-    def test_clip(self):    
-
+    def test_clip(self):   
+        
         dem = os.path.join(self.testdata_folder, "test_raster_dem.img") 
         dem_expect_result = os.path.join(self.testdata_folder,
                                           'test_raster_expect_clip_dem.img')
-        
-        extent = [142.94, -22.97, 143.96, -23.98]
         
         lc = os.path.join(self.testdata_folder, "test_raster_lc.img")
         
@@ -64,20 +62,20 @@ class TestClip(unittest.TestCase):
         assert exists(scripts_result)
         
         script_dataset = gdal.Open(scripts_result)
-#        script_band = script_dataset.GetRasterBand(1)
-#        script_data = script_band.ReadAsArray()
+        script_band = script_dataset.GetRasterBand(1)
+        script_data = script_band.ReadAsArray()
         
         expect_dataset = gdal.Open(dem_expect_result)
-#        expect_band = expect_dataset.GetRasterBand(1)
-#        expect_data = expect_band.ReadAsArray()
+        expect_band = expect_dataset.GetRasterBand(1)
+        expect_data = expect_band.ReadAsArray()
         
         # Check geographic transform:
         assert_almost_equal(script_dataset.GetGeoTransform(),
                             expect_dataset.GetGeoTransform(), decimal=2)
         
         # Check shape and content of arrays:
-        #self.assertEqual(script_data.shape, expect_data.shape)
-        #self.assertEqual(script_data.all(), expect_data.all())
+        self.assertEqual(script_data.shape, expect_data.shape)
+        self.assertEqual(script_data.all(), expect_data.all())
        
         
         del script_dataset, expect_dataset

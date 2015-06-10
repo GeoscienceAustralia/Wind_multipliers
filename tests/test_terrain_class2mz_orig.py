@@ -1,8 +1,8 @@
 """
- Title: test_tc2mz_orig.py 
+ Title: test_terrain_class2mz_orig.py 
  Author: Tina Yang, tina.yang@ga.gov.au 
  CreationDate: 2014-06-02
- Description: Unit testing module for tc2mz_orig function in terrain_mult.py 
+ Description: Unit testing module for terrain_class2mz_orig function in terrain_mult.py 
  Version: $Rev$ 
  $Id$
 """
@@ -39,19 +39,9 @@ class test_terrain_class2mz_orig(unittest.TestCase):
                       [1,9,4,7,2,8],
                       [2,5,15,12,7,8],
                       [3,8,3,1,5,2],
-                      [2,9,4,15,1,3]])
-    
-#        cycl = np.array([[1,0,0,0,0,0],
-#                          [0,0,0,1,0,0],
-#                          [0,0,0,0,0,0],
-#                          [0,0,0,0,0,0],
-#                          [0,0,0,1,0,0],
-#                          [0,0,0,0,1,0]])
-                                                      
+                      [2,9,4,15,1,3]])                                                         
                  
         scripts_result = terrain_class2mz_orig(data)
-        
-        #print scripts_result
         
         np.set_printoptions(precision=3)
         
