@@ -35,12 +35,13 @@ def clip_array(data, x_left, y_upper, pixelwidth, pixelheight, extent):
     :return: :class:`numpy.ndarray` the clipped array
 
     """
-
+    LOGGER.debug("Clipping the array using extent: {0}".format(repr(extent)))
+    
     lon_start = int(np.around((extent[0] - x_left)/pixelwidth))
     lat_start = int(np.around((-y_upper - extent[1])/pixelheight))
 
-    cols = int(np.ceil((extent[2] - extent[0])/pixelwidth))
-    rows = int(np.ceil((extent[1] - extent[3])/pixelheight))
+    cols = int(np.around((extent[2] - extent[0])/pixelwidth))
+    rows = int(np.around((extent[1] - extent[3])/pixelheight))
 
     lon_end = lon_start + cols
     lat_end = lat_start + rows
@@ -67,8 +68,8 @@ def get_lat_lon(extent, pixelwidth, pixelheight):
     x_left = extent[0]
     y_upper = -extent[1]
 
-    cols = int(np.ceil((extent[2] - extent[0])/pixelwidth))
-    rows = int(np.ceil((extent[1] - extent[3])/pixelheight))
+    cols = int(np.around((extent[2] - extent[0])/pixelwidth))
+    rows = int(np.around((extent[1] - extent[3])/pixelheight))
 
     lon = np.array(cols)
     lat = np.array(rows)
