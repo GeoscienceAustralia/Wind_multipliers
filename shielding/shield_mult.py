@@ -107,17 +107,14 @@ def get_slope_aspect(input_dem):
     band = ds.GetRasterBand(1)
     elevation_array = band.ReadAsArray(0, 0, cols, rows)
     elevation_array = elevation_array.astype(float)
-    # elevation_array[np.where(elevation_array < -0.001)] = np.nan
-    #elevation_array[np.where(elevation_array < -0.001)] = 0.0
-    
+
     nodata_value = band.GetNoDataValue()
     if nodata_value is not None:
         elevation_array[np.where(elevation_array == nodata_value)] = np.nan
     else:
         elevation_array[np.where(elevation_array is None)] = np.nan
-        
+
     mask = np.isnan(elevation_array)
-    #elevation_array[mask] = 0.0
 
     x_m_array, y_m_array = get_pixel_size_grids(ds)
 
@@ -142,7 +139,6 @@ def get_slope_aspect(input_dem):
         "(450 - arctan2(dzdy_array, -dzdx_array) / RADIANS_PER_DEGREE) % 360")
     # Derive reclassifed aspect...
     aspect_array_reclassify = reclassify_aspect(aspect_array)
-    #aspect_array_reclassify[mask] = np.nan
     del aspect_array
 
     ds = None
@@ -174,13 +170,13 @@ def terrain_class2ms_orig(terrain):
     # get georeference info
     band = terrain_resample_ds.GetRasterBand(1)
     data = band.ReadAsArray(0, 0, cols, rows)
-    
+
     nodata_value = band.GetNoDataValue()
     if nodata_value is not None:
         data[np.where(data == nodata_value)] = np.nan
     else:
         data[np.where(data is None)] = np.nan
-        
+
     mask = np.isnan(data)
 
     ms_init = value_lookup.ms_init
@@ -190,7 +186,6 @@ def terrain_class2ms_orig(terrain):
     for i in [1, 3, 4, 5]:
         outdata[data == i] = ms_init[i] / 100.0
 
-    #outdata[np.where(data == 0)] = np.nan
     outdata[mask] = np.nan
 
     ms_orig = pjoin(ms_folder, os.path.splitext(file_name)[0] + '_ms.img')
@@ -231,6 +226,11 @@ def convo_combine(ms_orig, slope_array, aspect_array, tile_extents_nobuffer):
     """
 
     ms_orig_ds = gdal.Open(ms_orig)
+    if ms_orig_ds is None:
+        log.info('Could not open ' + ms_orig)
+        sys.exit(1)
+
+    log.info('ms_orig is {0}'.format(ms_orig))
 
     # get image size, format, projection
     cols = ms_orig_ds.RasterXSize
@@ -303,8 +303,15 @@ def convo_combine(ms_orig, slope_array, aspect_array, tile_extents_nobuffer):
     os.remove(ms_orig)
     os.chdir(ms_folder)
     filelist = glob.glob('*.xml')
-    for f in filelist:
-        os.remove(f)
+
+    log.debug("useless xml files: {0}".format(repr(filelist)))
+
+    if len(filelist) != 0:
+        for f in filelist:
+            try:
+                os.remove(f)
+            except OSError:
+                pass
 
 
 def combine(ms_orig_array, slope_array, aspect_array, one_dir):
