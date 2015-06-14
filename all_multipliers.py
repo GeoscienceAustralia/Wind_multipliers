@@ -31,7 +31,7 @@ from os.path import join as pjoin, realpath, isdir, dirname
 from functools import wraps
 import itertools
 
-__version__ = '1.0'
+__version__ = '2.0'
 
 
 class TileGrid(object):
