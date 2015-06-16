@@ -783,11 +783,11 @@ def run():
 
     cmd_subfolder3 = pjoin(cmd_folder, "topographic")
     if cmd_subfolder3 not in sys.path:
-        sys.path.insert(0, cmd_subfolder2)
+        sys.path.insert(0, cmd_subfolder3)
 
     cmd_subfolder4 = pjoin(cmd_folder, "utilities")
     if cmd_subfolder4 not in sys.path:
-        sys.path.insert(0, cmd_subfolder2)
+        sys.path.insert(0, cmd_subfolder4)
 
     config = ConfigParser.RawConfigParser()
     config.read(pjoin(cmd_folder, 'multiplier_conf.cfg'))
