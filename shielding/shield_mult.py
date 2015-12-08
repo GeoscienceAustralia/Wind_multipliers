@@ -172,14 +172,21 @@ def terrain_class2ms_orig(terrain):
     data = band.ReadAsArray(0, 0, cols, rows)
 
     nodata_value = band.GetNoDataValue()
+#    if nodata_value is not None:
+#        data[np.where(data == nodata_value)] = np.nan
+#    else:
+#        data[np.where(data is None)] = np.nan
+#
+#    mask = np.isnan(data)
+
     if nodata_value is not None:
-        data[np.where(data == nodata_value)] = np.nan
+        data[np.where(data == nodata_value)] = -99
     else:
-        data[np.where(data is None)] = np.nan
+        data[np.where(data is None)] = -99
 
-    mask = np.isnan(data)
+    mask = np.where(data == -99)
 
-    ms_init = value_lookup.ms_init
+    ms_init = value_lookup.MS_INIT
 
     outdata = np.ones_like(data, dtype=np.float32)
 
@@ -328,7 +335,7 @@ def combine(ms_orig_array, slope_array, aspect_array, one_dir):
     :return: :class:`numpy.ndarray` the output shielding mutipler values
     """
 
-    dire_aspect = value_lookup.dire_aspect
+    dire_aspect = value_lookup.DIRE_ASPECT
     aspect_value = dire_aspect[one_dir]
 
     conservatism = 0.9
@@ -510,8 +517,7 @@ def kern_se(size):
 def blur_image(im, kernel, mode='constant'):
     """
     Blurs the image by convolving with a kernel (e.g. mean or gaussian) of
-    typical size n. The optional keyword argument ny allows for a different
-    size in the y direction.
+    typical size.
 
     :param im: :class:`numpy.ndarray` input data of initial shielding values
     :param kernel: :class:`numpy.ndarray` the kernel used for convolution

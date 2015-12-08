@@ -22,7 +22,7 @@ from osgeo import osr, gdal
 import logging as log
 import terrain.terrain_mult
 import shielding.shield_mult
-import topographic.topomult
+import topographic.topo_mult
 import ConfigParser
 from osgeo.gdalconst import GA_ReadOnly, GRA_NearestNeighbour
 from osgeo.gdalconst import GDT_Float32, GDT_Int32
@@ -392,7 +392,8 @@ class Multipliers(object):
                                          tile_extents_nobuffer)
 
             log.info('producing Topographic multipliers ...')
-            topographic.topomult.topomult(temp_tile_dem, tile_extents_nobuffer)
+            topographic.topo_mult.topomult(temp_tile_dem,
+                                           tile_extents_nobuffer)
 
             log.info('deleting the temporary files after calculation ...')
             log.info('deleteing the temporary DEM: {0}'

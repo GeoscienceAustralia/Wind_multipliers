@@ -36,7 +36,7 @@ def clip_array(data, x_left, y_upper, pixelwidth, pixelheight, extent):
 
     """
     LOGGER.debug("Clipping the array using extent: {0}".format(repr(extent)))
-    
+
     lon_start = int(np.around((extent[0] - x_left)/pixelwidth))
     lat_start = int(np.around((-y_upper - extent[1])/pixelheight))
 

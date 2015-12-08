@@ -23,7 +23,8 @@ from utilities import value_lookup
 from utilities.nctools import save_multiplier, get_lat_lon, clip_array
 from utilities.get_pixel_size_grid import get_pixel_size_grids
 import numpy as np
-import osgeo.gdal as gdal
+# import osgeo.gdal as gdal
+from osgeo import gdal
 from os.path import join as pjoin
 
 
@@ -155,7 +156,7 @@ def terrain_class2mz_orig(data):
     :returns: :class:`numpy.ndarray` the initial terrain multiplier value
     """
 
-    mz_init = value_lookup.mz_init_non_cycl
+    mz_init = value_lookup.MZ_INIT
 
     outdata = np.zeros_like(data, np.float32)
 
@@ -183,46 +184,14 @@ def convo(one_dir, data, avg_width, lag_width):
     rows = data.shape[0]
     cols = data.shape[1]
 
-    all_neighb = dict([('w', lambda i, jj, rows, cols: jj-lag_width),
-                       ('e', lambda i, jj, rows, cols: cols-jj-1-lag_width),
-                       ('n', lambda i, jj, rows, cols: i-lag_width),
-                       ('s', lambda i, jj, rows, cols: rows-i-1-lag_width),
-                       ('nw', lambda i, jj, rows, cols: min(i, jj)-lag_width),
-                       ('ne', lambda i, jj, rows, cols:
-                           min(i, cols-jj-1)-lag_width),
-                       ('sw', lambda i, jj, rows, cols:
-                           min(rows-i-1, jj)-lag_width),
-                       ('se', lambda i, jj, rows, cols:
-                           min(rows-i-1, cols-jj-1)-lag_width),
-                       ])
-
-    point_r = dict([('w', lambda i, m: i),
-                    ('e', lambda i, m: i),
-                    ('n', lambda i, m: i-m-lag_width-1),
-                    ('s', lambda i, m: i+m+lag_width+1),
-                    ('nw', lambda i, m: i-m-lag_width-1),
-                    ('ne', lambda i, m: i-m-lag_width-1),
-                    ('sw', lambda i, m: i+m+lag_width+1),
-                    ('se', lambda i, m: i+m+lag_width+1),
-                    ])
-
-    point_c = dict([('w', lambda jj, m: jj-m-lag_width-1),
-                    ('e', lambda jj, m: jj+m+lag_width+1),
-                    ('n', lambda jj, m: jj),
-                    ('s', lambda jj, m: jj),
-                    ('nw', lambda jj, m: jj-m-lag_width-1),
-                    ('ne', lambda jj, m: jj+m+lag_width+1),
-                    ('sw', lambda jj, m: jj-m-lag_width-1),
-                    ('se', lambda jj, m: jj+m+lag_width+1),
-                    ])
-
     for i in range(rows):
         for jj in range(cols):
 
             neighbour_sum = 0
 
             # find the total number of neighbours in this direction
-            all_neighb_no = all_neighb[one_dir](i, jj, rows, cols)
+            all_neighb_no = value_lookup.ALL_NEIGHB[one_dir](i, jj, rows, cols,
+                                                             lag_width)
 
             if all_neighb_no > 0:
                 if all_neighb_no < avg_width:
@@ -233,8 +202,8 @@ def convo(one_dir, data, avg_width, lag_width):
                 for m in range(max_neighb_no):
 
                     # get neighbour point location
-                    point_row = point_r[one_dir](i, m)
-                    point_col = point_c[one_dir](jj, m)
+                    point_row = value_lookup.POINT_R[one_dir](i, m, lag_width)
+                    point_col = value_lookup.POINT_C[one_dir](jj, m, lag_width)
 
                     neighbour_sum += data[point_row, point_col]
 

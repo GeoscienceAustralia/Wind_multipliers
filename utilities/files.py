@@ -279,7 +279,7 @@ def fl_start_log(log_file, log_level, verbose=False, datestamp=False,
             console.setFormatter(formatter)
             logger.addHandler(console)
 
-    logger.info('Started log file %s (detail level %s)' % 
+    logger.info('Started log file %s (detail level %s)' %
                 (log_file, log_level))
     logger.info('Running %s (pid %d)' % (sys.argv[0], os.getpid()))
     logger.info('Version %s' % (fl_program_version()))
