@@ -42,10 +42,10 @@ multiplier_calc.py
 
 
 
-topomult.py
+topo_mult.py
 ===========================================
 
-.. automodule:: topomult
+.. automodule:: topo_mult
    :members:
 
 
