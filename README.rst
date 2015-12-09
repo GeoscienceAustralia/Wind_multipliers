@@ -37,7 +37,7 @@ Version 2.0 has several improvements compared to Version 1.0:
 	* Simplified the output structure.
 	* Updated the terrain multiplier algorithm as per AS/NZS 1170.2 (2011) and recent amendments. 
 	* Updated the topographic multiplier algorithm to include the Tasmania factor as per AS/NZS 1170.2 (2011).
-	* Updated the topographic multiplier algorithm to remove the conservatism associated with the topographic multiplier as described in the document (Yang, T., Nadimpalli, K. & Cechet, R.P. 2014. Local wind assessment in Australia: computation methodology for wind multipliers. Record 2014/33. Geoscience Australia, Canberra) but with a modification (For topographic features such as shallow hills and escarpments where Mt < 1.4, a linear interpolation is constructed so that the percentage of reduction is gradually increased from 0 at point (Mt = 1) to 10 at point (Mt = 1.4))
+	* Updated the topographic multiplier algorithm to remove the conservatism associated with the topographic multiplier as described in the document (*Yang, T., Nadimpalli, K. & Cechet, R.P. 2014. Local wind assessment in Australia: computation methodology for wind multipliers. Record 2014/33. Geoscience Australia, Canberra*) but with a modification (For topographic features such as shallow hills and escarpments where Mt < 1.4, a linear interpolation is constructed so that the percentage of reduction is gradually increased from 0 at point (Mt = 1) to 10 at point (Mt = 1.4))
 	* Updated the shielding multiplier convolution mask by considering the Engineer's opinion.
 
 Status 
