@@ -79,11 +79,11 @@ def terrain(temp_tile, tile_extents_nobuffer):
     reclassified_array = terrain_class2mz_orig(data)
 
     # if the value is 0, it is nodata
-    # reclassified_array[reclassified_array == 0] = np.nan
+    reclassified_array[reclassified_array == 0] = np.nan
 
-    # assign nodata area as average multiplier value
+    # assign nodata area as water with multiplier value 1
     mask = np.isnan(reclassified_array)
-    reclassified_array[mask] = 0.931
+    reclassified_array[mask] = 1.0
 
     # convoulution of the original terrain multipler into different directions
     log.info('Moving average for each direction ...')
