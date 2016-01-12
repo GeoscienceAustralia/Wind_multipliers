@@ -78,8 +78,11 @@ def terrain(temp_tile, tile_extents_nobuffer):
 
     reclassified_array = terrain_class2mz_orig(data)
 
-    # if the value is 0, it is nodata
-    reclassified_array[reclassified_array == 0] = np.nan
+    # if the value is 0, it is nodata, if all 0s, empty tile
+    if np.max(reclassified_array) == 0:
+        return
+    else:
+        reclassified_array[reclassified_array == 0] = np.nan
 
     # assign nodata area as water with multiplier value 1
     mask = np.isnan(reclassified_array)
