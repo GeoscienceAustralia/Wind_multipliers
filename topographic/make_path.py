@@ -49,7 +49,7 @@ def make_path(nr, nc, n, dire):
     result = []
     while ((i <= nr and i >= 1) and (j <= nc and j >= 1)):
         l = i + (j - 1) * nr - 1
-        result.append(l)
+        result.append(int(l))
         i += i_incr
         j += j_incr
 
