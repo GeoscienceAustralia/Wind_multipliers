@@ -28,7 +28,7 @@ def escarpment_factor(profile, ridge, valley, data_spacing):
     lu = abs(ridge - valley) * data_spacing / 2
     slope = h / (2 * lu)
     beta_ind = np.minimum(nrow - 1, np.floor(ridge + (2 * lu / data_spacing)))
-    h_r2beta = profile[ridge] - profile[beta_ind]
+    h_r2beta = profile[int(ridge)] - profile[int(beta_ind)]
     d_r2beta = (beta_ind - ridge) * data_spacing
     if d_r2beta > 0:                 # d_r2beta can be 0, 25, 50, ...
         slope_r2ml2 = h_r2beta / d_r2beta
