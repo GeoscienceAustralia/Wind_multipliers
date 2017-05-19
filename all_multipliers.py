@@ -825,8 +825,8 @@ def run():
     fl_start_log(logfile, loglevel, verbose)
 
     # set input maps and output folder
-    terrain_map = pjoin(pjoin(root, 'input'), "lc_terrain_class.img")
-    dem = pjoin(pjoin(root, 'input'), "dems1_whole.img")
+    terrain_map = config.get('inputValues', 'terrain_data')
+    dem = config.get('inputValues', 'dem_data')
 
     do_output_directory_creation(root)
     global output_folder
