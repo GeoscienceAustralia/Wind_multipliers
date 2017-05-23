@@ -6,3 +6,4 @@ python-dateutil
 netCDF4>=1.0.8 
 pytz==2014.4 
 simplejson==3.6.0 
+pandas
