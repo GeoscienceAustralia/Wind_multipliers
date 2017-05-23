@@ -2,6 +2,7 @@
     Title: test_terrain.py
     Author: Tina Yang, tina.yang@ga.gov.au
     CreationDate: 2014-05-01
+    Updated: May 2017, Claire Krause
     Description: Unit testing module for convo function in
                  terrain_mult.py
     Version: $Rev$
@@ -15,7 +16,7 @@ import numpy as np
 from numpy.testing import assert_almost_equal, assert_array_almost_equal
 from inspect import getfile, currentframe
 from osgeo import gdal
-
+import pandas as pd
 
 class TestTerrainMultiplier(unittest.TestCase):
 
@@ -36,25 +37,29 @@ class TestTerrainMultiplier(unittest.TestCase):
 
         from terrain.terrain_mult import terrain_class2mz_orig
 
-        data = np.array([[2, 4, 4, 5, 13, 11],
-                         [7, 14, 3, 1, 8, 6],
-                         [1, 9, 4, 7, 2, 8],
-                         [2, 5, 15, 12, 7, 8],
-                         [3, 8, 3, 1, 5, 2],
-                         [2, 9, 4, 15, 1, 3]])
+        data = np.array([[1000, 1000, 949, 898],
+                         [898,  1063, 774, 949],
+                         [949,  774,  806, 806],
+                         [1063, 1000, 949, 774],
+                         [1000, 898,  774, 949],
+                         [949,  1063, 806, 774]])
+        mz_init = pd.DataFrame({'CATEGORY' : pd.Series([774, 806, 898, 949, 1000, 1063], 
+                                                       index = [0, 1, 2, 3, 4, 5]),
+                                'ROUGHNESS_LENGTH_m' : pd.Series([1, 0.4, 0.08, 0.04, 0.02, 0.006], 
+                                                       index = [0, 1, 2, 3, 4, 5])})
 
-        scripts_result = terrain_class2mz_orig(data)
+        scripts_result = terrain_class2mz_orig(data, mz_init)
 
         np.set_printoptions(precision=3)
 
-        expect_result = np.array([[0.774, 0.806, 0.806, 0.83, 1.063, 1.063],
-                                  [0.949, 0.898, 0.782, 0.75, 1, 0.919],
-                                  [0.750, 1, 0.806, 0.949, 0.774, 1],
-                                  [0.774, 0.830, 1.084, 1, 0.949, 1],
-                                  [0.782, 1, 0.782, 0.75, 0.830, 0.774],
-                                  [0.774, 1, 0.806, 1.084, 0.75, 0.782]])
+        expect_result = np.array([[ 0.8870,  0.8870,  0.8447,  0.8078],
+                                  [ 0.8078,  0.9802,  0.7037,  0.8447],
+                                  [ 0.8447,  0.7037,  0.7372,  0.7372],
+                                  [ 0.9802,  0.8870,  0.8447,  0.7037],
+                                  [ 0.8870,  0.8078,  0.7037 , 0.8447],
+                                  [ 0.8447,  0.9802,  0.7372,  0.7037]])
 
-        assert_almost_equal(scripts_result, expect_result, decimal=2,
+        assert_almost_equal(scripts_result, expect_result, decimal=3,
                             err_msg='', verbose=True)
 
     def test_convo(self):
