@@ -26,6 +26,9 @@ import numpy as np
 # import osgeo.gdal as gdal
 from osgeo import gdal
 from os.path import join as pjoin
+import pandas as pd
+import inspect
+import ConfigParser
 
 
 def terrain(temp_tile, tile_extents_nobuffer):
@@ -76,10 +79,13 @@ def terrain(temp_tile, tile_extents_nobuffer):
     else:
         data[np.where(data is None)] = np.nan
 
-    reclassified_array = terrain_class2mz_orig(data)
+    mz_init = get_terrain_table()
+    reclassified_array = terrain_class2mz_orig(data, mz_init)
 
     # if the value is 0, it is nodata, if all 0s, empty tile
     if np.max(reclassified_array) == 0:
+        log.info('Terrain dataset is all zeros. Terrain classification'
+                 'will be skipped')
         return
     else:
         reclassified_array[reclassified_array == 0] = np.nan
@@ -149,8 +155,29 @@ def terrain(temp_tile, tile_extents_nobuffer):
     log.info(
         'finish terrain multiplier computation for this tile successfully')
 
+def get_terrain_table():
+    """
+    Read in the terrain table specified in the config file
 
-def terrain_class2mz_orig(data):
+    :returns: pandas.DataFrame of the terrain classification data
+    """
+    cmd_folder = os.path.realpath(
+        os.path.abspath(
+            os.path.split(
+                inspect.getfile(
+                    inspect.currentframe()))[0]))
+    par_folder = os.path.abspath(pjoin(cmd_folder, os.pardir))
+    config = ConfigParser.RawConfigParser()
+    config.read(pjoin(par_folder, 'multiplier_conf.cfg'))
+
+    log.info('Reading in the terrain table from the config file')
+    terrain_table = config.get('inputValues', 'terrain_table')
+
+    mz_init =  pd.read_csv(terrain_table, comment = '#', index_col=False)
+    
+    return mz_init
+
+def terrain_class2mz_orig(data, mz_init):
     """
     Transfer the landsat classified image into original terrain multiplier
 
@@ -158,17 +185,17 @@ def terrain_class2mz_orig(data):
 
     :returns: :class:`numpy.ndarray` the initial terrain multiplier value
     """
-
-    mz_init = value_lookup.MZ_INIT
-
     outdata = np.zeros_like(data, np.float32)
 
     # Reclassify the land classes into initial terrain multipliers
-    for i in mz_init.keys():
-        outdata[data == i] = mz_init[i] / 1000.0
+    log.info('Calculating Mz for each terrain category')
+    for ix, row in mz_init.iterrows():
+        category = row['CATEGORY']
+        roughness = row['ROUGHNESS_LENGTH_m']
+        Mz = -0.2827 * np.log(0.4554*np.log(roughness) + 3.734) + 1.0762
+        outdata[data == category] = Mz
 
     return outdata
-
 
 def convo(one_dir, data, avg_width, lag_width):
     """
