@@ -16,7 +16,7 @@ CATEGORY,DESCRIPTION,ROUGHNESS_LENGTH_m
 # 'CATEGORY' refers to the classification category in the
 # input terrain dataset. 
 # 'DESCRIPTION' of the classification category
-# 'ROUGHNESS_LENGTH' of the classification category
+# 'ROUGHNESS_LENGTH_m' of the classification category
 # This example is taken from "AS/NZ Standarts 1170.2 -
 # Structural design actions, Part 2: Wind Actions - 
 # Supplement 1 (2002)"
