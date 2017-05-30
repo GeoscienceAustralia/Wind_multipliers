@@ -2,3 +2,4 @@ input/
 output/
 log/
 *.pyc
+run_*
