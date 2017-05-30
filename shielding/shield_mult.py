@@ -287,6 +287,8 @@ def convo_combine(ms_orig, slope_array, aspect_array, tile_extents_nobuffer):
             outdata = data
 
         result = combine(outdata, slope_array, aspect_array, one_dir)
+        log.debug('Maximum shielding value is {0}'.format(result.max()))
+        log.debug('Minimum shielding value is {0}'.format(result.min()))
         del outdata
 
         # output format as netCDF4
