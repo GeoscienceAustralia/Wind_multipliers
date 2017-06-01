@@ -12,6 +12,7 @@ import getpass
 import ConfigParser
 from os.path import join as pjoin
 import inspect
+import subprocess
 
 from utilities.files import fl_program_version
 
@@ -282,12 +283,6 @@ def nc_save_grid(filename, dimensions, variables, nodata=-9999,
             var[:] = np.array(v['values'], dtype=v['dtype'])
 
         var.setncatts(v['atts'])
-
-        # Additional global attributes:
-        gatts['created_on'] = time.strftime(ISO_FORMAT, time.localtime())
-        gatts['created_by'] = getpass.getuser()
-        gatts['Conventions'] = 'CF-1.6'
-
         ncobj.setncatts(gatts)
 
         if datatitle:
@@ -332,6 +327,7 @@ def save_multiplier(multiplier_name, multiplier_values, lat, lon, nc_name):
     terrain_map = config.get('inputValues', 'terrain_data')
     dem = config.get('inputValues', 'dem_data')
 
+    # Set global attributes, including metadata capture: 
     global_atts = {'Abstract': ('This dataset is the local ' +
                                 multiplier[multiplier_name] +
                                 ' for each grid cell in ' + direction +
@@ -344,9 +340,20 @@ def save_multiplier(multiplier_name, multiplier_values, lat, lon, nc_name):
                                'Australia, Canberra.'),
                    'Inputs': ('terrain data: {0}, dem data: {1}'
                               .format(str(terrain_map), str(dem))),
-                   'Version': fl_program_version(),
-                   'Python_ver': sys.version,
+                   'Python_version': os.environ['PYTHON_VERSION'],
+                   'Module_versions': os.environ['LOADEDMODULES'],
+                   'Wind_multipler_code_version': fl_program_version(),
+                   'Git_version': subprocess.check_output(["git", "describe"]),
+                   'Conventions':('CF-1.6'),
+                   'Created_on': time.strftime(ISO_FORMAT, time.localtime()),
+                   'Created_by': getpass.getuser(),
                    'Custodian': ('Geoscience Australia')}
+
+    for section in config.sections():
+        for option in config.options(section):
+            key = "{0}_{1}".format(section, option)
+            value = config.get(section, option)
+            global_atts[key] = value
 
     # Add configuration settings to global attributes:
 #    for section in config.sections():
