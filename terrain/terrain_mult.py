@@ -74,10 +74,10 @@ def terrain(temp_tile, tile_extents_nobuffer):
     data = band.ReadAsArray(0, 0, cols, rows)
 
     nodata_value = band.GetNoDataValue()
-    if nodata_value is not None:
-        data[np.where(data == nodata_value)] = np.nan
-    else:
-        data[np.where(data is None)] = np.nan
+    #if nodata_value is not None:
+    #    data[np.where(data == nodata_value)] = np.nan
+    #else:
+    #    data[np.where(data is None)] = np.nan
 
     mz_init = get_terrain_table()
     reclassified_array = terrain_class2mz_orig(data, mz_init)

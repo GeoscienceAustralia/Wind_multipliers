@@ -340,8 +340,7 @@ def save_multiplier(multiplier_name, multiplier_values, lat, lon, nc_name):
                                'Australia, Canberra.'),
                    'Inputs': ('terrain data: {0}, dem data: {1}'
                               .format(str(terrain_map), str(dem))),
-                   'Python_version': os.environ['PYTHON_VERSION'],
-                   'Module_versions': os.environ['LOADEDMODULES'],
+                   'Python_version': sys.version,
                    'Wind_multipler_code_version': fl_program_version(),
                    'Git_version': subprocess.check_output(["git", "describe"]),
                    'Conventions':('CF-1.6'),
