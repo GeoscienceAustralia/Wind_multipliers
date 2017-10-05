@@ -15,7 +15,6 @@ before_install:
   - sudo apt-get install libgcc1
   - sudo apt-get install libgfortran3
   - sudo apt-get install liblapack3gf
-  - sudo apt-get install libumfpack5.4.0
   - sudo apt-get install libstdc++6 
   
 # install Python dependencies 
