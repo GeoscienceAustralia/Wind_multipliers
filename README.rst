@@ -16,29 +16,32 @@ all_multipliers.py that links four modules: terrain, shielding, topographic and 
 
 Before running all_multipliers.py to produce terrain, shielding and topographic
 multipliers, the configuration file named multiplier_conf.cfg needs to be
-configured. There are two variables to be pre-defined:
+configured. The following options need to be set in the configuration file:
 
     * **root:** the working directory of the task.
     * **upwind_length:** the upwind buffer distance
+    * **terrain_data:** the location of the terrain dataset to be used 
+    * **terrain_table:** the csv table outlining the format of the terrain dataset to be read in
+    * **dem_data:** the location of the DEM dataset to be used
 
-Then copy the input files (dem and terrain classes) into the input folder (created beforehand manually) under root, and start to run all_multipliers.py. The results are respectively located under output folder (created automatically during the process) under root directory.
+Start to run all_multipliers.py. The results are located under output folder (created automatically during the process) under root directory.
 
 This software implements parallelisation using PyPar for MPI handling. To run it in parallel mode, use  
 mpirun -np ncpu python all_mulitpliers.py, while ncpu is the
 number of CPUs adopted.
 
-Improvements
-==========
-
-Version 2.0 has several improvements compared to Version 1.0:
-
-	* Replaced the sub-processes with GDAL API, so some tiles are not missing on NCI.
-	* Updated the tile output without overlapping areas.
-	* Simplified the output structure.
-	* Updated the terrain multiplier algorithm as per AS/NZS 1170.2 (2011) and recent amendments. 
-	* Updated the topographic multiplier algorithm to include the Tasmania factor as per AS/NZS 1170.2 (2011).
-	* Updated the topographic multiplier algorithm to remove the conservatism associated with the topographic multiplier as described in the document (*Yang, T., Nadimpalli, K. & Cechet, R.P. 2014. Local wind assessment in Australia: computation methodology for wind multipliers. Record 2014/33. Geoscience Australia, Canberra*) but with a modification (For topographic features such as shallow hills and escarpments where Mt < 1.4, a linear interpolation is constructed so that the percentage of reduction is gradually increased from 0 at point (Mt = 1) to 10 at point (Mt = 1.4))
-	* Updated the shielding multiplier convolution mask by considering the Engineer's opinion.
+terrain_table
+-------------
+The terrain table is a csv file that provides the 'key' for reading in the terrain dataset. The use of the terrain 
+table means that any input landcover dataset can be used, with any classification method. 
+The csv file requires the following headings:
+    * CATEGORY: refers to the classification category used in the input terrain dataset
+    * DESCRIPTION: of the classification category
+    * ROUGHNESS_LENGTH_m: of the classification category
+    
+Change log (develop branch)
+==========    
+    * Terrain classification input dataset configuration is no longer hard-coded. (May 2017)
 
 Status 
 ====== 
