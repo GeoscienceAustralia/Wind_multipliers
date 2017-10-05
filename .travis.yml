@@ -14,37 +14,37 @@ python:
  addons:
   apt:
     packages:
-  - -qq
-  - build-essential
-  - libhdf5-serial-dev
-  - libnetcdf-dev 
-  - python-dev
-  - libgeos-c1 libgeos-dev 
-  - libatlas-base-dev gfortran
-  - libblas3gf 
-  - libc6 
-  - libgcc1 
-  - libgfortran3 
-  - liblapack3gf 
-  - libumfpack5.4.0 
-  - libstdc++6 
+    - -qq
+    - build-essential
+    - libhdf5-serial-dev
+    - libnetcdf-dev 
+    - python-dev
+    - libgeos-c1 libgeos-dev 
+    - libatlas-base-dev gfortran
+    - libblas3gf 
+    - libc6 
+    - libgcc1 
+    - libgfortran3 
+    - liblapack3gf 
+    - libumfpack5.4.0 
+    - libstdc++6 
 # install Python dependencies 
 install:
 #  - sudo pip install conda 
 #  - sudo conda init 
-  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then wget https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh
-    -O miniconda.sh; else wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
-    -O miniconda.sh; fi
-  - bash miniconda.sh -b -p $HOME/miniconda
-  - export PATH="$HOME/miniconda/bin:$PATH"
-  - hash -r
-  - conda config --set always_yes yes --set changeps1 no
-  - conda update -q conda
-  - deps='pip numpy scipy matplotlib nose coverage numexpr gdal' 
-  - conda create -p $HOME/py --yes $deps "python=$TRAVIS_PYTHON_VERSION" 
-  - export PATH=$HOME/py/bin:$PATH 
-  - pip install pycurl
-  - pip -v install -r requirements.txt 
+- if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then wget https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh
+  -O miniconda.sh; else wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+  -O miniconda.sh; fi
+- bash miniconda.sh -b -p $HOME/miniconda
+- export PATH="$HOME/miniconda/bin:$PATH"
+- hash -r
+- conda config --set always_yes yes --set changeps1 no
+- conda update -q conda
+- deps='pip numpy scipy matplotlib nose coverage numexpr gdal' 
+- conda create -p $HOME/py --yes $deps "python=$TRAVIS_PYTHON_VERSION" 
+- export PATH=$HOME/py/bin:$PATH 
+- pip install pycurl
+- pip -v install -r requirements.txt 
 branches:
   except:
   - notebooks
