@@ -21,7 +21,7 @@ configured. The following options need to be set in the configuration file:
     * **root:** the working directory of the task.
     * **upwind_length:** the upwind buffer distance
     * **terrain_data:** the location of the terrain dataset to be used 
-    * **terrain_table:** the csv table outlining the format of the terrain dataset to be read in
+    * **terrain_table:** the location of the csv table outlining the format of the terrain dataset to be read in
     * **dem_data:** the location of the DEM dataset to be used
 
 Start to run all_multipliers.py. The results are located under output folder (created automatically during the process) under root directory.
@@ -35,13 +35,14 @@ terrain_table
 The terrain table is a csv file that provides the 'key' for reading in the terrain dataset. The use of the terrain 
 table means that any input landcover dataset can be used, with any classification method. 
 The csv file requires the following headings:
-    * CATEGORY: refers to the classification category used in the input terrain dataset
-    * DESCRIPTION: of the classification category
-    * ROUGHNESS_LENGTH_m: of the classification category
+    * **CATEGORY:** refers to the classification category used in the input terrain dataset
+    * **DESCRIPTION:** of the classification category
+    * **ROUGHNESS_LENGTH_m:** of the classification category
     
 Change log (develop branch)
 ==========    
-    * Terrain classification input dataset configuration is no longer hard-coded. (May 2017)
+    * Terrain classification input dataset configuration is no longer hard-coded. A terrain_table is now used
+      to facilitate ingenstion of the terrain dataset. (May 2017)
 
 Status 
 ====== 

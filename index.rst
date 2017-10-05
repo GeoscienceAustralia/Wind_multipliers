@@ -5,17 +5,18 @@
 
 Wind Multipliers
 **************************
-
-
-
-
      
 Overview
 ===========================================
 
+This package is used to produce wind terrain, shielding and topographic multipliers for national coverage using a classified landcover dataset and a
+DEM dataset. The default inputs to this code are the National Dynamic Land Cover Dataset of Australia Version 2.0 
+(http://www.ga.gov.au/metadata-gateway/metadata/record/gcat_83868) and 1 second Shuttle Radar Topography Mission (SRTM) Smoothed Digital Elevation 
+Models (DEM-S) Version 1.0 (http://www.ga.gov.au/metadata-gateway/metadata/record/gcat_72759). Both of these datasets are freely available to download.
+Where possible, higher resolution datasets can be used to improve the resolution of the resulting wind multipliers. 
 
-This package is used to produce wind terrain, shielding and topographic multipliers for national coverage using the input of National Dynamic Land Cover Dataset of Australia Version 2.0 (http://www.ga.gov.au/metadata-gateway/metadata/record/gcat_83868) and 1 second Shuttle Radar Topography Mission (SRTM) Smoothed Digital Elevation Models (DEM-S) Version 1.0 (http://www.ga.gov.au/metadata-gateway/metadata/record/gcat_72759). The output is based on tiles with dimension about 1 by 1 degree in netCDF format. It includes terrain, shielding and topographic multiplier respectively. Each multiplier further contains 8 directions. 
-
+The output is based on tiles with dimension about 1 by 1 degree in netCDF format. It includes terrain, shielding and topographic multiplier 
+respectively. Each multiplier further contains 8 directions. 
 
 
 Dependencies
@@ -24,11 +25,11 @@ Dependencies
 Python 2.7, NumPy, SciPy, NetCDF4 and GDAL are needed. 
 
 
-
 Package structures
 ==============================================
 
-The script for deriving terrain, shielding and topographic multipliers is **all_multipliers.py** that can be run in parallel using MPI. It links four modules: 
+The script for deriving terrain, shielding and topographic multipliers is **all_multipliers.py** that can be run in parallel using MPI. It links 
+four modules: 
 
 1. terrain; 
 2. shielding;
@@ -61,14 +62,6 @@ The script for deriving terrain, shielding and topographic multipliers is **all_
 * value_lookup.py;
 * vincenty.py.
 
-.. note::
-	Before running **all_multipliers.py** to produce terrain, shielding and topographic multipliers, the configuration file named **multiplier_conf.cfg** needs to be configured. There are some variables to be pre-defined:
-
-	* **root:** the working directory of the task.
-	* **upwind_length:** the upwind buffer distance
-
-	Then copy the input files (dem and terrain classes) into the input folder (created beforehand manually) under **root**, and start to run **all_multipliers.py**. The results are respectively located under output folder (created automatically during the process) under **root**.
-
 
 Background
 ===========================================
@@ -90,6 +83,7 @@ Code Documentation
 .. toctree::
    :maxdepth: 2
 
+   docs/run_instructions
    docs/all_multipliers
    docs/terrain
    docs/shielding
