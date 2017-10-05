@@ -6,7 +6,9 @@ Setting up the code repository
 The Wind multipliers code is managed through `GitHub <https://github.com/GeoscienceAustralia/Wind_multipliers>`_. To get a copy of the code, either git
 clone, or download the repository. To clone the repository using git (recommended), open up a command line window (e.g. cmd on Windows, or Terminal on
 Mac), change to the directory where you would like the code to be installed, then type
+
 `git clone https://github.com/GeoscienceAustralia/Wind_multipliers Wind_multipliers`
+
 This will initialise a git repository called `Wind_multipliers` in the folder you are in. 
 
 Dependencies 
@@ -17,18 +19,19 @@ Dependencies
 
 In order for the code to run successfully, you will need to install a number of python packages. These are listed in the `requirements.txt` file in 
 the code's home directory. To install these packages with pip, use:
+
 `pip install -r requirements.txt`
 
 Input datasets
 ==============
 The wind multipliers code requires two input datasets:
-* **Landcover classification:** The landcover classification dataset is used to calculate the change in wind speed over varying landcover surfaces.
+    * **Landcover classification:** The landcover classification dataset is used to calculate the change in wind speed over varying landcover surfaces.
     The input landcover classification dataset must be a classified dataset, broken into desired landcover categories, such as urban, forest, 
     grassland etc. The classification categories should be integer values (but this is not required). The interpretation of each landcover type is
     outlined in the accompanying terrain_table.
     The `National Dynamic Land Cover Dataset of Australia Version 2.0 <http://www.ga.gov.au/metadata-gateway/metadata/record/gcat_83868>`_ can be 
     used if a higher resolution dataset is not available.
-* **Digital elevation model: ** The DEM dataset is used to calculate topography and shielding parameters. The `1 second Shuttle Radar Topography 
+    * **Digital elevation model: ** The DEM dataset is used to calculate topography and shielding parameters. The `1 second Shuttle Radar Topography 
     Mission (SRTM) Smoothed Digital Elevation Models (DEM-S) Version 1.0` <http://www.ga.gov.au/metadata-gateway/metadata/record/gcat_72759>`_ is
     available to use as an input.
 
@@ -59,7 +62,9 @@ The csv file requires the following headings:
     * **ROUGHNESS_LENGTH_m:** of the classification category
 
 An example of the terrain table that would be used for the National Dynamic Landcover Dataset has been included in the code.
-```CATEGORY,DESCRIPTION,ROUGHNESS_LENGTH_m
+
+```
+CATEGORY,DESCRIPTION,ROUGHNESS_LENGTH_m
 1,'City buildings',2
 2,'Forest',1
 3,'High density (industrial) buildings',0.8
@@ -80,7 +85,8 @@ An example of the terrain table that would be used for the National Dynamic Land
 # 'ROUGHNESS_LENGTH_m' of the classification category
 # This example is taken from "AS/NZ Standarts 1170.2 -
 # Structural design actions, Part 2: Wind Actions - 
-# Supplement 1 (2002)"```
+# Supplement 1 (2002)"
+```
 
 Running the code
 ================
@@ -88,11 +94,15 @@ The script for deriving terrain, shielding and topographic multipliers is `all_m
 topographic and utilities.
  
 To run `all_multipliers` type 
+
 `python all_multipliers.py -c multiplier_conf.cfg`
+
 from the code home directory.
 
 This software implements parallelisation using PyPar for MPI handling. To run it in parallel mode, use  
+
 `mpirun -np ncpu python all_mulitpliers.py`
+
 where ncpu is the number of CPUs adopted.
 
 The results are located under output folder (created automatically during the process) under root directory.
