@@ -279,11 +279,14 @@ class Multipliers(object):
 
         """
 
+        if not os.path.exists(self.dem):
+            log.critical('DEM file does not exist: {0}'.format(self.dem))
+            raise OSError
         self.dem_ds = gdal.Open(self.dem, GA_ReadOnly)
         if self.dem_ds is None:
-            log.info('Could not open ' + self.dem)
-            sys.exit(1)
-
+            log.critical('Could not open {0}. Check file format?'.format(self.dem))
+            raise IOError
+        
         # get georeference info
         geotransform = self.dem_ds.GetGeoTransform()
         self.pixelwidth = geotransform[1]
