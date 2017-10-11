@@ -43,6 +43,8 @@ Change log (develop branch)
 ==========    
     * Terrain classification input dataset configuration is no longer hard-coded. A terrain_table is now used
       to facilitate ingenstion of the terrain dataset. (May 2017)
+    * Input file formats no longer fixed. File formats able to be read in with gdal.Open can now be used as the
+      DEM and landcover input dataset types, incl .img, .tif. 
 
 Status 
 ====== 
