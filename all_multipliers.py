@@ -52,12 +52,15 @@ class TileGrid(object):
 
         # register all of the drivers
         gdal.AllRegister()
-
+        
         # open the image
+        if not os.path.exists(raster_ds):
+            log.critical('File does not exist: {0}'.format(raster_ds))
+            raise OSError
         ds = gdal.Open(raster_ds, GA_ReadOnly)
         if ds is None:
-            log.info('Could not open ' + raster_ds)
-            sys.exit(1)
+            log.critical('Could not open {0}. Check file format?'.format(raster_ds))
+            raise IOError
 
         # get image size, format
         self.x_dim = ds.RasterXSize
@@ -371,8 +374,14 @@ class Multipliers(object):
 
         # check the checksum value of the terrain map tile, if it is greater
         # than 0, go ahead
+        if not os.path.exists(temp_tile_dem):
+            log.critical('File does not exist: {0}'.format(temp_tile_dem))
+            raise OSError
         temp_dataset = gdal.Open(temp_tile_dem)
-        assert temp_dataset, 'Unable to open dataset %s' % temp_tile_dem
+        if temp_dataset is None:
+            log.critical('Could not open {0}. Check file format?'.format(temp_tile_dem))
+            raise IOError
+        
         band = temp_dataset.GetRasterBand(1)
         checksum = band.Checksum()
         log.info('This DEM tile checksum is {0}'.format(str(checksum)))
@@ -619,10 +628,14 @@ def reproject_dataset(src_file, match_filename, dst_filename,
     log.debug("Output raster: {0}".format(dst_filename))
 
     if type(src_file) == str:
-        src = gdal.Open(src_file, GA_ReadOnly)
+        if os.path.exists(src_file):
+            src = gdal.Open(src_file, GA_ReadOnly)
+        else:
+            log.critical('File does not exist: {0}'.format(src_file))
+            raise OSError
         if src is None:
-            log.info('Could not open ' + src)
-            sys.exit(1)
+            log.critical('Could not open {0}. Check file format?'.format(src_file))
+            raise IOError
     else:
         src = src_file
 
@@ -638,10 +651,14 @@ def reproject_dataset(src_file, match_filename, dst_filename,
 
     # We want a section of source that matches this:
     if type(match_filename) == str:
-        match_ds = gdal.Open(match_filename, GA_ReadOnly)
+        if os.path.exists(match_filename):
+            match_ds = gdal.Open(match_filename, GA_ReadOnly)
+        else:
+            log.critical('File does not exist: {0}'.format(match_filename))
+            raise OSError
         if match_ds is None:
-            log.info('Could not open ' + match_ds)
-            sys.exit(1)
+            log.critical('Could not open {0}. Check file format?'.format(match_filename))
+            raise IOError
     else:
         match_ds = match_filename
 
