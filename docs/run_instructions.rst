@@ -25,13 +25,16 @@ the code's home directory. To install these packages with pip, use:
 Input datasets
 ==============
 The wind multipliers code requires two input datasets:
-    * **Landcover classification:** The landcover classification dataset is used to calculate the change in wind speed over varying landcover surfaces.
+    * **Landcover classification:** 
+        The landcover classification dataset is used to calculate the change in wind speed over varying landcover surfaces.
         The input landcover classification dataset must be a classified dataset, broken into desired landcover categories, such as urban, forest, 
         grassland etc. The classification categories should be integer values (but this is not required). The interpretation of each landcover type is
         outlined in the accompanying terrain_table.
         The `National Dynamic Land Cover Dataset of Australia Version 2.0 <http://www.ga.gov.au/metadata-gateway/metadata/record/gcat_83868>`_ can be 
         used if a higher resolution dataset is not available.
-    * **Digital elevation model:** The DEM dataset is used to calculate topography and shielding parameters. The `1 second Shuttle Radar Topography Mission (SRTM) Smoothed Digital Elevation Models (DEM-S) Version 1.0 <http://www.ga.gov.au/metadata-gateway/metadata/record/gcat_72759>`_ is
+    * **Digital elevation model:** 
+        The DEM dataset is used to calculate topography and shielding parameters. 
+        The `1 second Shuttle Radar Topography Mission (SRTM) Smoothed Digital Elevation Models (DEM-S) Version 1.0 <http://www.ga.gov.au/metadata-gateway/metadata/record/gcat_72759>`_ is
         available to use as an input.
 
 Both input datasets can be placed in the `input` folder within Wind_multipliers, however can be placed anywhere that can be accessed by the code.
@@ -63,7 +66,7 @@ The csv file requires the following headings:
 
 An example of the terrain table that would be used for the National Dynamic Landcover Dataset has been included in the code.
 
-```
+'''
 CATEGORY,DESCRIPTION,ROUGHNESS_LENGTH_m,SHIELDING
 1,'City buildings',2,0.85
 2,'Forest',1,1
@@ -87,7 +90,7 @@ CATEGORY,DESCRIPTION,ROUGHNESS_LENGTH_m,SHIELDING
 # This example is taken from "AS/NZ Standarts 1170.2 -
 # Structural design actions, Part 2: Wind Actions - 
 # Supplement 1 (2002)"
-```
+'''
 
 Running the code
 ================
