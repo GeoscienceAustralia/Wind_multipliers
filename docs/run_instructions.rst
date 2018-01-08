@@ -64,7 +64,7 @@ The csv file requires the following headings:
 
 An example of the terrain table that would be used for the National Dynamic Landcover Dataset has been included in the code.
 
-```CATEGORY,DESCRIPTION,ROUGHNESS_LENGTH_m,SHIELDING
+``CATEGORY,DESCRIPTION,ROUGHNESS_LENGTH_m,SHIELDING
 1,'City buildings',2,0.85
 2,'Forest',1,1
 3,'High density (industrial) buildings',0.8,0.88
@@ -86,22 +86,23 @@ An example of the terrain table that would be used for the National Dynamic Land
 # 'SHIELDING' parameter for urban land cover types. Other land cover types should be set to 1.0.
 # This example is taken from "AS/NZ Standarts 1170.2 -
 # Structural design actions, Part 2: Wind Actions - 
-# Supplement 1 (2002)"```
+# Supplement 1 (2002)"
+``
 
 Running the code
 ================
-The script for deriving terrain, shielding and topographic multipliers is `all_multipliers.py`. This script links four modules: terrain, shielding, 
+The script for deriving terrain, shielding and topographic multipliers is ``all_multipliers.py``. This script links four modules: terrain, shielding, 
 topographic and utilities.
  
-To run `all_multipliers` type 
+To run ``all_multipliers`` type 
 
-```python all_multipliers.py -c multiplier_conf.cfg```
+``python all_multipliers.py -c multiplier_conf.cfg``
 
 from the code home directory.
 
 This software implements parallelisation using PyPar for MPI handling. To run it in parallel mode, use  
 
-```mpirun -np ncpu python all_mulitpliers.py```
+``mpirun -np ncpu python all_mulitpliers.py``
 
 where ncpu is the number of CPUs adopted.
 
