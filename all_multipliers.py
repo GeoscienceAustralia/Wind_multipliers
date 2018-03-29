@@ -572,17 +572,14 @@ def disable_on_workers(f):
 
 
 @disable_on_workers
-def do_output_directory_creation(root):
+def do_output_directory_creation(output):
     """
     Create all the necessary output folders.
 
-    :param root: `string` Name of root directory
+    :param output: `string` Output directory
     :raises OSError: If the directory tree cannot be created.
 
     """
-
-    output = pjoin(root, 'output')
-
     log.info('Output will be stored under %s', output)
 
     subdirs_1 = ['terrain', 'shielding', 'topographic']
@@ -848,9 +845,9 @@ def run():
     terrain_map = config.get('inputValues', 'terrain_data')
     dem = config.get('inputValues', 'dem_data')
 
-    do_output_directory_creation(root)
     global output_folder
-    output_folder = pjoin(root, 'output')
+    output_folder = config.get('Output', 'output_dir')
+    do_output_directory_creation(output_folder)
 
     log.info("get the tiles based on the DEM")
     tg = TileGrid(upwind_length, dem)
