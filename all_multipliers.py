@@ -17,6 +17,7 @@ import os
 import time
 import inspect
 import shutil
+import argparse
 import numpy as np
 from osgeo import osr, gdal
 import logging as log
@@ -785,6 +786,14 @@ def run():
 
     """
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-c', '--config_file', help='Configuration file name')
+    parser.add_argument('-v', '--verbose',
+                        help='Print verbose output to stdout',
+                        action='store_true')
+
+    args = parser.parse_args()
+
     # add subfolders into path
     cmd_folder = os.path.realpath(
         os.path.abspath(
@@ -810,8 +819,15 @@ def run():
     if cmd_subfolder4 not in sys.path:
         sys.path.insert(0, cmd_subfolder4)
 
+
+    if args.config_file:
+        configFile = args.config_file
+    else:
+        config_file = pjoin(cmd_folder, 'multiplier_conf.cfg') 
+
+
     config = ConfigParser.RawConfigParser()
-    config.read(pjoin(cmd_folder, 'multiplier_conf.cfg'))
+    config.read(config_file)
 
     root = config.get('inputValues', 'root')
     upwind_length = float(config.get('inputValues', 'upwind_length'))
@@ -827,12 +843,11 @@ def run():
             logfile = pjoin(os.getcwd(), 'multipliers.log')
 
     loglevel = config.get('Logging', 'LogLevel')
-    verbose = config.getboolean('Logging', 'Verbose')
 
-    if verbose:
+    if args.verbose:
         verbose = True
     else:
-        verbose = False
+        verbose = config.getboolean('Logging', 'Verbose')
 
     attempt_parallel()
 
