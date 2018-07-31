@@ -38,6 +38,9 @@ The csv file requires the following headings:
     * **CATEGORY:** refers to the classification category used in the input terrain dataset
     * **DESCRIPTION:** of the classification category
     * **ROUGHNESS_LENGTH_m:** of the classification category
+    * **SHIELDING:** parameter for urban land cover types. Other land cover types should be set to 1.0.
+
+Values for these parameters can be found in the following GA Record, `'Local Wind Assessment in Australia: Computation Methodology for Wind Multipliers' <https://ecat.ga.gov.au/geonetwork/srv/eng/search#!d5a59415-611a-4ad5-e044-00144fdd4fa6>`_.
     
 Change log (develop branch)
 ==========    
@@ -45,6 +48,8 @@ Change log (develop branch)
       to facilitate ingenstion of the terrain dataset. (May 2017)
     * Input file formats no longer fixed. File formats able to be read in with gdal.Open can now be used as the
       DEM and landcover input dataset types, incl .img, .tif. 
+    * Shielding parameters for urban land cover types now configurable within the terrain_table. (Dec 2017)
+    * Configuration file no longer hard coded (Issue #13). The configuration file specified at run time will now be used. (Jan 2018)
 
 Status 
 ====== 
