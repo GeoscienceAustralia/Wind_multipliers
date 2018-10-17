@@ -12,6 +12,7 @@ import getpass
 import ConfigParser
 from os.path import join as pjoin
 import inspect
+import subprocess
 
 from utilities.files import fl_program_version
 
@@ -282,12 +283,6 @@ def nc_save_grid(filename, dimensions, variables, nodata=-9999,
             var[:] = np.array(v['values'], dtype=v['dtype'])
 
         var.setncatts(v['atts'])
-
-        # Additional global attributes:
-        gatts['created_on'] = time.strftime(ISO_FORMAT, time.localtime())
-        gatts['created_by'] = getpass.getuser()
-        gatts['Conventions'] = 'CF-1.6'
-
         ncobj.setncatts(gatts)
 
         if datatitle:
@@ -311,6 +306,14 @@ def save_multiplier(multiplier_name, multiplier_values, lat, lon, nc_name):
     :param nc_name: `string` the netcdf file name
 
     """
+    cmd_folder = os.path.realpath(
+        os.path.abspath(
+            os.path.split(
+                inspect.getfile(
+                    inspect.currentframe()))[0]))
+    par_folder = os.path.abspath(pjoin(cmd_folder, os.pardir))
+    config = ConfigParser.RawConfigParser()
+    config.read(pjoin(par_folder, 'multiplier_conf.cfg'))
 
     direction = os.path.splitext(nc_name)[0][-2:]
 
@@ -321,31 +324,35 @@ def save_multiplier(multiplier_name, multiplier_values, lat, lon, nc_name):
                        ('Ms', 'shielding multiplier'),
                        ('Mt', 'topographic multiplier')])
 
+    terrain_map = config.get('inputValues', 'terrain_data')
+    dem = config.get('inputValues', 'dem_data')
+
+    # Set global attributes, including metadata capture: 
     global_atts = {'Abstract': ('This dataset is the local ' +
                                 multiplier[multiplier_name] +
                                 ' for each grid cell in ' + direction +
                                 ' direction for this tile'),
-                   'Lineage': ('This dataset was produced based on the '
-                               'national dynamic land cover dataset v1 and '
-                               '1 second SRTM level 2 derived digtial '
-                               'models (DEM-S) version 1.0. Methodology is '
+                   'Lineage': ('Methodology is '
                                'based on the reference: Yang, T., Nadimpalli, '
                                'K. & Cechet, R.P. 2014. Local wind assessment '
                                'in Australia: computation methodology for wind'
                                ' multipliers. Record 2014/33. Geoscience '
                                'Australia, Canberra.'),
-                   'Version': fl_program_version(),
-                   'Python_ver': sys.version,
+                   'Inputs': ('terrain data: {0}, dem data: {1}'
+                              .format(str(terrain_map), str(dem))),
+                   'Python_version': sys.version,
+                   'Wind_multipler_code_version': fl_program_version(),
+                   'Git_version': subprocess.check_output(["git", "describe"]),
+                   'Conventions':('CF-1.6'),
+                   'Created_on': time.strftime(ISO_FORMAT, time.localtime()),
+                   'Created_by': getpass.getuser(),
                    'Custodian': ('Geoscience Australia')}
 
-    cmd_folder = os.path.realpath(
-        os.path.abspath(
-            os.path.split(
-                inspect.getfile(
-                    inspect.currentframe()))[0]))
-    par_folder = os.path.abspath(pjoin(cmd_folder, os.pardir))
-    config = ConfigParser.RawConfigParser()
-    config.read(pjoin(par_folder, 'multiplier_conf.cfg'))
+    for section in config.sections():
+        for option in config.options(section):
+            key = "{0}_{1}".format(section, option)
+            value = config.get(section, option)
+            global_atts[key] = value
 
     # Add configuration settings to global attributes:
 #    for section in config.sections():

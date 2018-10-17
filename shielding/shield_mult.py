@@ -31,6 +31,10 @@ from utilities.get_pixel_size_grid import get_pixel_size_grids
 from utilities.get_pixel_size_grid import RADIANS_PER_DEGREE
 from utilities.nctools import save_multiplier, get_lat_lon, clip_array
 
+import inspect
+import pandas as pd
+import ConfigParser
+
 
 def shield(terrain, input_dem, tile_extents_nobuffer):
     """
@@ -145,6 +149,27 @@ def get_slope_aspect(input_dem):
 
     return slope_array, aspect_array_reclassify
 
+def get_shielding_table():
+    """
+    Read in the terrain table specified in the config file
+
+    :returns: pandas.DataFrame of the terrain classification data
+    """
+    cmd_folder = os.path.realpath(
+        os.path.abspath(
+            os.path.split(
+                inspect.getfile(
+                    inspect.currentframe()))[0]))
+    par_folder = os.path.abspath(pjoin(cmd_folder, os.pardir))
+    config = ConfigParser.RawConfigParser()
+    config.read(pjoin(par_folder, 'multiplier_conf.cfg'))
+
+    log.info('Reading in the terrain table from the config file')
+    terrain_table = config.get('inputValues', 'terrain_table')
+
+    ms_init =  pd.read_csv(terrain_table, comment = '#', index_col=False)
+    
+    return ms_init
 
 def terrain_class2ms_orig(terrain):
     """
@@ -187,12 +212,18 @@ def terrain_class2ms_orig(terrain):
     mask = np.where(data == -99)
 
     ms_init = value_lookup.MS_INIT
+    #import pdb;pdb.set_trace()
+    ms_init_new = get_shielding_table()
 
     outdata = np.ones_like(data, dtype=np.float32)
 
-    for i in [1, 3, 4, 5]:
-        outdata[data == i] = ms_init[i] / 100.0
-
+    for ix, row in ms_init_new.iterrows():
+        category = row['CATEGORY']
+        Ms = row['SHIELDING']
+        outdata[data==category] = Ms / 100.
+    #for i in [1, 3, 4, 5]:
+    #    outdata[data == i] = ms_init[i] / 100.0
+    
     outdata[mask] = np.nan
 
     ms_orig = pjoin(ms_folder, os.path.splitext(file_name)[0] + '_ms.img')
@@ -287,6 +318,8 @@ def convo_combine(ms_orig, slope_array, aspect_array, tile_extents_nobuffer):
             outdata = data
 
         result = combine(outdata, slope_array, aspect_array, one_dir)
+        log.debug('Maximum shielding value is {0}'.format(result.max()))
+        log.debug('Minimum shielding value is {0}'.format(result.min()))
         del outdata
 
         # output format as netCDF4
@@ -306,8 +339,10 @@ def convo_combine(ms_orig, slope_array, aspect_array, tile_extents_nobuffer):
         del result
 
     ms_orig_ds = None
-
-    os.remove(ms_orig)
+    try:
+        os.remove(ms_orig)
+    except:
+        pass
     os.chdir(ms_folder)
     filelist = glob.glob('*.xml')
 
@@ -338,7 +373,7 @@ def combine(ms_orig_array, slope_array, aspect_array, one_dir):
     dire_aspect = value_lookup.DIRE_ASPECT
     aspect_value = dire_aspect[one_dir]
 
-    conservatism = 0.9
+    conservatism = 1.0 #0.9
     up_degree = 12.30
     low_degree = 3.27
 
