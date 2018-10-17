@@ -172,8 +172,14 @@ def get_terrain_table():
 
     log.info('Reading in the terrain table from the config file')
     terrain_table = config.get('inputValues', 'terrain_table')
-
-    mz_init =  pd.read_csv(terrain_table, comment = '#', index_col=False)
+    try:
+        mz_init =  pd.read_csv(terrain_table, comment = '#', index_col=False)
+    except IOError:
+        log.exception("Terrain table file does not exist: {0}".format(terrain_table))
+        import sys; sys.exit()
+    except:
+        raise
+        
     
     return mz_init
 

@@ -818,7 +818,7 @@ def run():
 
 
     if args.config_file:
-        configFile = args.config_file
+        config_file = args.config_file
     else:
         config_file = pjoin(cmd_folder, 'multiplier_conf.cfg') 
 
