@@ -1,16 +1,18 @@
+from functools import reduce
+from os import listdir
+
 from osgeo import gdal, osr
 from osgeo.gdal_array import BandReadAsArray
 import numpy as np
 import numpy.ma as ma
-from functools import reduce
-from os import listdir, path
+
 
 gdal.UseExceptions()
 gdal.SetConfigOption('GDAL_PAM_ENABLED', 'NO')
 
-srs = osr.SpatialReference()
-srs.ImportFromEPSG(4326)
-projection = srs.ExportToWkt()
+SRS = osr.SpatialReference()
+SRS.ImportFromEPSG(4326)
+PROJECTION = SRS.ExportToWkt()
 
 
 class Converter:
@@ -23,8 +25,8 @@ class Converter:
     def process_tile(self, tile):
         '''Convert NetCDF tiles into GeoTIFF tile
 
-        Each direction NetCDF becomes a band in the GeoTIFF, the pre-multiplied wind multiplier
-        is stored in the band (Ms * Mz * Mt)
+        Each direction NetCDF becomes a band in the GeoTIFF, 
+        the pre-multiplied wind multiplier is stored in the band (Ms * Mz * Mt)
         '''
 
         # Create the raster in-memory to allow manipulating the bands
@@ -63,9 +65,10 @@ class Converter:
             band_index += 1
 
         # Georeference the raster
-        out_ds.SetProjection(projection)
+        out_ds.SetProjection(PROJECTION)
         out_ds.SetGeoTransform(transform)
 
+        filename = '/g/data/fj6/multipliers/{0}/{1}.nc'.format('M3', tile)
         # Write out a GeoTIFF
         tif = gdal.Translate(filename, out_ds,
                              options=gdal.TranslateOptions(gdal.ParseCommandLine("-co COMPRESS=LZW -co TILED=YES")))
@@ -80,8 +83,8 @@ class Converter:
 
 
 if __name__ == '__main__':
-    tiles = {file.split('_')[0] for file in listdir('shielding')}
-    converter = Converter(tiles)
+    tilelist = {file.split('_')[0] for file in listdir('shielding')}
+    converter = Converter(tilelist)
     tile_files = converter.run()
 
     if len(tile_files) > 0:
