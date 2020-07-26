@@ -22,7 +22,53 @@ class Converter:
         self.directions = ['e', 'n', 'ne', 'nw', 's', 'se', 'sw', 'w']
         self.types = {'shielding': 'Ms', 'terrain': 'Mz', 'topographic': 'Mt'}
         self.tile_files = []
+        self.max_tile_files = []
         self.path = datapath
+        self.missing_value = -9999
+
+    def process_max_tile(self, tile):
+        """
+        Calculate maximum of all directions for a tile
+
+        """
+
+        driver = gdal.GetDriverByName('MEM')
+        # Get dimensions of tile:
+        inds = gdal.Open(pjoin(self.path, f"M3/{tile}.tif"))
+        transform = inds.GetGeoTransform()
+        nx = inds.RasterXSize
+        ny = inds.RasterYSize
+        bands = []
+        band_index = 1
+        for direction in self.directions:
+            bands.append(ma.masked_values(
+                    BandReadAsArray(inds.GetRasterBand(band_index)),
+                    self.missing_value))
+            band_index += 1
+
+        maxima = np.max(np.dstack(bands), axis=2)
+        # Create output dataset - single band required (maximum only)
+        out_ds = driver.Create('', nx, ny, 1, gdal.GDT_Float32)
+        out_ds.AddBand(gdal.GDT_Float32)
+        band = out_ds.GetRasterBand(1)
+        band.WriteArray(maxima.data)
+        band.SetDescription("Maximum of all directions")
+        band.ComputeStatistics(False)
+        band.SetNoDataValue(-9999)
+
+        out_ds.SetProjection(PROJECTION)
+        out_ds.SetGeoTransform(transform)
+
+        filename = pjoin(self.path, f"M3_max/{tile}.tif")
+        log.info(f"Saving data to {filename}")
+        # Write out a GeoTIFF
+        tif = gdal.Translate(filename, out_ds,
+                             options=gdal.TranslateOptions(
+                                 gdal.ParseCommandLine(
+                                     "-co COMPRESS=LZW -co TILED=YES")))
+        self.max_tile_files.append(filename)
+
+        del tif
 
     def process_tile(self, tile):
         '''Convert NetCDF tiles into GeoTIFF tile
@@ -35,7 +81,7 @@ class Converter:
         driver = gdal.GetDriverByName('MEM')
 
         # Get/set dimensions for the output bands:
-        tmpds = gdal.Open(pjoin(self.path, 'shielding/{0}_ms_n.nc'.format(tile)))
+        tmpds = gdal.Open(pjoin(self.path, f"shielding/{tile}_ms_n.nc"))
         nx = tmpds.RasterXSize
         ny = tmpds.RasterYSize
 
@@ -56,7 +102,7 @@ class Converter:
 
             # Read the wind multipliers for the current direction
             for folder, unit in self.types.items():
-                filename = pjoin(self.path, '{0}/{1}_{2}_{3}.nc'.format(folder, tile, unit.lower(), direction))
+                filename = pjoin(self.path, f"{folder}/{tile}_{unit.lower()}_{direction}.nc")
                 log.info(f"Opening {filename}")
                 try:
                     ds = gdal.Open(filename)
@@ -68,7 +114,8 @@ class Converter:
                     band = ds.GetRasterBand(1)
                     band.WriteArray(np.ones((nx, ny)))
                 
-                bands.append(ma.masked_values(BandReadAsArray(ds.GetRasterBand(1)), -9999))
+                bands.append(ma.masked_values(BandReadAsArray(ds.GetRasterBand(1)),
+                                              self.missing_value))
 
                 if first:
                     transform = ds.GetGeoTransform()
@@ -94,7 +141,7 @@ class Converter:
         out_ds.SetProjection(PROJECTION)
         out_ds.SetGeoTransform(transform)
 
-        filename = pjoin(self.path, '{0}/{1}.tif'.format('M3', tile))
+        filename = pjoin(self.path, f"M3/{tile}.tif")
         log.info(f"Saving data to {filename}")
         # Write out a GeoTIFF
         tif = gdal.Translate(filename, out_ds,
@@ -106,6 +153,7 @@ class Converter:
     def run(self):
         for tile in self.tiles:
             self.process_tile(tile)
+            self.process_max_tile(tile)
         return self.tile_files
 
 
