@@ -34,6 +34,20 @@ class Converter:
         self.path = datapath
         self.missing_value = -9999
 
+        try:
+            os.makedirs(pjoin(self.path, 'M3'))
+        except FileExistsError:
+            log.debug("Folder already exists")
+        except:
+            log.error(f"Failed to create output path: {pjoin(self.path, 'M3')}")
+
+        try:
+            os.makedirs(pjoin(self.path, 'M3_max'))
+        except FileExistsError:
+            log.debug("Folder already exists")
+        except:
+            log.error(f"Failed to create output path: {pjoin(self.path, 'M3_max')}")
+
     def process_max_tile(self, tile):
         """
         Calculate maximum of all directions for a tile
@@ -62,7 +76,7 @@ class Converter:
         band.WriteArray(maxima.data)
         band.SetDescription("Maximum of all directions")
         band.ComputeStatistics(False)
-        band.SetNoDataValue(-9999)
+        band.SetNoDataValue(self.missing_value)
 
         out_ds.SetProjection(PROJECTION)
         out_ds.SetGeoTransform(transform)
@@ -143,7 +157,7 @@ class Converter:
                 log.error(multiplied.data.shape)
             band.SetDescription(direction)
             band.ComputeStatistics(False)
-            band.SetNoDataValue(-9999)
+            band.SetNoDataValue(self.missing_value)
 
             band_index += 1
 

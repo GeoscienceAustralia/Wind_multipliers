@@ -110,3 +110,32 @@ This software implements parallelisation using mpi4py for MPI handling. To run i
 where ncpu is the number of CPUs adopted.
 
 The results are located under output folder (created automatically during the process) under root directory.
+
+
+Merged files
+============
+
+*WIP: July 2020*
+
+Two scripts in the `utilities` folder allow users to build merged files, which contain all directions as bands in the output file. 
+
+`utilities/convert.py` reads a list of tile files and creates a single file, with the three components (Mz, Ms and Mt) combined (multiplied), and each direction stored as a separate band.
+
+From the top-level output folder (specified in ``multiplier_conf.cfg`` as ``Output -- output_dir``), call ``utilities/convert.py``. 
+
+Two additional output folders are created: ``M3`` and ``M3_max``. ``M3`` contains GeoTIFF files with eight bands, representing the merged multiplier data for each of the eight cardinal directions. ``M3__max`` folder contains GeoTIFF files that have a single band that is the maximum of all directions.
+
+A virtual raster table file is added to the base output path, which enables seamless access to the tiles. 
+
+Using command line GDAL::
+
+    gdal_translate gdal_translate /<path>/wind-multipliers.vrt output.tif -projwin_srs EPSG:4326 -projwin 151.5 -28.5 153.5 -30.5
+
+Using Python::
+
+    gdal.UseExceptions()
+
+    ds = gdal.Open('/<path>/wind-multipliers.vrt')
+    gdal.Translate('output.tif', ds, projWin=[151.5, -28.5, 153.5, -30.5], options=gdal.TranslateOptions(gdal.ParseCommandLine("-co TILED=YES")))
+
+
