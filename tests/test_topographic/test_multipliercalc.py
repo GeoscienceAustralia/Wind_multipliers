@@ -8,19 +8,14 @@
     $Id$
 """
 
-import os.path
 import sys
+import os.path
 import unittest
-from inspect import getfile, currentframe
-
 import numpy as np
 from numpy.testing import assert_allclose
-
-from test_all_topo_engineered_data import mh_engineered
+from inspect import getfile, currentframe
 from test_all_topo_engineered_data import test_slope, test_escarp
-
-
-# import topographic.multiplier_calc as multiplier_calc
+from test_all_topo_engineered_data import mh_engineered
 
 
 class TestMultiplierCalc(unittest.TestCase):

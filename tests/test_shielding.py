@@ -9,13 +9,12 @@
     $Id$
 """
 
-import os.path
 import sys
+import os.path
 import unittest
-from inspect import getfile, currentframe
-
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_array_almost_equal
+from inspect import getfile, currentframe
 from osgeo import gdal
 
 

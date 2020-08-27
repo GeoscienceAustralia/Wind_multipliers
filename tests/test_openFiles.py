@@ -13,12 +13,10 @@
  $Id:
 """
 
-import os.path
 import sys
+import os.path
 import unittest
-# from numpy.testing import assertIsNotNone
 from inspect import getfile, currentframe
-
 from all_multipliers import Multipliers
 from utilities.files import fl_start_log
 

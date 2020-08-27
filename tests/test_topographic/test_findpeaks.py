@@ -7,16 +7,14 @@
     $Id$
 """
 
-import logging as log
-import os.path
 import sys
+import os.path
 import unittest
-from inspect import getfile, currentframe
-
 import numpy as np
 from numpy.testing import assert_almost_equal
-
+import logging as log
 from test_all_topo_engineered_data import test_line, expect_results
+from inspect import getfile, currentframe
 
 
 def escarpment_factor(profile, ridge, valley, data_spacing):

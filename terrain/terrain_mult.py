@@ -16,21 +16,18 @@ for 8 directions and output as NetCDF format.
 
 """
 
-import inspect
-import logging as log
 # Import system & process modules
 import os
-from os.path import join as pjoin
-
-import configparser
-import numpy as np
-import pandas as pd
-# import osgeo.gdal as gdal
-from osgeo import gdal
-
+import logging as log
 from utilities import value_lookup
-from utilities.get_pixel_size_grid import get_pixel_size_grids
 from utilities.nctools import save_multiplier, get_lat_lon, clip_array
+from utilities.get_pixel_size_grid import get_pixel_size_grids
+import numpy as np
+from osgeo import gdal
+from os.path import join as pjoin
+import pandas as pd
+import inspect
+import configparser
 
 
 def terrain(temp_tile, tile_extents_nobuffer):

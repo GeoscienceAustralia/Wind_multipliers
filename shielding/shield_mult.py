@@ -33,7 +33,7 @@ from utilities.nctools import save_multiplier, get_lat_lon, clip_array
 
 import inspect
 import pandas as pd
-import ConfigParser
+import configparser
 
 
 def shield(terrain, input_dem, tile_extents_nobuffer):
@@ -161,7 +161,7 @@ def get_shielding_table():
                 inspect.getfile(
                     inspect.currentframe()))[0]))
     par_folder = os.path.abspath(pjoin(cmd_folder, os.pardir))
-    config = ConfigParser.RawConfigParser()
+    config = configparser.RawConfigParser()
     config.read(pjoin(par_folder, 'multiplier_conf.cfg'))
 
     log.info('Reading in the terrain table from the config file')
@@ -359,7 +359,7 @@ def convo_combine(ms_orig, slope_array, aspect_array, tile_extents_nobuffer):
 def combine(ms_orig_array, slope_array, aspect_array, one_dir):
     """
     Used for each direction to derive the shielding multipliers by considering
-    slope and aspect after covolution in the previous step. It will also remove
+    slope and aspect after convolution in the previous step. It will also remove
     the conservatism.
 
     :param ms_orig_array: :class:`numpy.ndarray` convoluted shielding values
