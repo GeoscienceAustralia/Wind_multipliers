@@ -7,15 +7,16 @@
     $Id$
 """
 
-import sys
+import logging as log
 import os.path
+import sys
 import unittest
+from inspect import getfile, currentframe
+
 import numpy as np
 from numpy.testing import assert_almost_equal
-from matplotlib import pyplot
-import logging as log
+
 from test_all_topo_engineered_data import test_line, expect_results
-from inspect import getfile, currentframe
 
 
 def escarpment_factor(profile, ridge, valley, data_spacing):
@@ -76,7 +77,7 @@ class TestFindpeaks(unittest.TestCase):
         # test for each scenerio
         # for p in range(3, 4):
         for p in range(1, len(test_line)+1):
-            print '\ntest ' + str(p) + ' ...'
+            print('\ntest ' + str(p) + ' ...')
             nrow = np.size(test_line[p])
 
             # take the largest integer of each element of the data line
@@ -86,8 +87,8 @@ class TestFindpeaks(unittest.TestCase):
             ridge_ind = findpeaks(fwd_line)        # relative ind
             valley_ind = findvalleys(fwd_line)    # relative ind
 
-            print ridge_ind
-            print valley_ind
+            print(ridge_ind)
+            print(valley_ind)
 
             nrow = np.size(ridge_ind)
             H = np.ones((nrow, 1), dtype=float)
@@ -124,8 +125,8 @@ class TestFindpeaks(unittest.TestCase):
                                             downwind_slope.flatten(),
                                             escarp_factor.flatten()])
 
-            print scripts_result
-            print expect_results[p]
+            print(scripts_result)
+            print(expect_results[p])
 
             assert_almost_equal(scripts_result, expect_results[p], decimal=2,
                                 err_msg='', verbose=True)
