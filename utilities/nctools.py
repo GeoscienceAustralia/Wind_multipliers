@@ -9,7 +9,7 @@ from netCDF4 import Dataset
 import numpy as np
 import time
 import getpass
-import ConfigParser
+import configparser
 from os.path import join as pjoin
 import inspect
 import subprocess
@@ -244,7 +244,7 @@ def nc_save_grid(filename, dimensions, variables, nodata=-9999,
     varkeys = set(['name', 'values', 'dtype', 'dims', 'atts'])
 
     dims = ()
-    for d in dimensions.itervalues():
+    for d in dimensions.values():
         missingkeys = [x for x in dimkeys if x not in d.keys()]
         if len(missingkeys) > 0:
             ncobj.close()
@@ -254,7 +254,7 @@ def nc_save_grid(filename, dimensions, variables, nodata=-9999,
         nc_create_dim(ncobj, d['name'], d['values'], d['dtype'], d['atts'])
         dims = dims + (d['name'],)
 
-    for v in variables.itervalues():
+    for v in variables.values():
         missingkeys = [x for x in varkeys if x not in v.keys()]
         if len(missingkeys) > 0:
             ncobj.close()
@@ -312,7 +312,7 @@ def save_multiplier(multiplier_name, multiplier_values, lat, lon, nc_name):
                 inspect.getfile(
                     inspect.currentframe()))[0]))
     par_folder = os.path.abspath(pjoin(cmd_folder, os.pardir))
-    config = ConfigParser.RawConfigParser()
+    config = configparser.RawConfigParser()
     config.read(pjoin(par_folder, 'multiplier_conf.cfg'))
 
     direction = os.path.splitext(nc_name)[0][-2:]
@@ -326,6 +326,14 @@ def save_multiplier(multiplier_name, multiplier_values, lat, lon, nc_name):
 
     terrain_map = config.get('inputValues', 'terrain_data')
     dem = config.get('inputValues', 'dem_data')
+
+    # Collect git info - need to make sure git command is executed from
+    # code - not from data directory
+    cwd = os.getcwd()
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    os.chdir(dir_path)
+    git_info = subprocess.check_output(["git", "describe"])
+    os.chdir(cwd)
 
     # Set global attributes, including metadata capture: 
     global_atts = {'Abstract': ('This dataset is the local ' +
@@ -342,7 +350,7 @@ def save_multiplier(multiplier_name, multiplier_values, lat, lon, nc_name):
                               .format(str(terrain_map), str(dem))),
                    'Python_version': sys.version,
                    'Wind_multipler_code_version': fl_program_version(),
-                   'Git_version': subprocess.check_output(["git", "describe"]),
+                   'Git_version': git_info,
                    'Conventions':('CF-1.6'),
                    'Created_on': time.strftime(ISO_FORMAT, time.localtime()),
                    'Created_by': getpass.getuser(),
