@@ -11,6 +11,7 @@ makes some of the code harder to follow.
 import numpy
 import logging
 from meta import print_call
+import math
 
 LOGGER = logging.getLogger('root.' + __name__)
 
@@ -131,6 +132,12 @@ def interpolate_block(origin=DEFAULT_ORIGIN, shape=DEFAULT_SHAPE,
     """
     i0, i1, j0, j1 = indices(origin, shape)
 
+    # Indices need to be integers - no fraction allowed
+    i0 = math.floor(i0)
+    j0 = math.floor(j0)
+    i1 = math.ceil(i1)
+    j1 = math.ceil(j1)
+
     f_ul = eval_func(i0, j0)
     f_ll = eval_func(i1, j0)
     f_ur = eval_func(i0, j1)
@@ -185,6 +192,6 @@ def interpolate_grid(depth=0, origin=DEFAULT_ORIGIN, shape=DEFAULT_SHAPE,
         interpolate_block(origin, shape, eval_func, grid)
     else:
         blocks = subdivide(origin, shape)
-        for (k_ul, k_ur, k_ll, k_lr) in blocks.itervalues():
+        for (k_ul, k_ur, k_ll, k_lr) in blocks.values():
             block_shape = (k_lr[0] - k_ul[0] + 1, k_lr[1] - k_ul[1] + 1)
             interpolate_grid(depth - 1, k_ul, block_shape, eval_func, grid)
