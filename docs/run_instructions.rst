@@ -12,10 +12,10 @@ Mac), change to the directory where you would like the code to be installed, the
 This will initialise a git repository called `Wind_multipliers` in the folder you are in. 
 
 Dependencies 
-=========
+============
 * `Python (2.7 preferred) <https://www.python.org/>`_, `Numpy <http://www.numpy.org/>`_, `Scipy <http://www.scipy.org/>`_, 
   `GDAL <http://www.gdal.org/>`_, `netcdf4-python <https://code.google.com/p/netcdf4-python>`_; 
-* For parallel execution, `Pypar <http://github.com/daleroberts/pypar>`_ is required; 
+* For parallel execution, `mpi4py <https://github.com/mpi4py/mpi4py>`_ is required;
 
 In order for the code to run successfully, you will need to install a number of python packages. These are listed in the `requirements.txt` file in 
 the code's home directory. To install these packages with pip, use:
@@ -103,7 +103,7 @@ To run ``all_multipliers`` type
 
 from the code home directory.
 
-This software implements parallelisation using PyPar for MPI handling. To run it in parallel mode, use  
+This software implements parallelisation using mpi4py for MPI handling. To run it in parallel mode, use
 
 ``mpirun -np ncpu python all_mulitpliers.py``
 
