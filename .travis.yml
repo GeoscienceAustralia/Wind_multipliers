@@ -33,6 +33,8 @@ install:
 - export PATH=$HOME/py/bin:$PATH 
 - pip install pycurl
 - pip -v install -r requirements.txt
+- ls -al
+- export PYTHONPATH="${PYTHONPATH}:$HOME:$HOME/utilities:$HOME/topographic:$HOME/tests:$HOME/tests/test_topographic"
 branches:
   except:
   - notebooks
