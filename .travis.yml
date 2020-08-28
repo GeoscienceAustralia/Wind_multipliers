@@ -1,17 +1,16 @@
 language: python 
 python:
   - "3.7"
-  - "3.8"
-# install system dependencies 
+# install system dependencies
 before_install: 
   - sudo apt-get update -qq
   - sudo apt-get install build-essential
   - sudo apt-get install libhdf5-serial-dev
   - sudo apt-get install libnetcdf-dev 
-  - sudo apt-get install python-dev
-  - sudo apt-get install libgeos-c1 libgeos-dev
+  - sudo apt-get install python3-dev
+  - sudo apt-get install libgeos-c1v5 libgeos-dev
   - sudo apt-get install libatlas-base-dev gfortran
-  - sudo apt-get install libblas3gf
+  - sudo apt-get install libblas3
   - sudo apt-get install libc6
   - sudo apt-get install libgcc1
   - sudo apt-get install libgfortran3
@@ -30,10 +29,10 @@ install:
 - conda update -q conda
 - conda info -a
 - deps='pip numpy scipy nose coverage numexpr gdal mpi4py openssh'
-- conda create -p $HOME/py --yes $deps "python=$TRAVIS_PYTHON_VERSION" 
+- conda create -p $HOME/py --yes $deps "python=$TRAVIS_PYTHON_VERSION" -c conda-forge
 - export PATH=$HOME/py/bin:$PATH 
 - pip install pycurl
-- pip -v install -r requirements.txt 
+- pip -v install -r requirements.txt
 branches:
   except:
   - notebooks

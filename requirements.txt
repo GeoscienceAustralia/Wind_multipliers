@@ -1,6 +1,5 @@
---allow-external python-dateutil
---allow-unverified python-dateutil 
-python-dateutil 
+python-dateutil
 netCDF4>=1.5.4
 pytz==2020.1
 pandas
+
