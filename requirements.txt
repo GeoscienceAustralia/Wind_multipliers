@@ -1,9 +1,6 @@
-argparse==1.2.1 
-six>=1.7.3 
---allow-external python-dateutil 
+--allow-external python-dateutil
 --allow-unverified python-dateutil 
 python-dateutil 
-netCDF4>=1.0.8 
-pytz==2014.4 
-simplejson==3.6.0 
+netCDF4>=1.5.4
+pytz==2020.1
 pandas
