@@ -9,11 +9,9 @@ from netCDF4 import Dataset
 import numpy as np
 import time
 import getpass
-import configparser
-from os.path import join as pjoin
-import inspect
 import subprocess
 
+from config import configparser as config
 from utilities.files import fl_program_version
 
 LOGGER = logging.getLogger(__name__)
@@ -306,15 +304,6 @@ def save_multiplier(multiplier_name, multiplier_values, lat, lon, nc_name):
     :param nc_name: `string` the netcdf file name
 
     """
-    cmd_folder = os.path.realpath(
-        os.path.abspath(
-            os.path.split(
-                inspect.getfile(
-                    inspect.currentframe()))[0]))
-    par_folder = os.path.abspath(pjoin(cmd_folder, os.pardir))
-    config = configparser.RawConfigParser()
-    config.read(pjoin(par_folder, 'multiplier_conf.cfg'))
-
     direction = os.path.splitext(nc_name)[0][-2:]
 
     if '_' in direction:

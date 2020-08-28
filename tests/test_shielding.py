@@ -9,13 +9,16 @@
     $Id$
 """
 
-import sys
 import os.path
+import sys
 import unittest
+from inspect import getfile, currentframe
+
 import numpy as np
 from numpy.testing import assert_almost_equal, assert_array_almost_equal
-from inspect import getfile, currentframe
 from osgeo import gdal
+
+from config import configparser as config
 
 
 class TestShieldingMultiplier(unittest.TestCase):
@@ -363,6 +366,8 @@ class TestShieldingMultiplier(unittest.TestCase):
                                   decimal=-1, err_msg='', verbose=True)
 
     def test_terrain_class2ms_orig(self):
+
+        config.set('inputValues', 'terrain_table', os.path.join(self.testdata_folder, 'terrain_classification.csv'))
 
         terrain = os.path.join(self.testdata_folder, "lc_terrain.img")
 

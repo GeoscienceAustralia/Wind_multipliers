@@ -22,7 +22,6 @@ from functools import reduce, wraps
 from os.path import join as pjoin, realpath, isdir, dirname
 
 import argparse
-import configparser
 import numpy as np
 from osgeo import osr, gdal
 from osgeo.gdalconst import GA_ReadOnly, GRA_NearestNeighbour, GDT_Float32, GDT_Int32
@@ -30,6 +29,7 @@ from osgeo.gdalconst import GA_ReadOnly, GRA_NearestNeighbour, GDT_Float32, GDT_
 import shielding.shield_mult
 import terrain.terrain_mult
 import topographic.topo_mult
+from config import configparser as config
 from utilities.files import fl_start_log
 from utilities.parallel import attempt_parallel, disable_on_workers
 
@@ -54,7 +54,7 @@ class TileGrid(object):
 
         # register all of the drivers
         gdal.AllRegister()
-        
+
         # open the image
         if not os.path.exists(raster_ds):
             log.critical('File does not exist: {0}'.format(raster_ds))
@@ -291,7 +291,7 @@ class Multipliers(object):
         if self.dem_ds is None:
             log.critical('Could not open {0}. Check file format?'.format(self.dem))
             raise IOError
-        
+
         # get georeference info
         geotransform = self.dem_ds.GetGeoTransform()
         self.pixelwidth = geotransform[1]
@@ -383,7 +383,7 @@ class Multipliers(object):
         if temp_dataset is None:
             log.critical('Could not open {0}. Check file format?'.format(temp_tile_dem))
             raise IOError
-        
+
         band = temp_dataset.GetRasterBand(1)
         checksum = band.Checksum()
         log.info('This DEM tile checksum is {0}'.format(str(checksum)))
@@ -713,15 +713,8 @@ def run():
     if cmd_subfolder4 not in sys.path:
         sys.path.insert(0, cmd_subfolder4)
 
-
-    if args.config_file:
-        config_file = args.config_file
-    else:
-        config_file = pjoin(cmd_folder, 'multiplier_conf.cfg') 
-
-
-    config = configparser.RawConfigParser()
-    config.read(config_file)
+    if args.config_file:  # defaulted to multiplier_conf.cfg
+        config.set_config_file(args.config_file)
 
     root = config.get('inputValues', 'root')
     upwind_length = float(config.get('inputValues', 'upwind_length'))
