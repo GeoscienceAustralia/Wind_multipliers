@@ -3,7 +3,7 @@
 ===============================================================================
 
 This module can be run in parallel using MPI if the
-:term:`pypar` library is found and all_multipliers is run using the
+:term:`mpi4py` library is found and all_multipliers is run using the
 :term:`mpirun` command. For example, to run with 8 processors::
 
     mpirun -n 8 python all_multipliers.py
@@ -12,25 +12,26 @@ This module can be run in parallel using MPI if the
 
 """
 
-import sys
-import os
-import time
 import inspect
+import logging as log
+import os
 import shutil
+import sys
+import time
+from functools import reduce, wraps
+from os.path import join as pjoin, realpath, isdir, dirname
+
 import argparse
+import configparser
 import numpy as np
 from osgeo import osr, gdal
-import logging as log
-import terrain.terrain_mult
+from osgeo.gdalconst import GA_ReadOnly, GRA_NearestNeighbour, GDT_Float32, GDT_Int32
+
 import shielding.shield_mult
+import terrain.terrain_mult
 import topographic.topo_mult
-import ConfigParser
-from osgeo.gdalconst import GA_ReadOnly, GRA_NearestNeighbour
-from osgeo.gdalconst import GDT_Float32, GDT_Int32
 from utilities.files import fl_start_log
-from os.path import join as pjoin, realpath, isdir, dirname
-from functools import wraps
-import itertools
+from utilities.parallel import attempt_parallel, disable_on_workers
 
 __version__ = '2.0'
 
@@ -120,8 +121,8 @@ class TileGrid(object):
 
         k = 0
 
-        for i in xrange(self.subset_maxcols):
-            for j in xrange(self.subset_maxrows):
+        for i in range(self.subset_maxcols):
+            for j in range(self.subset_maxrows):
                 self.x_start[k] = max(0, i * self.x_step - self.x_buffer)
                 self.x_end[k] = min(
                     ((i + 1) * self.x_step + self.x_buffer),
@@ -435,65 +436,63 @@ class Multipliers(object):
 
         work_tag = 0
         result_tag = 1
-        if (pp.rank() == 0) and (pp.size() > 1):
-
+        if (comm.rank == 0) and (comm.size > 1):
             if not self.dem_ds:
                 self.open_dem()
             w = 0
-            p = pp.size() - 1
-            for d in range(1, pp.size()):
+            p = comm.size - 1
+            for d in range(1, comm.size):
                 if w < len(tiles):
                     dem_tile = self.cut_dem(tiles[w])
-                    pp.send([dem_tile, tiles[w]], destination=d, tag=work_tag)
+                    comm.send([dem_tile, tiles[w]], dest=d, tag=work_tag)
                     log.debug("Processing tile {0}({1}) of {2} on {3}".format(
-                              w, tiles[w], len(tiles), d))
+                        w, tiles[w], len(tiles), d))
                     w += 1
                 else:
-                    pp.send(None, destination=d, tag=work_tag)
+                    comm.send(None, dest=d, tag=work_tag)
                     p = w
 
             terminated = 0
 
-            while(terminated < p):
+            while terminated < p:
 
-                status = pp.receive(pp.any_source, tag=result_tag,
-                                    return_status=True)[1]
-
+                status = MPI.Status()
+                result = comm.recv(source=MPI.ANY_SOURCE, tag=result_tag,
+                                   status=status)
                 d = status.source
                 log.debug("Returned from {0}".format(d))
 
                 if w < len(tiles):
                     dem_tile = self.cut_dem(tiles[w])
-                    pp.send([dem_tile, tiles[w]], destination=d, tag=work_tag)
+                    comm.send([dem_tile, tiles[w]], dest=d, tag=work_tag)
                     log.debug("Processing tile {0}({1}) of {2} on {3}".format(
-                              w, tiles[w], len(tiles), d))
+                        w, tiles[w], len(tiles), d))
                     w += 1
                 else:
-                    pp.send(None, destination=d, tag=work_tag)
+                    comm.send(None, dest=d, tag=work_tag)
                     terminated += 1
 
                     log.debug("Number of terminated threads is {0}".format(
-                              terminated))
+                        terminated))
 
                 if progress_callback:
                     progress_callback(w)
 
-        elif (pp.size() > 1) and (pp.rank() != 0):
-            while(True):
-                ww = pp.receive(source=0, tag=work_tag)
+        elif (comm.size > 1) and (comm.rank != 0):
+            while True:
+                ww = comm.recv(source=0, tag=work_tag)
                 if ww is None:
                     break
                 status = self.multipliers_calculate(ww[0], ww[1])
-                pp.send(status, destination=0, tag=result_tag)
+                comm.send(status, dest=0, tag=result_tag)
 
-        elif pp.size() == 1 and pp.rank() == 0:
-            # Assumed no Pypar - helps avoid the need to extend DummyPypar()
+        elif comm.size == 1 and comm.rank == 0:
+            # Assumed no mpi4py - helps avoid the need to extend DummyCommWorld()
             if not self.dem_ds:
                 self.open_dem()
             for i, tile in enumerate(tiles):
                 dem_tile = self.cut_dem(tile)
-                log.debug("Processing tile {0} of {1}".format(i,
-                          len(tiles)))
+                log.debug("Processing tile {0} of {1}".format(i, len(tiles)))
                 self.multipliers_calculate(dem_tile, tile)
 
                 if progress_callback:
@@ -548,27 +547,9 @@ def timer(f):
             reduce(lambda ll, b: divmod(ll[0], b) + ll[1:],
                    [(tottime,), 60, 60])
 
-        log.info("Time for {0}:{1}".format(f.func_name, msg))
+        log.info("Time for {0}:{1}".format(f.__name__, msg))
         return res
 
-    return wrap
-
-
-def disable_on_workers(f):
-    """
-    Disable function calculation on workers. Function will
-    only be evaluated on the master.
-    """
-    @wraps(f)
-    def wrap(*args, **kwargs):
-        """
-        wrap
-        """
-
-        if pp.size() > 1 and pp.rank() > 0:
-            return
-        else:
-            return f(*args, **kwargs)
     return wrap
 
 
@@ -688,90 +669,6 @@ def reproject_dataset(src_file, match_filename, dst_filename,
 
     return
 
-
-def balanced(iterable):
-    """
-    Balance an iterator across processors.
-
-    This partitions the work evenly across processors. However, it requires
-    the iterator to have been generated on all processors before hand. This is
-    only some magical slicing of the iterator, i.e., a poor man version of
-    scattering.
-    """
-
-    s, p = pp.size(), pp.rank()
-    return itertools.islice(iterable, p, None, s)
-
-
-def balance(nn):
-    """
-    Compute p'th interval when nn is distributed over s bins
-    """
-
-    s, p = pp.size(), pp.rank()
-    l = int(np.floor(float(nn) / s))
-    k = nn - s * l
-    if p < k:
-        nlo = p * l + p
-        nhi = nlo + l + 1
-    else:
-        nlo = p * l + k
-        nhi = nlo + l
-
-    return nlo, nhi
-
-
-def attempt_parallel():
-    """
-    Attempt to load Pypar globally as `pp`.  If pypar cannot be loaded then a
-    dummy `pp` is created.
-    """
-
-    global pp
-
-    try:
-        # load pypar for everyone
-
-        import pypar as pp
-        import atexit
-        atexit.register(pp.finalize)
-
-    except ImportError:
-
-        # no pypar, create a dummy one
-
-        class DummyPypar(object):
-            """
-            Create dummy pypar
-            """
-
-            def size(self):
-                """
-                define size
-                """
-                return 1
-
-            def rank(self):
-                """
-                define rank
-                """
-                return 0
-
-            def barrier(self):
-                """
-                define barrier
-                """
-                pass
-
-            def finalize(self):
-                """
-                define finalize
-                """
-                pass
-
-        pp = DummyPypar()
-
-
 @timer
 def run():
     """
@@ -823,7 +720,7 @@ def run():
         config_file = pjoin(cmd_folder, 'multiplier_conf.cfg') 
 
 
-    config = ConfigParser.RawConfigParser()
+    config = configparser.RawConfigParser()
     config.read(config_file)
 
     root = config.get('inputValues', 'root')
@@ -846,10 +743,14 @@ def run():
     else:
         verbose = config.getboolean('Logging', 'Verbose')
 
-    attempt_parallel()
+    global MPI, comm
+    MPI = attempt_parallel()
+    import atexit
+    atexit.register(MPI.Finalize)
+    comm = MPI.COMM_WORLD
 
-    if pp.size() > 1 and pp.rank() > 0:
-        logfile += '_' + str(pp.rank())
+    if comm.size > 1 and comm.rank > 0:
+        logfile += '_' + str(comm.rank)
         verbose = False
     else:
         pass
@@ -869,12 +770,12 @@ def run():
     tiles = get_tiles(tg)
     log.info('the number of tiles is {0}'.format(str(len(tiles))))
 
-    pp.barrier()
+    comm.barrier()
 
     multiplier = Multipliers(terrain_map, dem)
     multiplier.parallelise_on_tiles(tiles)
 
-    pp.barrier()
+    comm.barrier()
 
     log.info("Successfully completed wind multipliers calculation")
 
