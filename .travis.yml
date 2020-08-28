@@ -33,11 +33,9 @@ install:
 - export PATH=$HOME/py/bin:$PATH 
 - pip install pycurl
 - pip -v install -r requirements.txt
-- ls -al
-- pwd
-- export PYTHONPATH="${PYTHONPATH}:$HOME:$HOME/utilities:$HOME/topographic:$HOME/tests:$HOME/tests/test_topographic"
-- echo "${PYTHONPATH}"
-- echo "${TRAVIS_BUILD_DIR}"
+- export PYTHONPATH="${PYTHONPATH}:$HOME:${TRAVIS_BUILD_DIR}/utilities:${TRAVIS_BUILD_DIR}/topographic:${TRAVIS_BUILD_DIR}/tests:${TRAVIS_BUILD_DIR}/tests/test_topographic"
+#- echo "${PYTHONPATH}"
+#- echo "${TRAVIS_BUILD_DIR}"
 branches:
   except:
   - notebooks
