@@ -5,7 +5,7 @@ This package is used to produce wind multipliers including terrain, shielding an
 
 Dependencies 
 ============
-* `Python (2.7 preferred) <https://www.python.org/>`_, `Numpy <http://www.numpy.org/>`_, `Scipy <http://www.scipy.org/>`_, `GDAL <http://www.gdal.org/>`_, `netcdf4-python <https://code.google.com/p/netcdf4-python>`_; 
+* `Python (3.7 preferred) <https://www.python.org/>`_, `Numpy <http://www.numpy.org/>`_, `Scipy <http://www.scipy.org/>`_, `GDAL <http://www.gdal.org/>`_, `netcdf4-python <https://code.google.com/p/netcdf4-python>`_;
 * For parallel execution, `mpi4py <https://github.com/mpi4py/mpi4py>`_ is required;
 
 Usage
