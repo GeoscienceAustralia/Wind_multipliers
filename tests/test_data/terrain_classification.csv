@@ -1,0 +1,14 @@
+CATEGORY,DESCRIPTION,ROUGHNESS_LENGTH_m,SHIELDING
+1,"City buildings",2,85
+2,"Forest",1,100
+3,"High density (industrial) buildings",0.8,88
+4,"Small town centres",0.4,90
+5,"Suburban/wooded country",0.2,90
+6,"Orchard, open forest",0.08,100
+7,"Long grass with few trees",0.06,100
+8,"Crops",0.04,100
+9,"Open rough water, airfields, uncut grass etc.",0.02,100
+10,"Cut grass",0.008,100
+11,"Desert (stones),roads",0.006,100
+12,"Mudflats/salt evaporators/sandy beaches",0.004,100
+13,"Snow surface",0.002,100
