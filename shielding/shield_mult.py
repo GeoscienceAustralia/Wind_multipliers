@@ -363,7 +363,7 @@ def combine(ms_orig_array, slope_array, aspect_array, one_dir):
     dire_aspect = value_lookup.DIRE_ASPECT
     aspect_value = dire_aspect[one_dir]
 
-    conservatism = 1.0 #0.9
+    conservatism = 0.9
     up_degree = 12.30
     low_degree = 3.27
 
