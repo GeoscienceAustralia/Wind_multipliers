@@ -72,7 +72,7 @@ class TestFindpeaks(unittest.TestCase):
 
         from topographic.findpeaks import findpeaks, findvalleys
 
-        # test for each scenerio
+        # test for each scenario
         # for p in range(3, 4):
         for p in range(1, len(test_line)+1):
             print('\ntest ' + str(p) + ' ...')
@@ -84,9 +84,6 @@ class TestFindpeaks(unittest.TestCase):
             # Get the indices of the ridges & valleys
             ridge_ind = findpeaks(fwd_line)        # relative ind
             valley_ind = findvalleys(fwd_line)    # relative ind
-
-            print(ridge_ind)
-            print(valley_ind)
 
             nrow = np.size(ridge_ind)
             H = np.ones((nrow, 1), dtype=float)
@@ -120,11 +117,8 @@ class TestFindpeaks(unittest.TestCase):
 
             scripts_result = np.concatenate([[hill_no], H.flatten(),
                                              slope.flatten(),
-                                            downwind_slope.flatten(),
-                                            escarp_factor.flatten()])
-
-            print(scripts_result)
-            print(expect_results[p])
+                                             downwind_slope.flatten(),
+                                             escarp_factor.flatten()])
 
             assert_almost_equal(scripts_result, expect_results[p], decimal=2,
                                 err_msg='', verbose=True)
