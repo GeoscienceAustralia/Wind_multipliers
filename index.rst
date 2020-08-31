@@ -22,7 +22,7 @@ respectively. Each multiplier further contains 8 directions.
 Dependencies
 ===========================================
 
-Python 2.7, NumPy, SciPy, NetCDF4 and GDAL are needed. 
+Python 3.7, NumPy, SciPy, NetCDF4 and GDAL are needed.
 
 
 Package structures

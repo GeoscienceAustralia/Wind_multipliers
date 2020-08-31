@@ -16,14 +16,10 @@
 import sys
 import os.path
 import unittest
-import numpy as np
-#from numpy.testing import assertIsNotNone
 from inspect import getfile, currentframe
-from osgeo import gdal
-import pandas as pd
-
 from all_multipliers import Multipliers
-from Utilities.files import flStartLog
+from utilities.files import fl_start_log
+
 
 class TestOpenFiles(unittest.TestCase):
 
@@ -59,6 +55,6 @@ class TestOpenFiles(unittest.TestCase):
         self.assertTrue(hasattr(self.gtiffMult, 'dem_type'))
     
 if __name__ == "__main__":
-    flStartLog('', 'CRITICAL', False)
+    fl_start_log('', 'CRITICAL', False)
     testSuite = unittest.makeSuite(TestGPD,'test')
     unittest.TextTestRunner(verbosity=3).run(testSuite)

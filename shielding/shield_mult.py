@@ -26,14 +26,13 @@ from os.path import join as pjoin
 import numpy as np
 from osgeo.gdalconst import GDT_Float32
 from osgeo import gdal
+
+from config import configparser as config
 from utilities import value_lookup
-from utilities.get_pixel_size_grid import get_pixel_size_grids
-from utilities.get_pixel_size_grid import RADIANS_PER_DEGREE
+from utilities.get_pixel_size_grid import get_pixel_size_grids, RADIANS_PER_DEGREE
 from utilities.nctools import save_multiplier, get_lat_lon, clip_array
 
-import inspect
 import pandas as pd
-import ConfigParser
 
 
 def shield(terrain, input_dem, tile_extents_nobuffer):
@@ -155,19 +154,10 @@ def get_shielding_table():
 
     :returns: pandas.DataFrame of the terrain classification data
     """
-    cmd_folder = os.path.realpath(
-        os.path.abspath(
-            os.path.split(
-                inspect.getfile(
-                    inspect.currentframe()))[0]))
-    par_folder = os.path.abspath(pjoin(cmd_folder, os.pardir))
-    config = ConfigParser.RawConfigParser()
-    config.read(pjoin(par_folder, 'multiplier_conf.cfg'))
-
     log.info('Reading in the terrain table from the config file')
     terrain_table = config.get('inputValues', 'terrain_table')
 
-    ms_init =  pd.read_csv(terrain_table, comment = '#', index_col=False)
+    ms_init = pd.read_csv(terrain_table, comment='#', index_col=False)
     
     return ms_init
 
@@ -359,7 +349,7 @@ def convo_combine(ms_orig, slope_array, aspect_array, tile_extents_nobuffer):
 def combine(ms_orig_array, slope_array, aspect_array, one_dir):
     """
     Used for each direction to derive the shielding multipliers by considering
-    slope and aspect after covolution in the previous step. It will also remove
+    slope and aspect after convolution in the previous step. It will also remove
     the conservatism.
 
     :param ms_orig_array: :class:`numpy.ndarray` convoluted shielding values
@@ -373,7 +363,7 @@ def combine(ms_orig_array, slope_array, aspect_array, one_dir):
     dire_aspect = value_lookup.DIRE_ASPECT
     aspect_value = dire_aspect[one_dir]
 
-    conservatism = 1.0 #0.9
+    conservatism = 0.9
     up_degree = 12.30
     low_degree = 3.27
 

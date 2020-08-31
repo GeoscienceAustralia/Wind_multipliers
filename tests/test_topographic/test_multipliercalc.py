@@ -13,11 +13,7 @@ import os.path
 import unittest
 import numpy as np
 from numpy.testing import assert_allclose
-from matplotlib import pyplot
 from inspect import getfile, currentframe
-
-# import topographic.multiplier_calc as multiplier_calc
-
 from test_all_topo_engineered_data import test_slope, test_escarp
 from test_all_topo_engineered_data import mh_engineered
 
@@ -52,7 +48,7 @@ class TestMultiplierCalc(unittest.TestCase):
 
             # get the test line and engineered mh total of 28 test cases
             for i in range(1, len(test_slope)+1):
-                print '\ntest ' + str(i) + ' ...'
+                print('\ntest ' + str(i) + ' ...')
 
                 test_line = np.empty(181)
                 test_line.fill(case)

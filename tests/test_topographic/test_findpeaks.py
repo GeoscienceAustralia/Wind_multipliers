@@ -12,7 +12,6 @@ import os.path
 import unittest
 import numpy as np
 from numpy.testing import assert_almost_equal
-from matplotlib import pyplot
 import logging as log
 from test_all_topo_engineered_data import test_line, expect_results
 from inspect import getfile, currentframe
@@ -73,10 +72,10 @@ class TestFindpeaks(unittest.TestCase):
 
         from topographic.findpeaks import findpeaks, findvalleys
 
-        # test for each scenerio
+        # test for each scenario
         # for p in range(3, 4):
         for p in range(1, len(test_line)+1):
-            print '\ntest ' + str(p) + ' ...'
+            print('\ntest ' + str(p) + ' ...')
             nrow = np.size(test_line[p])
 
             # take the largest integer of each element of the data line
@@ -85,9 +84,6 @@ class TestFindpeaks(unittest.TestCase):
             # Get the indices of the ridges & valleys
             ridge_ind = findpeaks(fwd_line)        # relative ind
             valley_ind = findvalleys(fwd_line)    # relative ind
-
-            print ridge_ind
-            print valley_ind
 
             nrow = np.size(ridge_ind)
             H = np.ones((nrow, 1), dtype=float)
@@ -121,11 +117,8 @@ class TestFindpeaks(unittest.TestCase):
 
             scripts_result = np.concatenate([[hill_no], H.flatten(),
                                              slope.flatten(),
-                                            downwind_slope.flatten(),
-                                            escarp_factor.flatten()])
-
-            print scripts_result
-            print expect_results[p]
+                                             downwind_slope.flatten(),
+                                             escarp_factor.flatten()])
 
             assert_almost_equal(scripts_result, expect_results[p], decimal=2,
                                 err_msg='', verbose=True)

@@ -19,16 +19,15 @@ for 8 directions and output as NetCDF format.
 # Import system & process modules
 import os
 import logging as log
+
+from config import configparser as config
 from utilities import value_lookup
 from utilities.nctools import save_multiplier, get_lat_lon, clip_array
 from utilities.get_pixel_size_grid import get_pixel_size_grids
 import numpy as np
-# import osgeo.gdal as gdal
 from osgeo import gdal
 from os.path import join as pjoin
 import pandas as pd
-import inspect
-import ConfigParser
 
 
 def terrain(temp_tile, tile_extents_nobuffer):
@@ -161,19 +160,10 @@ def get_terrain_table():
 
     :returns: pandas.DataFrame of the terrain classification data
     """
-    cmd_folder = os.path.realpath(
-        os.path.abspath(
-            os.path.split(
-                inspect.getfile(
-                    inspect.currentframe()))[0]))
-    par_folder = os.path.abspath(pjoin(cmd_folder, os.pardir))
-    config = ConfigParser.RawConfigParser()
-    config.read(pjoin(par_folder, 'multiplier_conf.cfg'))
-
     log.info('Reading in the terrain table from the config file')
     terrain_table = config.get('inputValues', 'terrain_table')
     try:
-        mz_init =  pd.read_csv(terrain_table, comment = '#', index_col=False)
+        mz_init = pd.read_csv(terrain_table, comment='#', index_col=False)
     except IOError:
         log.exception("Terrain table file does not exist: {0}".format(terrain_table))
         import sys; sys.exit()
