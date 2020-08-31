@@ -6,8 +6,8 @@
     :synopsis: Provides a couple of base functions that set up a
                parallel processing environment. There are only a 
                small number of parallel processing functions 
-               required for TCRM, so we only need to ensure 
-               those functions are available, either as 
+               required for Wind multiplier, so we only need to
+               ensure those functions are available, either as
                the real thing or, if the required modules are 
                not available, dummy functions that pass straight 
                through. 
