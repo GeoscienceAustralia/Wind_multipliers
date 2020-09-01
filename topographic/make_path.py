@@ -17,7 +17,7 @@ def make_path(nr, nc, n, dire):
     :param nr: `int` number of rows of the input DEM
     :param nc: `int` number of columns of the input DEM
     :param n: `int` starting index
-    :param dire: `string` firection of the path
+    :param dire: `string` direction of the path
 
     :Returns: :class:`numpy.ndarray` the indices of a path
     """
