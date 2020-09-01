@@ -11,7 +11,7 @@ import time
 import getpass
 import subprocess
 
-from config import configparser as config
+from utilities.config import configparser as config
 from utilities.files import fl_program_version
 
 LOGGER = logging.getLogger(__name__)

@@ -27,7 +27,7 @@ import numpy as np
 from osgeo.gdalconst import GDT_Float32
 from osgeo import gdal
 
-from config import configparser as config
+from utilities.config import configparser as config
 from utilities import value_lookup
 from utilities.get_pixel_size_grid import get_pixel_size_grids, RADIANS_PER_DEGREE
 from utilities.nctools import save_multiplier, get_lat_lon, clip_array
