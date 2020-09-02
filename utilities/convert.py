@@ -1,5 +1,5 @@
 from functools import reduce
-from os import listdir
+import os
 from os.path import join as pjoin
 import logging as log
 from osgeo import gdal, osr
@@ -34,7 +34,7 @@ class Converter:
 
         driver = gdal.GetDriverByName('MEM')
         # Get dimensions of tile:
-        inds = gdal.Open(pjoin(self.path, f"M3/{tile}.tif"))
+        inds = gdal.Open(pjoin(self.path, "M3", f"{tile}.tif"))
         transform = inds.GetGeoTransform()
         nx = inds.RasterXSize
         ny = inds.RasterYSize
@@ -59,7 +59,7 @@ class Converter:
         out_ds.SetProjection(PROJECTION)
         out_ds.SetGeoTransform(transform)
 
-        filename = pjoin(self.path, f"M3_max/{tile}.tif")
+        filename = pjoin(self.path, "M3_max", f"{tile}.tif")
         log.info(f"Saving data to {filename}")
         # Write out a GeoTIFF
         tif = gdal.Translate(filename, out_ds,
@@ -81,7 +81,7 @@ class Converter:
         driver = gdal.GetDriverByName('MEM')
 
         # Get/set dimensions for the output bands:
-        tmpds = gdal.Open(pjoin(self.path, f"shielding/{tile}_ms_n.nc"))
+        tmpds = gdal.Open(pjoin(self.path, "shielding", f"{tile}_ms_n.nc"))
         nx = tmpds.RasterXSize
         ny = tmpds.RasterYSize
 
@@ -102,7 +102,7 @@ class Converter:
 
             # Read the wind multipliers for the current direction
             for folder, unit in self.types.items():
-                filename = pjoin(self.path, f"{folder}/{tile}_{unit.lower()}_{direction}.nc")
+                filename = pjoin(self.path, folder, f"{tile}_{unit.lower()}_{direction}.nc")
                 log.info(f"Opening {filename}")
                 try:
                     ds = gdal.Open(filename)
@@ -141,7 +141,7 @@ class Converter:
         out_ds.SetProjection(PROJECTION)
         out_ds.SetGeoTransform(transform)
 
-        filename = pjoin(self.path, f"M3/{tile}.tif")
+        filename = pjoin(self.path, "M3", f"{tile}.tif")
         log.info(f"Saving data to {filename}")
         # Write out a GeoTIFF
         tif = gdal.Translate(filename, out_ds,
@@ -154,12 +154,12 @@ class Converter:
         for tile in self.tiles:
             self.process_tile(tile)
             self.process_max_tile(tile)
-        return self.tile_files
+        return self.tile_files, self.max_tile_files
 
 
 if __name__ == '__main__':
-    tilelist = {file.split('_')[0] for file in listdir('shielding')}
-    converter = Converter(tilelist)
+    tileList = {file.split('_')[0] for file in os.listdir('shielding')}
+    converter = Converter(tileList)
     tile_files = converter.run()
 
     if len(tile_files) > 0:
