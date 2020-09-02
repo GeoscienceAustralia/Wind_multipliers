@@ -160,7 +160,7 @@ class Converter:
 if __name__ == '__main__':
     tileList = {file.split('_')[0] for file in os.listdir('shielding')}
     converter = Converter(tileList)
-    tile_files = converter.run()
+    tile_files, max_tile_files = converter.run()
 
     if len(tile_files) > 0:
         gdal.BuildVRT('wind-multipliers.vrt', tile_files)
