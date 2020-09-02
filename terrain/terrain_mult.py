@@ -20,7 +20,7 @@ for 8 directions and output as NetCDF format.
 import os
 import logging as log
 
-from config import configparser as config
+from utilities.config import configparser as config
 from utilities import value_lookup
 from utilities.nctools import save_multiplier, get_lat_lon, clip_array
 from utilities.get_pixel_size_grid import get_pixel_size_grids
@@ -210,14 +210,18 @@ def convo(one_dir, data, avg_width, lag_width):
     rows = data.shape[0]
     cols = data.shape[1]
 
+    # Get lambda for the direction
+    all_neighbour_lambda = value_lookup.ALL_NEIGHB[one_dir]
+    point_r_lambda = value_lookup.POINT_R[one_dir]
+    point_c_lambda = value_lookup.POINT_C[one_dir]
     for i in range(rows):
         for jj in range(cols):
 
             neighbour_sum = 0
 
             # find the total number of neighbours in this direction
-            all_neighb_no = value_lookup.ALL_NEIGHB[one_dir](i, jj, rows, cols,
-                                                             lag_width)
+            all_neighb_no = all_neighbour_lambda(i, jj, rows, cols,
+                                                 lag_width)
 
             if all_neighb_no > 0:
                 if all_neighb_no < avg_width:
@@ -226,10 +230,9 @@ def convo(one_dir, data, avg_width, lag_width):
                     max_neighb_no = avg_width
 
                 for m in range(max_neighb_no):
-
                     # get neighbour point location
-                    point_row = value_lookup.POINT_R[one_dir](i, m, lag_width)
-                    point_col = value_lookup.POINT_C[one_dir](jj, m, lag_width)
+                    point_row = point_r_lambda(i, m, lag_width)
+                    point_col = point_c_lambda(jj, m, lag_width)
 
                     neighbour_sum += data[point_row, point_col]
 
