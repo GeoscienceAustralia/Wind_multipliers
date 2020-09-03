@@ -8,9 +8,9 @@ This module is called by the module :term:`topomult`
 import logging as log
 import numpy as np
 # calculate Mh using the simpler formula modified by C.Thomas 2009
-import mh
+from topographic import mh
 # get the indices of the ridges in a data line
-from findpeaks import findpeaks, findvalleys
+from topographic.findpeaks import findpeaks, findvalleys
 
 
 def multiplier_calc(line, data_spacing):

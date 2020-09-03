@@ -71,6 +71,13 @@ class DummyCommWorld(object):
     def finalize(self):
         pass
 
+    def scatter(self, sendobj, root=0):
+        return sendobj[0]
+
+    def gather(self, sendobj, root=0):
+        return [sendobj]
+
+
 def attempt_parallel():
     """
     Attempt to load `mpi4py.MPI` globally as `MPI`.  If mpi4py loads

@@ -29,7 +29,8 @@ from osgeo.gdalconst import GA_ReadOnly, GRA_NearestNeighbour, GDT_Float32, GDT_
 import shielding.shield_mult
 import terrain.terrain_mult
 import topographic.topo_mult
-from config import configparser as config
+from utilities import mpi_runner
+from utilities.config import configparser as config
 from utilities.files import fl_start_log
 from utilities.parallel import attempt_parallel, disable_on_workers
 
@@ -409,6 +410,7 @@ class Multipliers(object):
             topographic.topo_mult.topomult(temp_tile_dem,
                                            tile_extents_nobuffer)
 
+            del temp_dataset
             log.info('deleting the temporary files after calculation ...')
             log.info('deleteing the temporary DEM: {0}'
                      .format(temp_tile_dem))
@@ -416,15 +418,13 @@ class Multipliers(object):
             log.info('deleteing the temporary resampled landcover: {0}'
                      .format(terrain_resample))
             os.remove(terrain_resample)
-
-            temp_dataset = None
         else:
+            del temp_dataset
             log.info('deleteing the temporary empty DEM: {0}'
                      .format(temp_tile_dem))
             if os.path.exists(temp_tile_dem):
                 os.remove(temp_tile_dem)
 
-            temp_dataset = None
 
     def parallelise_on_tiles(self, tiles, progress_callback=None):
         """
@@ -564,7 +564,7 @@ def do_output_directory_creation(output):
     """
     log.info('Output will be stored under %s', output)
 
-    subdirs_1 = ['terrain', 'shielding', 'topographic']
+    subdirs_1 = ['terrain', 'shielding', 'topographic', 'M3', 'M3_max']
 
     if os.path.exists(output):
         shutil.rmtree(output)
@@ -772,6 +772,10 @@ def run():
 
     log.info("Successfully completed wind multipliers calculation")
 
+    mpi_runner.parallelise_convert_on_tiles(output_folder, comm)
+    comm.barrier()
+
+    log.info("Successfully converted to raster image")
 
 if __name__ == '__main__':
     run()

@@ -18,7 +18,7 @@ import numpy as np
 from numpy.testing import assert_almost_equal, assert_array_almost_equal
 from osgeo import gdal
 
-from config import configparser as config
+from utilities.config import configparser as config
 
 
 class TestShieldingMultiplier(unittest.TestCase):

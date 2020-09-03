@@ -1,11 +1,12 @@
-from functools import reduce
-from os import listdir
-from os.path import join as pjoin
 import logging as log
-from osgeo import gdal, osr
-from osgeo.gdal_array import BandReadAsArray
+import os
+from functools import reduce
+from os.path import join as pjoin
+
 import numpy as np
 import numpy.ma as ma
+from osgeo import gdal, osr
+from osgeo.gdal_array import BandReadAsArray
 
 
 gdal.UseExceptions()
@@ -34,7 +35,7 @@ class Converter:
 
         driver = gdal.GetDriverByName('MEM')
         # Get dimensions of tile:
-        inds = gdal.Open(pjoin(self.path, f"M3/{tile}.tif"))
+        inds = gdal.Open(pjoin(self.path, "M3", f"{tile}.tif"))
         transform = inds.GetGeoTransform()
         nx = inds.RasterXSize
         ny = inds.RasterYSize
@@ -59,7 +60,7 @@ class Converter:
         out_ds.SetProjection(PROJECTION)
         out_ds.SetGeoTransform(transform)
 
-        filename = pjoin(self.path, f"M3_max/{tile}.tif")
+        filename = pjoin(self.path, "M3_max", f"{tile}.tif")
         log.info(f"Saving data to {filename}")
         # Write out a GeoTIFF
         tif = gdal.Translate(filename, out_ds,
@@ -71,17 +72,17 @@ class Converter:
         del tif
 
     def process_tile(self, tile):
-        '''Convert NetCDF tiles into GeoTIFF tile
+        """Convert NetCDF tiles into GeoTIFF tile
 
-        Each direction NetCDF becomes a band in the GeoTIFF, 
+        Each direction NetCDF becomes a band in the GeoTIFF,
         the pre-multiplied wind multiplier is stored in the band (Ms * Mz * Mt)
-        '''
+        """
 
         # Create the raster in-memory to allow manipulating the bands
         driver = gdal.GetDriverByName('MEM')
 
         # Get/set dimensions for the output bands:
-        tmpds = gdal.Open(pjoin(self.path, f"shielding/{tile}_ms_n.nc"))
+        tmpds = gdal.Open(pjoin(self.path, "shielding", f"{tile}_ms_n.nc"))
         nx = tmpds.RasterXSize
         ny = tmpds.RasterYSize
 
@@ -102,7 +103,7 @@ class Converter:
 
             # Read the wind multipliers for the current direction
             for folder, unit in self.types.items():
-                filename = pjoin(self.path, f"{folder}/{tile}_{unit.lower()}_{direction}.nc")
+                filename = pjoin(self.path, folder, f"{tile}_{unit.lower()}_{direction}.nc")
                 log.info(f"Opening {filename}")
                 try:
                     ds = gdal.Open(filename)
@@ -141,7 +142,7 @@ class Converter:
         out_ds.SetProjection(PROJECTION)
         out_ds.SetGeoTransform(transform)
 
-        filename = pjoin(self.path, f"M3/{tile}.tif")
+        filename = pjoin(self.path, "M3", f"{tile}.tif")
         log.info(f"Saving data to {filename}")
         # Write out a GeoTIFF
         tif = gdal.Translate(filename, out_ds,
@@ -154,13 +155,10 @@ class Converter:
         for tile in self.tiles:
             self.process_tile(tile)
             self.process_max_tile(tile)
-        return self.tile_files
+        return self.tile_files, self.max_tile_files
 
 
-if __name__ == '__main__':
-    tilelist = {file.split('_')[0] for file in listdir('shielding')}
-    converter = Converter(tilelist)
-    tile_files = converter.run()
+def create_sub_dirs_for_convert(data_path):
+    os.makedirs(os.path.join(data_path, 'M3'), exist_ok=True)
+    os.makedirs(os.path.join(data_path, 'M3_max'), exist_ok=True)
 
-    if len(tile_files) > 0:
-        gdal.BuildVRT('wind-multipliers.vrt', tile_files)
