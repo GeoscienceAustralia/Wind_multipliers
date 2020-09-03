@@ -5,12 +5,18 @@ import os
 import argparse
 from osgeo import gdal
 
-from convert import Converter
+from convert import Converter, create_sub_dirs_for_convert
 from parallel import attempt_parallel, disable_on_workers
 
 
 def parallelise_convert_on_tiles(data_path, comm):
-    # MPI wrapper to parallelize tile conversion on NCI
+    """
+    MPI wrapper to parallelize tile conversion on NCI
+
+    :param data_path: `string` location of sheilding, terrain
+                    and topographic data
+    :param comm: `tuple` MIP.COMM_WORLD object
+    """
 
     if comm.rank == 0:
         tiles = list({file.split('_')[0] for file in os.listdir(os.path.join(data_path, 'shielding'))})
@@ -38,12 +44,6 @@ def parallelise_convert_on_tiles(data_path, comm):
             log.warning("No raster file found to build virtual raster table")
 
 
-@disable_on_workers
-def _create_sub_dirs(data_path):
-    os.makedirs(os.path.join(data_path, 'M3'), exist_ok=True)
-    os.makedirs(os.path.join(data_path, 'M3_max'), exist_ok=True)
-
-
 if __name__ == '__main__':
     log.getLogger().setLevel('DEBUG')
 
@@ -56,6 +56,6 @@ if __name__ == '__main__':
     MPI = attempt_parallel()
     comm = MPI.COMM_WORLD
     if comm.rank == 0:
-        _create_sub_dirs(args.path)
+        create_sub_dirs_for_convert(args.path)
 
     parallelise_convert_on_tiles(args.path, comm)
