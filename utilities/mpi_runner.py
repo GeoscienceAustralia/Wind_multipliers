@@ -6,7 +6,7 @@ import argparse
 from osgeo import gdal
 
 from convert import Converter, create_sub_dirs_for_convert
-from parallel import attempt_parallel, disable_on_workers
+from parallel import attempt_parallel
 
 
 def parallelise_convert_on_tiles(data_path, comm):
@@ -45,8 +45,6 @@ def parallelise_convert_on_tiles(data_path, comm):
 
 
 if __name__ == '__main__':
-    log.getLogger().setLevel('DEBUG')
-
     p = argparse.ArgumentParser()
     p.add_argument('-p', '--path', help="Base path of multiplier data to convert")
 
