@@ -1,11 +1,12 @@
-from functools import reduce
-import os
-from os.path import join as pjoin
 import logging as log
-from osgeo import gdal, osr
-from osgeo.gdal_array import BandReadAsArray
+import os
+from functools import reduce
+from os.path import join as pjoin
+
 import numpy as np
 import numpy.ma as ma
+from osgeo import gdal, osr
+from osgeo.gdal_array import BandReadAsArray
 
 
 gdal.UseExceptions()
@@ -71,11 +72,11 @@ class Converter:
         del tif
 
     def process_tile(self, tile):
-        '''Convert NetCDF tiles into GeoTIFF tile
+        """Convert NetCDF tiles into GeoTIFF tile
 
-        Each direction NetCDF becomes a band in the GeoTIFF, 
+        Each direction NetCDF becomes a band in the GeoTIFF,
         the pre-multiplied wind multiplier is stored in the band (Ms * Mz * Mt)
-        '''
+        """
 
         # Create the raster in-memory to allow manipulating the bands
         driver = gdal.GetDriverByName('MEM')
@@ -157,10 +158,7 @@ class Converter:
         return self.tile_files, self.max_tile_files
 
 
-if __name__ == '__main__':
-    tileList = {file.split('_')[0] for file in os.listdir('shielding')}
-    converter = Converter(tileList)
-    tile_files, max_tile_files = converter.run()
+def create_sub_dirs_for_convert(data_path):
+    os.makedirs(os.path.join(data_path, 'M3'), exist_ok=True)
+    os.makedirs(os.path.join(data_path, 'M3_max'), exist_ok=True)
 
-    if len(tile_files) > 0:
-        gdal.BuildVRT('wind-multipliers.vrt', tile_files)
