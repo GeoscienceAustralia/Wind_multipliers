@@ -367,7 +367,9 @@ class TestShieldingMultiplier(unittest.TestCase):
 
     def test_terrain_class2ms_orig(self):
 
-        config.set('inputValues', 'terrain_table', os.path.join(self.testdata_folder, 'terrain_classification.csv'))
+        config.set('inputValues', 'terrain_table',
+                   os.path.join(self.testdata_folder,
+                                'terrain_classification.csv'))
 
         terrain = os.path.join(self.testdata_folder, "lc_terrain.img")
 

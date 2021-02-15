@@ -50,13 +50,13 @@ class TestParallel(unittest.TestCase):
         else:
             tiles = None
         local_tiles = comm.scatter(tiles, root=0)
-        np.testing.assert_almost_equal(local_tiles, np.array([1, 2, 3]), decimal=2,
-                                       err_msg='', verbose=True)
+        np.testing.assert_almost_equal(local_tiles, np.array([1, 2, 3]),
+                                       decimal=2, err_msg='', verbose=True)
         # assert local_tiles == tiles[0]
         local_results = local_tiles * 2
         results = comm.gather(local_results, root=0)
-        np.testing.assert_almost_equal(results[0], np.array([2, 4, 6]), decimal=2,
-                                       err_msg='', verbose=True)
+        np.testing.assert_almost_equal(results[0], np.array([2, 4, 6]),
+                                       decimal=2, err_msg='', verbose=True)
 
 
 if __name__ == "__main__":

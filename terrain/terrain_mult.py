@@ -18,6 +18,7 @@ for 8 directions and output as NetCDF format.
 
 # Import system & process modules
 import os
+import sys
 import logging as log
 
 from utilities.config import configparser as config
@@ -73,10 +74,10 @@ def terrain(temp_tile, tile_extents_nobuffer):
     data = band.ReadAsArray(0, 0, cols, rows)
 
     nodata_value = band.GetNoDataValue()
-    #if nodata_value is not None:
-    #    data[np.where(data == nodata_value)] = np.nan
-    #else:
-    #    data[np.where(data is None)] = np.nan
+    # if nodata_value is not None:
+    #     data[np.where(data == nodata_value)] = np.nan
+    # else:
+    #     data[np.where(data is None)] = np.nan
 
     mz_init = get_terrain_table()
     reclassified_array = terrain_class2mz_orig(data, mz_init)
@@ -154,6 +155,7 @@ def terrain(temp_tile, tile_extents_nobuffer):
     log.info(
         'finish terrain multiplier computation for this tile successfully')
 
+
 def get_terrain_table():
     """
     Read in the terrain table specified in the config file
@@ -165,13 +167,13 @@ def get_terrain_table():
     try:
         mz_init = pd.read_csv(terrain_table, comment='#', index_col=False)
     except IOError:
-        log.exception("Terrain table file does not exist: {0}".format(terrain_table))
-        import sys; sys.exit()
+        log.exception(f"Terrain table file does not exist: {terrain_table}")
+        sys.exit()
     except:
         raise
-        
-    
+
     return mz_init
+
 
 def terrain_class2mz_orig(data, mz_init):
     """
@@ -192,6 +194,7 @@ def terrain_class2mz_orig(data, mz_init):
         outdata[data == category] = Mz
 
     return outdata
+
 
 def convo(one_dir, data, avg_width, lag_width):
     """

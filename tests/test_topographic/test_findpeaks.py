@@ -29,7 +29,8 @@ def escarpment_factor(profile, ridge, valley, data_spacing):
     H = profile[ridge] - profile[valley]
     Lu = abs(ridge - valley) * data_spacing / 2
     slope = H / (2 * Lu)
-    beta_ind = int(np.minimum(nrow - 1, np.floor(ridge + (2 * Lu / data_spacing))))
+    beta_ind = int(np.minimum(nrow - 1,
+                   np.floor(ridge + (2 * Lu / data_spacing))))
     H_r2beta = profile[ridge] - profile[beta_ind]
     D_r2beta = (beta_ind - ridge) * data_spacing
     if D_r2beta > 0:                 # D_r2beta can be 0, 25, 50, ...
@@ -103,15 +104,15 @@ class TestFindpeaks(unittest.TestCase):
                 if ridge_ind[0] == 0:    # (1) down up down up ....
                     for i in range(1, np.size(ridge_ind)):
                         H[i], slope[i], downwind_slope[i], escarp_factor[i] = \
-                        escarpment_factor(fwd_line, ridge_ind[i],
-                                          valley_ind[i-1],
-                                          self.data_spacing)
+                            escarpment_factor(fwd_line, ridge_ind[i],
+                                              valley_ind[i-1],
+                                              self.data_spacing)
 
                 else:                    # (2) up dowm up dowm ....
                     for i in range(0, np.size(ridge_ind)):
                         H[i], slope[i], downwind_slope[i], escarp_factor[i] = \
-                        escarpment_factor(fwd_line, ridge_ind[i],
-                                          valley_ind[i], self.data_spacing)
+                            escarpment_factor(fwd_line, ridge_ind[i],
+                                              valley_ind[i], self.data_spacing)
 
             hill_no = np.size(ridge_ind)
 

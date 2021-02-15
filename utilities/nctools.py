@@ -319,11 +319,11 @@ def save_multiplier(multiplier_name, multiplier_values, lat, lon, nc_name):
     # Collect git info - need to make sure git command is executed from
     # code - not from data directory
     cwd = os.getcwd()  # save working directory
-    os.chdir(os.path.dirname(os.path.realpath(__file__)))  # change to this file's directory
+    os.chdir(os.path.dirname(os.path.realpath(__file__)))
     git_info = subprocess.check_output(["git", "describe"])
     os.chdir(cwd)  # restore working directory from saved value
 
-    # Set global attributes, including metadata capture: 
+    # Set global attributes, including metadata capture:
     global_atts = {'Abstract': ('This dataset is the local ' +
                                 multiplier[multiplier_name] +
                                 ' for each grid cell in ' + direction +
@@ -339,7 +339,7 @@ def save_multiplier(multiplier_name, multiplier_values, lat, lon, nc_name):
                    'Python_version': sys.version,
                    'Wind_multipler_code_version': fl_program_version(),
                    'Git_version': git_info,
-                   'Conventions':('CF-1.6'),
+                   'Conventions': ('CF-1.6'),
                    'Created_on': time.strftime(ISO_FORMAT, time.localtime()),
                    'Created_by': getpass.getuser(),
                    'Custodian': ('Geoscience Australia')}

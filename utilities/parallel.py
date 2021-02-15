@@ -4,13 +4,13 @@
 
 .. module:: parallel
     :synopsis: Provides a couple of base functions that set up a
-               parallel processing environment. There are only a 
-               small number of parallel processing functions 
+               parallel processing environment. There are only a
+               small number of parallel processing functions
                required for Wind multiplier, so we only need to
                ensure those functions are available, either as
-               the real thing or, if the required modules are 
-               not available, dummy functions that pass straight 
-               through. 
+               the real thing or, if the required modules are
+               not available, dummy functions that pass straight
+               through.
                We base our parallel processing on :term:`mpi4py`
 
 .. moduleauthor: Craig Arthur, <craig.arthur@ga.gov.au>
@@ -19,9 +19,10 @@
 
 from functools import wraps
 
+
 class DummyStatus(object):
     """
-    A dummy `Status` class that provides a placeholder 
+    A dummy `Status` class that provides a placeholder
     for the methods that are used to control processing
     in parallel implementation
 
@@ -31,17 +32,18 @@ class DummyStatus(object):
         self.tag = -1
         self.error = 0
 
+
 class DummyCommWorld(object):
     """
     A dummy COMM_WORLD class that provides the bare
     essential methods for running the code. This is used
     for basic parallelisation (task distribution).
 
-    This is returned only if mpi4py raises an ImportError or 
-    ModuleNotFoundError. 
+    This is returned only if mpi4py raises an ImportError or
+    ModuleNotFoundError.
 
     """
-    
+
     def __init__(self):
         self._rank = 0
         self._size = 1
@@ -50,7 +52,7 @@ class DummyCommWorld(object):
     @property
     def name(self):
         return self._name
-        
+
     @property
     def rank(self):
         return self._rank
@@ -106,7 +108,7 @@ def attempt_parallel():
                 self.COMM_WORLD = DummyCommWorld()
                 self.Status = DummyStatus()
                 self.ANY_SOURCE = -1
-            
+
             def Init(self):
                 pass
 
@@ -116,7 +118,6 @@ def attempt_parallel():
         MPI = DummyMPI()
     return MPI
 
- 
 
 def disable_on_workers(f):
     """

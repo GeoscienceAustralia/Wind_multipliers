@@ -1,3 +1,10 @@
+"""
+convert
+
+Convert from NetCDF files to single merged geotiff file, and create a Virtual
+Raster Table (VRT) to simplify access to the data
+"""
+
 import logging as log
 import os
 from functools import reduce
@@ -103,7 +110,8 @@ class Converter:
 
             # Read the wind multipliers for the current direction
             for folder, unit in self.types.items():
-                filename = pjoin(self.path, folder, f"{tile}_{unit.lower()}_{direction}.nc")
+                filename = pjoin(self.path, folder,
+                                 f"{tile}_{unit.lower()}_{direction}.nc")
                 log.info(f"Opening {filename}")
                 try:
                     ds = gdal.Open(filename)
@@ -114,9 +122,10 @@ class Converter:
                     ds.SetGeoTransform(transform)
                     band = ds.GetRasterBand(1)
                     band.WriteArray(np.ones((nx, ny)))
-                
-                bands.append(ma.masked_values(BandReadAsArray(ds.GetRasterBand(1)),
-                                              self.missing_value))
+
+                bands.append(ma.masked_values(
+                    BandReadAsArray(ds.GetRasterBand(1)),
+                    self.missing_value))
 
                 if first:
                     transform = ds.GetGeoTransform()
@@ -146,7 +155,9 @@ class Converter:
         log.info(f"Saving data to {filename}")
         # Write out a GeoTIFF
         tif = gdal.Translate(filename, out_ds,
-                             options=gdal.TranslateOptions(gdal.ParseCommandLine("-co COMPRESS=LZW -co TILED=YES")))
+                             options=gdal.TranslateOptions(
+                                 gdal.ParseCommandLine(
+                                     "-co COMPRESS=LZW -co TILED=YES")))
         self.tile_files.append(filename)
 
         del tif
@@ -161,4 +172,3 @@ class Converter:
 def create_sub_dirs_for_convert(data_path):
     os.makedirs(os.path.join(data_path, 'M3'), exist_ok=True)
     os.makedirs(os.path.join(data_path, 'M3_max'), exist_ok=True)
-

@@ -71,7 +71,9 @@ class TestMultiplierCalc(unittest.TestCase):
                     # updated eleveation considering the forward slope
                     test_line[j] = test_line[j] + (500-distance)*test_slope[i]
                 if test_escarp[i] == 'Y':
-                    for j in range(61, int(np.floor(L2_down/self.data_spacing))+61):
+                    for j in range(61,
+                                   int(np.floor(L2_down/self.data_spacing)) +
+                                   61):
                         test_line[j] = test_line[60]
                 else:
                     for j in range(61, 81):
@@ -79,8 +81,9 @@ class TestMultiplierCalc(unittest.TestCase):
 
                 test_line_total = np.concatenate([test_line_total.flatten(),
                                                   test_line.flatten()])
-                mh_engineered_total = np.concatenate([mh_engineered_total.flatten(),
-                                                      mh_engineered[i].flatten()])
+                mh_engineered_total = np.concatenate(
+                    [mh_engineered_total.flatten(),
+                     mh_engineered[i].flatten()])
 
             # plot the line profile
             # point_no = len(test_slope)*181
@@ -96,11 +99,18 @@ class TestMultiplierCalc(unittest.TestCase):
             mh_scripts_selection_total = np.empty(0)
             for i in range(1, len(test_slope)+1):
 
-                mh_scripts_selection = np.concatenate([mh_scripts[0+181*(i-1)], mh_scripts[10+181*(i-1)], mh_scripts[20+181*(i-1)], mh_scripts[30+181*(i-1):33+181*(i-1)].flatten(),\
-                                                       mh_scripts[40+181*(i-1)], mh_scripts[44+181*(i-1):73+181*(i-1)].flatten(), mh_scripts[80+181*(i-1)], mh_scripts[100+181*(i-1)],\
-                                                       mh_scripts[120+181*(i-1)], mh_scripts[180+181*(i-1)]])
+                mh_scripts_selection = np.concatenate(
+                    [mh_scripts[0+181*(i-1)], mh_scripts[10+181*(i-1)],
+                     mh_scripts[20+181*(i-1)],
+                     mh_scripts[30+181*(i-1):33+181*(i-1)].flatten(),
+                     mh_scripts[40+181*(i-1)],
+                     mh_scripts[44+181*(i-1):73+181*(i-1)].flatten(),
+                     mh_scripts[80+181*(i-1)], mh_scripts[100+181*(i-1)],
+                     mh_scripts[120+181*(i-1)], mh_scripts[180+181*(i-1)]])
 
-                mh_scripts_selection_total = np.concatenate([mh_scripts_selection_total.flatten(), mh_scripts_selection.flatten()])
+                mh_scripts_selection_total = np.concatenate([
+                    mh_scripts_selection_total.flatten(),
+                    mh_scripts_selection.flatten()])
 
             # assert_almost_equal(mh_engineered_total,
             #                     mh_scripts_selection_total, decimal=2,

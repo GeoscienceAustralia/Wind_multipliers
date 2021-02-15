@@ -54,10 +54,14 @@ class TestMPIRunner(unittest.TestCase):
         create_sub_dirs_for_convert(data_path)
         parallelise_convert_on_tiles(data_path, comm)
 
-        assert os.path.exists(os.path.join(output_path_m3, self.test_title + '.tif'))
-        assert os.path.exists(os.path.join(output_path_m3, 'wind-multipliers.vrt'))
-        assert os.path.exists(os.path.join(output_path_m3_max, self.test_title + '.tif'))
-        assert os.path.exists(os.path.join(output_path_m3_max, 'wind-multipliers.vrt'))
+        assert os.path.exists(os.path.join(output_path_m3,
+                                           self.test_title + '.tif'))
+        assert os.path.exists(os.path.join(output_path_m3,
+                                           'wind-multipliers.vrt'))
+        assert os.path.exists(os.path.join(output_path_m3_max,
+                                           self.test_title + '.tif'))
+        assert os.path.exists(os.path.join(output_path_m3_max,
+                                           'wind-multipliers.vrt'))
         # self.assertIsNotNone(converter.tile_files)
         # for file in converter.tile_files:
         #     assert os.path.exists(file)

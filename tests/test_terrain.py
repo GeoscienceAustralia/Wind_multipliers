@@ -18,6 +18,7 @@ from inspect import getfile, currentframe
 from osgeo import gdal
 import pandas as pd
 
+
 class TestTerrainMultiplier(unittest.TestCase):
 
     def setUp(self):
@@ -43,21 +44,24 @@ class TestTerrainMultiplier(unittest.TestCase):
                          [1063, 1000, 949, 774],
                          [1000, 898,  774, 949],
                          [949,  1063, 806, 774]])
-        mz_init = pd.DataFrame({'CATEGORY' : pd.Series([774, 806, 898, 949, 1000, 1063], 
-                                                       index = [0, 1, 2, 3, 4, 5]),
-                                'ROUGHNESS_LENGTH_m' : pd.Series([1, 0.4, 0.08, 0.04, 0.02, 0.006], 
-                                                       index = [0, 1, 2, 3, 4, 5])})
+        mz_init = pd.DataFrame({
+                    'CATEGORY': pd.Series(
+                        [774, 806, 898, 949, 1000, 1063],
+                        index=[0, 1, 2, 3, 4, 5]),
+                    'ROUGHNESS_LENGTH_m': pd.Series(
+                        [1, 0.4, 0.08, 0.04, 0.02, 0.006],
+                        index=[0, 1, 2, 3, 4, 5])})
 
         scripts_result = terrain_class2mz_orig(data, mz_init)
 
         np.set_printoptions(precision=3)
 
-        expect_result = np.array([[ 0.8870,  0.8870,  0.8447,  0.8078],
-                                  [ 0.8078,  0.9802,  0.7037,  0.8447],
-                                  [ 0.8447,  0.7037,  0.7372,  0.7372],
-                                  [ 0.9802,  0.8870,  0.8447,  0.7037],
-                                  [ 0.8870,  0.8078,  0.7037 , 0.8447],
-                                  [ 0.8447,  0.9802,  0.7372,  0.7037]])
+        expect_result = np.array([[0.8870, 0.8870, 0.8447, 0.8078],
+                                  [0.8078, 0.9802, 0.7037, 0.8447],
+                                  [0.8447, 0.7037, 0.7372, 0.7372],
+                                  [0.9802, 0.8870, 0.8447, 0.7037],
+                                  [0.8870, 0.8078, 0.7037, 0.8447],
+                                  [0.8447, 0.9802, 0.7372, 0.7037]])
 
         assert_almost_equal(scripts_result, expect_result, decimal=3,
                             err_msg='', verbose=True)

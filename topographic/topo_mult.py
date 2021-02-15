@@ -18,10 +18,10 @@ tile for 8 directions and output as NetCDF format.
 """
 
 import os
-from os.path import join as pjoin
-import numpy as np
 import math
 import logging as log
+from os.path import join as pjoin
+import numpy as np
 from scipy import signal
 from osgeo import gdal
 
@@ -107,8 +107,8 @@ def topomult(input_dem, tile_extents_nobuffer):
         strt_idx = np.unique(strt_idx)
 
         for ctr, idx in enumerate(strt_idx):
-            log.debug('Processing path %3i' % ctr + ' of %3i' % len(strt_idx)
-                      + ', index %5i.' % idx)
+            log.debug('Processing path %3i' % ctr + ' of %3i' % len(strt_idx) +
+                      ', index %5i.' % idx)
 
             # Get a line of the data
             # path is a 1-d vector which gives the indices of the data
@@ -124,7 +124,7 @@ def topomult(input_dem, tile_extents_nobuffer):
         # Reshape the result to matrix like
         mhdata = np.reshape(mhdata, (nc, nr))
         mhdata = np.transpose(mhdata)
-        
+
         # Remove the conservatism as described in the Reference
         mhdata = remove_conservatism(mhdata)
 
@@ -139,8 +139,8 @@ def topomult(input_dem, tile_extents_nobuffer):
         del mhdata
 
         # output format as netCDF4
-        tile_nc = pjoin(mh_folder, os.path.splitext(file_name)[0][:-4] + '_mt_'
-                        + direction + '.nc')
+        tile_nc = pjoin(mh_folder, os.path.splitext(file_name)[0][:-4] +
+                        '_mt_' + direction + '.nc')
 
         mhsmooth_nobuffer = clip_array(mhsmooth, x_left, y_upper, pixelwidth,
                                        pixelheight, tile_extents_nobuffer)
@@ -178,15 +178,14 @@ def remove_conservatism(mh_in):
 
     :return: :class:`numpy.ndarray` the output topographic multiplier
     """
-    
+
     mh_out = mh_in
     shallow = np.where((mh_in > 1) & (mh_in < 1.4))
     steep = np.where(mh_in >= 1.4)
-    
-    # A linear function y = 1.25 - 0.25x is used to get percentage for values 
+
+    # A linear function y = 1.25 - 0.25x is used to get percentage for values
     # between (1, 1.4)
     mh_out[shallow] = mh_in[shallow] * (1.25 - 0.25 * mh_in[shallow])
     mh_out[steep] = mh_in[steep] * 0.9
 
     return mh_out
-
