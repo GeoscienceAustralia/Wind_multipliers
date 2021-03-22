@@ -27,8 +27,17 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install
+        #
         run: |
+          sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
+          sudo apt-add-repository https://cli.github.com/packages
+          sudo apt update
+          sudo apt install -y --no-install-recommends libnetcdf-dev
+          sudo apt install -y --no-install-recommends gdal-bin libgdal-dev
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install GDAL==$(gdal-config --version) --global-option=build_ext --global-option="-I/usr/include/gdal"
+
+
 
       - name: Run Testing
         run: python -m unittest discover
