@@ -19,7 +19,7 @@ import sys, os
 #sys.path.insert(0, os.path.abspath('.'))
 
 sys.path.insert(0, os.path.abspath('.'))
-sys.path.append('/usr/local/python-2.7.2/lib/python2.7')
+sys.path.append('/usr/local/lib/python3.7')
 
 sys.path.append('/nas/gemd/climate_change/CHARS/B_Wind/Projects/Multipliers/github/windmultipliers/'
                 'topographic')

@@ -16,14 +16,10 @@
 import sys
 import os.path
 import unittest
-import numpy as np
-#from numpy.testing import assertIsNotNone
 from inspect import getfile, currentframe
-from osgeo import gdal
-import pandas as pd
-
 from all_multipliers import Multipliers
-from Utilities.files import flStartLog
+from utilities.files import fl_start_log
+
 
 class TestOpenFiles(unittest.TestCase):
 
@@ -46,19 +42,18 @@ class TestOpenFiles(unittest.TestCase):
     def test_DEM_open(self):
         """Test the DEM file is being opened properly"""
         self.mult.open_dem()
-        #(test for self attribute)
         self.assertTrue(hasattr(self.mult, 'dem_type'))
-        
+
     def test_bodgy_DEM(self):
         """Test the DEM file opening fails properly"""
         self.assertRaises(OSError, self.badmult.open_dem)
-    
+
     def test_GTiff_open(self):
         """Test function can open GeoTiff"""
         self.gtiffMult.open_dem()
         self.assertTrue(hasattr(self.gtiffMult, 'dem_type'))
-    
+
 if __name__ == "__main__":
-    flStartLog('', 'CRITICAL', False)
-    testSuite = unittest.makeSuite(TestGPD,'test')
+    fl_start_log('', 'CRITICAL', False)
+    testSuite = unittest.makeSuite(TestGPD, 'test')
     unittest.TextTestRunner(verbosity=3).run(testSuite)

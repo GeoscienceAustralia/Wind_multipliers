@@ -26,14 +26,14 @@ from os.path import join as pjoin
 import numpy as np
 from osgeo.gdalconst import GDT_Float32
 from osgeo import gdal
+
+from utilities.config import configparser as config
 from utilities import value_lookup
-from utilities.get_pixel_size_grid import get_pixel_size_grids
-from utilities.get_pixel_size_grid import RADIANS_PER_DEGREE
+from utilities.get_pixel_size_grid import get_pixel_size_grids, \
+                                          RADIANS_PER_DEGREE
 from utilities.nctools import save_multiplier, get_lat_lon, clip_array
 
-import inspect
 import pandas as pd
-import ConfigParser
 
 
 def shield(terrain, input_dem, tile_extents_nobuffer):
@@ -80,8 +80,8 @@ def reclassify_aspect(data):
 
     for i in range(2, 9):
         outdata[
-            np.where((22.5 + (i - 2) * 45 <= data)
-                     & (data < 67.5 + (i - 2) * 45))] = i
+            np.where((22.5 + (i - 2) * 45 <= data) &
+                     (data < 67.5 + (i - 2) * 45))] = i
 
     return outdata
 
@@ -149,27 +149,20 @@ def get_slope_aspect(input_dem):
 
     return slope_array, aspect_array_reclassify
 
+
 def get_shielding_table():
     """
     Read in the terrain table specified in the config file
 
     :returns: pandas.DataFrame of the terrain classification data
     """
-    cmd_folder = os.path.realpath(
-        os.path.abspath(
-            os.path.split(
-                inspect.getfile(
-                    inspect.currentframe()))[0]))
-    par_folder = os.path.abspath(pjoin(cmd_folder, os.pardir))
-    config = ConfigParser.RawConfigParser()
-    config.read(pjoin(par_folder, 'multiplier_conf.cfg'))
-
     log.info('Reading in the terrain table from the config file')
     terrain_table = config.get('inputValues', 'terrain_table')
 
-    ms_init =  pd.read_csv(terrain_table, comment = '#', index_col=False)
-    
+    ms_init = pd.read_csv(terrain_table, comment='#', index_col=False)
+
     return ms_init
+
 
 def terrain_class2ms_orig(terrain):
     """
@@ -212,18 +205,16 @@ def terrain_class2ms_orig(terrain):
     mask = np.where(data == -99)
 
     ms_init = value_lookup.MS_INIT
-    #import pdb;pdb.set_trace()
     ms_init_new = get_shielding_table()
-
     outdata = np.ones_like(data, dtype=np.float32)
 
     for ix, row in ms_init_new.iterrows():
         category = row['CATEGORY']
         Ms = row['SHIELDING']
-        outdata[data==category] = Ms / 100.
-    #for i in [1, 3, 4, 5]:
-    #    outdata[data == i] = ms_init[i] / 100.0
-    
+        outdata[data == category] = Ms / 100.
+    # for i in [1, 3, 4, 5]:
+    #     outdata[data == i] = ms_init[i] / 100.0
+
     outdata[mask] = np.nan
 
     ms_orig = pjoin(ms_folder, os.path.splitext(file_name)[0] + '_ms.img')
@@ -359,8 +350,8 @@ def convo_combine(ms_orig, slope_array, aspect_array, tile_extents_nobuffer):
 def combine(ms_orig_array, slope_array, aspect_array, one_dir):
     """
     Used for each direction to derive the shielding multipliers by considering
-    slope and aspect after covolution in the previous step. It will also remove
-    the conservatism.
+    slope and aspect after convolution in the previous step. It will also
+    remove the conservatism.
 
     :param ms_orig_array: :class:`numpy.ndarray` convoluted shielding values
     :param slope_array: :class:`numpy.ndarray` the input slope values
@@ -373,7 +364,7 @@ def combine(ms_orig_array, slope_array, aspect_array, one_dir):
     dire_aspect = value_lookup.DIRE_ASPECT
     aspect_value = dire_aspect[one_dir]
 
-    conservatism = 1.0 #0.9
+    conservatism = 0.9
     up_degree = 12.30
     low_degree = 3.27
 

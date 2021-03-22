@@ -3,40 +3,42 @@ branches:
   except:
   - notebooks
 python:
-  - "2.7"
-# install system dependencies 
+  - "3.7"
+# install system dependencies
 before_install: 
   - sudo apt-get update -qq
   - sudo apt-get install build-essential
   - sudo apt-get install libhdf5-serial-dev
   - sudo apt-get install libnetcdf-dev 
-  - sudo apt-get install python-dev
-  - sudo apt-get install libgeos-c1 libgeos-dev
+  - sudo apt-get install python3-dev
+  - sudo apt-get install libgeos-c1v5 libgeos-dev
   - sudo apt-get install libatlas-base-dev gfortran
-  - sudo apt-get install libblas3gf
+  - sudo apt-get install libblas3
   - sudo apt-get install libc6
   - sudo apt-get install libgcc1
   - sudo apt-get install libgfortran3
-  - sudo apt-get install liblapack3gf
+  - sudo apt-get install liblapack3
   - sudo apt-get install libstdc++6 
   
 # install Python dependencies 
 install:
 #  - sudo pip install conda 
 #  - sudo conda init 
-- if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then wget https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh
-  -O miniconda.sh; else wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
-  -O miniconda.sh; fi
+- wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
 - bash miniconda.sh -b -p $HOME/miniconda
 - export PATH="$HOME/miniconda/bin:$PATH"
 - hash -r
 - conda config --set always_yes yes --set changeps1 no
 - conda update -q conda
-- deps='pip numpy scipy matplotlib nose coverage numexpr gdal' 
-- conda create -p $HOME/py --yes $deps "python=$TRAVIS_PYTHON_VERSION" 
+- conda info -a
+- deps='pip numpy scipy nose coverage numexpr gdal mpi4py openssh'
+- conda create -p $HOME/py --yes $deps "python=$TRAVIS_PYTHON_VERSION" -c conda-forge
 - export PATH=$HOME/py/bin:$PATH 
 - pip install pycurl
-- pip -v install -r requirements.txt 
+- pip -v install -r requirements.txt
+- export PYTHONPATH="${PYTHONPATH}:$HOME:${TRAVIS_BUILD_DIR}/utilities:${TRAVIS_BUILD_DIR}/topographic:${TRAVIS_BUILD_DIR}/tests:${TRAVIS_BUILD_DIR}/tests/test_topographic"
+#- echo "${PYTHONPATH}"
+#- echo "${TRAVIS_BUILD_DIR}"
 branches:
   except:
   - notebooks

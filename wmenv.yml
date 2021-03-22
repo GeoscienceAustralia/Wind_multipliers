@@ -1,0 +1,19 @@
+name: wm
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.7
+  - netcdf4
+  - pandas
+  - scipy
+  - pytz
+  - cftime
+  - libgdal
+  - coverage
+  - gdal
+  - python-dateutil
+  - numexpr
+  - numpy
+  - nose
+  - mpi4py

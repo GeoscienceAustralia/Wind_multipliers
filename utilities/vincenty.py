@@ -246,8 +246,9 @@ def vinc_dist(f, a, phi1, lembda1, phi2, lembda2):
     B = (u2 / 1024) * (256 + u2 * (-128 + u2 * (74 - 47 * u2)))
 
     delta_sigma = B * Sin_sigma * (Cos2sigma_m + (B / 4) *
-                                   (Cos_sigma * (-1 + 2 * pow(Cos2sigma_m, 2))
-                                    - (B / 6) * Cos2sigma_m *
+                                   (Cos_sigma *
+                                   (-1 + 2 * pow(Cos2sigma_m, 2)) -
+                                    (B / 6) * Cos2sigma_m *
                                     (-3 + 4 * sqr_sin_sigma) *
                                     (-3 + 4 * pow(Cos2sigma_m, 2))))
 
@@ -341,13 +342,13 @@ def vinc_pt(f, a, phi1, lembda1, alpha12, s):
         two_sigma_m = 2 * sigma1 + sigma
 
         delta_sigma = B * math.sin(sigma) * \
-            (math.cos(two_sigma_m)
-             + (B / 4) * (math.cos(sigma) *
-                          (-1 + 2 * math.pow(
+            (math.cos(two_sigma_m) +
+             (B / 4) * (math.cos(sigma) *
+                        (-1 + 2 * math.pow(
                               math.cos(two_sigma_m), 2) -
-                           (B / 6) * math.cos(two_sigma_m) *
-                           (-3 + 4 * math.pow(math.sin(sigma), 2)) *
-                           (-3 + 4 * math.pow(
+                        (B / 6) * math.cos(two_sigma_m) *
+                        (-3 + 4 * math.pow(math.sin(sigma), 2)) *
+                        (-3 + 4 * math.pow(
                                math.cos(two_sigma_m), 2)))))
 
         last_sigma = sigma

@@ -46,7 +46,7 @@ def create_arg_string(func, *args, **kwargs):
 
     """
     return ',\n\t'.join(['='.join([str(y) for y in item]) for item in
-                         getcallargs(func, *args, **kwargs).iteritems()])
+                         getcallargs(func, *args, **kwargs).items()])
 
 
 def print_call(logger):

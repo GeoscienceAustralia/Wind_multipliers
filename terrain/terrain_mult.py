@@ -18,17 +18,17 @@ for 8 directions and output as NetCDF format.
 
 # Import system & process modules
 import os
+import sys
 import logging as log
+
+from utilities.config import configparser as config
 from utilities import value_lookup
 from utilities.nctools import save_multiplier, get_lat_lon, clip_array
 from utilities.get_pixel_size_grid import get_pixel_size_grids
 import numpy as np
-# import osgeo.gdal as gdal
 from osgeo import gdal
 from os.path import join as pjoin
 import pandas as pd
-import inspect
-import ConfigParser
 
 
 def terrain(temp_tile, tile_extents_nobuffer):
@@ -74,10 +74,10 @@ def terrain(temp_tile, tile_extents_nobuffer):
     data = band.ReadAsArray(0, 0, cols, rows)
 
     nodata_value = band.GetNoDataValue()
-    #if nodata_value is not None:
-    #    data[np.where(data == nodata_value)] = np.nan
-    #else:
-    #    data[np.where(data is None)] = np.nan
+    # if nodata_value is not None:
+    #     data[np.where(data == nodata_value)] = np.nan
+    # else:
+    #     data[np.where(data is None)] = np.nan
 
     mz_init = get_terrain_table()
     reclassified_array = terrain_class2mz_orig(data, mz_init)
@@ -155,33 +155,25 @@ def terrain(temp_tile, tile_extents_nobuffer):
     log.info(
         'finish terrain multiplier computation for this tile successfully')
 
+
 def get_terrain_table():
     """
     Read in the terrain table specified in the config file
 
     :returns: pandas.DataFrame of the terrain classification data
     """
-    cmd_folder = os.path.realpath(
-        os.path.abspath(
-            os.path.split(
-                inspect.getfile(
-                    inspect.currentframe()))[0]))
-    par_folder = os.path.abspath(pjoin(cmd_folder, os.pardir))
-    config = ConfigParser.RawConfigParser()
-    config.read(pjoin(par_folder, 'multiplier_conf.cfg'))
-
     log.info('Reading in the terrain table from the config file')
     terrain_table = config.get('inputValues', 'terrain_table')
     try:
-        mz_init =  pd.read_csv(terrain_table, comment = '#', index_col=False)
+        mz_init = pd.read_csv(terrain_table, comment='#', index_col=False)
     except IOError:
-        log.exception("Terrain table file does not exist: {0}".format(terrain_table))
-        import sys; sys.exit()
+        log.exception(f"Terrain table file does not exist: {terrain_table}")
+        sys.exit()
     except:
         raise
-        
-    
+
     return mz_init
+
 
 def terrain_class2mz_orig(data, mz_init):
     """
@@ -203,6 +195,7 @@ def terrain_class2mz_orig(data, mz_init):
 
     return outdata
 
+
 def convo(one_dir, data, avg_width, lag_width):
     """
     Convolute the initial terrain multplier to final values for one of the
@@ -220,14 +213,18 @@ def convo(one_dir, data, avg_width, lag_width):
     rows = data.shape[0]
     cols = data.shape[1]
 
+    # Get lambda for the direction
+    all_neighbour_lambda = value_lookup.ALL_NEIGHB[one_dir]
+    point_r_lambda = value_lookup.POINT_R[one_dir]
+    point_c_lambda = value_lookup.POINT_C[one_dir]
     for i in range(rows):
         for jj in range(cols):
 
             neighbour_sum = 0
 
             # find the total number of neighbours in this direction
-            all_neighb_no = value_lookup.ALL_NEIGHB[one_dir](i, jj, rows, cols,
-                                                             lag_width)
+            all_neighb_no = all_neighbour_lambda(i, jj, rows, cols,
+                                                 lag_width)
 
             if all_neighb_no > 0:
                 if all_neighb_no < avg_width:
@@ -236,10 +233,9 @@ def convo(one_dir, data, avg_width, lag_width):
                     max_neighb_no = avg_width
 
                 for m in range(max_neighb_no):
-
                     # get neighbour point location
-                    point_row = value_lookup.POINT_R[one_dir](i, m, lag_width)
-                    point_col = value_lookup.POINT_C[one_dir](jj, m, lag_width)
+                    point_row = point_r_lambda(i, m, lag_width)
+                    point_col = point_c_lambda(jj, m, lag_width)
 
                     neighbour_sum += data[point_row, point_col]
 
