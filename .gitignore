@@ -3,3 +3,5 @@ output/
 log/
 *.pyc
 run_*
+#PyCharm files
+.idea/

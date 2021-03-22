@@ -1,5 +1,6 @@
 python-dateutil
 netCDF4>=1.5.4
-pytz==2020.1
+pytz>=2020.1
 pandas
+pep8
 
