@@ -1,5 +1,5 @@
 """
-    Title: test_findpeaks.py
+    Title: __test_findpeaks.py
     Author: Tina Yang, tina.yang@ga.gov.au
     CreationDate: 2014-05-01
     Description: Unit testing module for findpeaks function in findpeaks.py
