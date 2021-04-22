@@ -5,3 +5,9 @@ log/
 run_*
 #PyCharm files
 .idea/
+testing/
+*.code-workspace
+.dockerignore
+.vscode/
+.devcontainer/
+.DS_Store
