@@ -13,7 +13,8 @@ import unittest
 import numpy as np
 from numpy.testing import assert_almost_equal
 import logging as log
-from test_all_topo_engineered_data import test_line, expect_results
+from tests.test_topographic.test_all_topo_engineered_data \
+    import test_line, expect_results
 from inspect import getfile, currentframe
 
 
