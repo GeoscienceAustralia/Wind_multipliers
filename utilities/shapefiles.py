@@ -65,18 +65,32 @@ class shp_file:
         # create the spatial tree
         idx_other = STRtree(other.geom)
         # start the merge:
-        for i, poly in enumerate(self.geom):
+        def process( i ):
+            poly = self.geom[i]
+        #for i, poly in enumerate(self.geom):
             fids = [index_by_id[id(pt)] for pt in idx_other.query(poly) if poly.intersects(pt)]
             if len(fids) == 0 :
-                self.attribute[i].update({var:None})
+                return None
+                #self.attribute[i].update({var:None})
             elif len(fids) == 1 :
-                self.attribute[i].update({var:other.attribute[fids[0]][var]})
+                return fids[0]
+                #self.attribute[i].update({var:other.attribute[fids[0]][var]})
             else :
                 results = np.zeros(len(fids))
                 for ii, id_ in enumerate(fids):
                     result = poly.intersection(other.geom[id_])
                     results[ii] = result.area / poly.area
                 argmax = np.argmax(results)
-                self.attribute[i].update({var:other.attribute[fids[argmax]][var]})
+                return fids[argmax]
+                #self.attribute[i].update({var:other.attribute[fids[argmax]][var]})
+        #multi process
+        from concurrent.futures import ThreadPoolExecutor
+        
+        with ThreadPoolExecutor(max_workers=8) as executor:
+            res = list(executor.map(process, range(len(self.geom))))
 
-
+        for i in range(len(self.geom)):
+            if res[i] is not None:
+                self.attribute[i].update({var:other.attribute[ res[i] ][var]})
+            else:
+                self.attribute[i].update({var:None})

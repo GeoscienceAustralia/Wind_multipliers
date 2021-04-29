@@ -15,7 +15,7 @@ from tqdm import tqdm
 logger = logging.getLogger('shapefile converter')
 logger.setLevel(logging.DEBUG)
 # create file handler which logs even debug messages
-fh = logging.FileHandler('spam.log')
+fh = logging.FileHandler('shapefile_converter.log')
 fh.setLevel(logging.DEBUG)
 # create console handler with a higher log level
 ch = logging.StreamHandler()
@@ -55,7 +55,7 @@ logger.info("number of element after dissolve %i" %(len(settlement.attribute)))
 
 for i in range(len(settlement.attribute)):
     print(i, settlement.attribute[i]['SETTLEMENT'])
-# settlement.save('intermediate/test_disolve2.shp')
+settlement.save('testing/intermediate/test_disolve2.shp')
 
 domain = shp_file()
 domain.read('testing/input/box_sub.shp')   # smaller selections. 

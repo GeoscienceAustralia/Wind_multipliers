@@ -11,3 +11,4 @@ testing/
 .vscode/
 .devcontainer/
 .DS_Store
+*.log
