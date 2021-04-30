@@ -35,9 +35,9 @@ class shp_file:
         e = sorted(list_z, key=lambda k: k[0][attribute_name] or "None")
         tmp_geom = []
         tmp_attribute = []
-        for key, group in itertools.groupby(e,
-                                            key=lambda x: x[0][attribute_name]
-                                            or "None"):
+        iter = itertools.groupby(e,
+                                 key=lambda x: x[0][attribute_name] or "None")
+        for key, group in iter:
             properties, geom = zip(*[(feature[0], feature[1])
                                      for feature in group])
             tmp_geom.append(unary_union(geom))
