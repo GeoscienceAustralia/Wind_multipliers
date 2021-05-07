@@ -55,11 +55,11 @@ def rasterize(input, output, input_topo, crop_topo):
         geotransfrom_output = geoTransform
         if crop_topo == "True":
             x0, dx0, _, y0, _, dy0 = geoTransform
-            x_min = np.floor( np.absolute(x_min - x0) / dx0 ) * dx0 + x0
-            y_max = np.floor( np.absolute(y_max - y0) / abs(dy0) ) * dy0 + y0
+            x_min = np.floor(np.absolute(x_min - x0) / abs(dx0)) * dx0 + x0
+            y_max = np.floor(np.absolute(y_max - y0) / abs(dy0)) * dy0 + y0
             geotransform_output = (x_min, dx0, 0, y_max, 0, dy0)
-            cols = int((x_max - x_min) / abs(dx0) ) + 1
-            rows = int((y_max - y_min) / abs(dy0) ) + 1
+            cols = int((x_max - x_min) / abs(dx0)) + 1
+            rows = int((y_max - y_min) / abs(dy0)) + 1
     else:
         pixelWidth = pixelHeight = 1/3600.0
         cols = int((x_max - x_min) / pixelHeight)
@@ -77,7 +77,6 @@ def rasterize(input, output, input_topo, crop_topo):
     band.FlushCache()
     gdal.RasterizeLayer(target_ds, [1],
                         source_layer, options=["ATTRIBUTE=CAT"])
-        
 
 
 def pre_process(settlment_file, landuse_file,
@@ -203,7 +202,7 @@ if __name__ == "__main__":
     input_topo = config.get('Preprocessing', 'input_topo')
     if input_topo == "True":
         input_topo = config.get('inputValues', 'dem_data')
-        crop_topo = config.get('Preprocessing','topo_crop')
+        crop_topo = config.get('Preprocessing', 'topo_crop')
     elif "None":
         input_topo = None
         crop_topo = None
