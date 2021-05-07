@@ -5,8 +5,8 @@ import os
 import argparse
 from osgeo import gdal
 
-from convert import Converter, create_sub_dirs_for_convert
-from parallel import attempt_parallel
+from utilities.convert import Converter, create_sub_dirs_for_convert
+from utilities.parallel import attempt_parallel
 
 
 def parallelise_convert_on_tiles(data_path, comm):

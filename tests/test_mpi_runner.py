@@ -14,9 +14,9 @@ import shutil
 import sys
 import unittest
 
-from convert import create_sub_dirs_for_convert
-from mpi_runner import parallelise_convert_on_tiles
-from parallel import attempt_parallel
+from utilities.convert import create_sub_dirs_for_convert
+from utilities.mpi_runner import parallelise_convert_on_tiles
+from utilities.parallel import attempt_parallel
 
 
 class TestMPIRunner(unittest.TestCase):
