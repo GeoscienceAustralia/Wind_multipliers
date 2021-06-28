@@ -10,6 +10,7 @@ import time
 import sys
 from rtree import index
 from osgeo import ogr, gdal
+import numpy as np
 
 
 logger = logging.getLogger('shapefile converter')
@@ -31,7 +32,8 @@ logger.addHandler(fh)
 logger.addHandler(ch)
 
 
-def rasterize(input, output):
+def rasterize(input, output, input_topo, crop_topo):
+
     """
     Function to rasterize a shapefile
 
@@ -44,15 +46,33 @@ def rasterize(input, output):
     """
     source_ds = ogr.Open(input)
     source_layer = source_ds.GetLayer()
-    pixelWidth = pixelHeight = 1/3600.0
     x_min, x_max, y_min, y_max = source_layer.GetExtent()
-    cols = int((x_max - x_min) / pixelHeight)
-    rows = int((y_max - y_min) / pixelWidth)
-    print(cols, rows)
+    if input_topo:
+        topo_ds = ogr.Open(input_topo)
+        nrows = topo_ds.RasterYsize
+        ncols = topo_ds.RasterXsize
+        geoTransform = topo_ds.GetGeoTransform()
+        rows = nrows
+        cols = ncols
+        geotransfrom_output = geoTransform
+        if crop_topo == "True":
+            x0, dx0, _, y0, _, dy0 = geoTransform
+            x_min = np.floor(np.absolute(x_min - x0) / abs(dx0)) * dx0 + x0
+            y_max = np.floor(np.absolute(y_max - y0) / abs(dy0)) * dy0 + y0
+            geotransform_output = (x_min, dx0, 0, y_max, 0, dy0)
+            cols = int((x_max - x_min) / abs(dx0)) + 1
+            rows = int((y_max - y_min) / abs(dy0)) + 1
+    else:
+        pixelWidth = pixelHeight = 1/3600.0
+        cols = int((x_max - x_min) / pixelHeight)
+        rows = int((y_max - y_min) / pixelWidth)
+        print(cols, rows)
+        geotransform_output = (x_min, pixelWidth, 0, y_max, 0, -1*pixelHeight)
+
     target_ds = gdal.GetDriverByName('GTiff').Create(
         output, cols, rows, 1, gdal.GDT_UInt16
         )
-    target_ds.SetGeoTransform((x_min, pixelWidth, 0, y_min, 0, pixelHeight))
+    target_ds.SetGeoTransform(geotransform_output)
     band = target_ds.GetRasterBand(1)
     NoData_value = 0
     band.SetNoDataValue(NoData_value)
@@ -181,6 +201,14 @@ if __name__ == "__main__":
     crop_mask_file = config.get('Preprocessing', 'crop_mask')
     output_shapefile = config.get('Preprocessing', 'output_shapefile')
     output_rasterized = config.get('Preprocessing', 'output_rasterized')
+    input_topo = config.get('Preprocessing', 'input_topo')
+    if input_topo == "True":
+        input_topo = config.get('inputValues', 'dem_data')
+        crop_topo = config.get('Preprocessing', 'topo_crop')
+    elif "None":
+        input_topo = None
+        crop_topo = None
+
     # print(settlment_file, landuse_file)
     pre_process(settlment_file, landuse_file, crop_mask_file, output_shapefile)
-    rasterize(output_shapefile, output_rasterized)
+    rasterize(output_shapefile, output_rasterized, input_topo, crop_topo)
