@@ -15,7 +15,7 @@ import unittest
 
 import numpy as np
 
-from parallel import attempt_parallel
+from utilities.parallel import attempt_parallel
 
 
 class TestParallel(unittest.TestCase):
