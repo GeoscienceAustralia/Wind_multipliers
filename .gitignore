@@ -12,3 +12,4 @@ testing/
 .devcontainer/
 .DS_Store
 *.log
+input2/
