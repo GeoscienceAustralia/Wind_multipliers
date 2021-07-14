@@ -9,20 +9,34 @@ Wind Multipliers
 Overview
 ===========================================
 
-This package is used to produce wind terrain, shielding and topographic multipliers for national coverage using a classified landcover dataset and a
-DEM dataset. The default inputs to this code are the National Dynamic Land Cover Dataset of Australia Version 2.0 
-(http://www.ga.gov.au/metadata-gateway/metadata/record/gcat_83868) and 1 second Shuttle Radar Topography Mission (SRTM) Smoothed Digital Elevation 
-Models (DEM-S) Version 1.0 (http://www.ga.gov.au/metadata-gateway/metadata/record/gcat_72759). Both of these datasets are freely available to download.
-Where possible, higher resolution datasets can be used to improve the resolution of the resulting wind multipliers. 
+This package is used to produce wind terrain, shielding and topographic
+multipliers for national coverage using a classified landcover dataset and a
+DEM dataset. The default inputs to this code are the National Dynamic Land Cover
+Dataset of Australia Version 2.0 (http://pid.geoscience.gov.au/dataset/ga/75847)
+and 1 second Shuttle Radar Topography Mission (SRTM) Smoothed Digital Elevation 
+Models (DEM-S) Version 1.0 (http://pid.geoscience.gov.au/dataset/ga/72759). Both
+of these datasets are freely available to download.
 
-The output is based on tiles with dimension about 1 by 1 degree in netCDF format. It includes terrain, shielding and topographic multiplier 
+Where possible, higher resolution datasets can be used to improve the resolution
+of the resulting wind multipliers. 
+
+The output is based on tiles with dimension about 1 by 1 degree in netCDF
+format. It includes terrain, shielding and topographic multiplier 
 respectively. Each multiplier further contains 8 directions. 
+
+The tiles can be converted to multiband geotiff images, and combined into a
+virtual raster table (VRT) using `utilities.convert.py`
 
 
 Dependencies
 ===========================================
 
-Python 3.7, NumPy, SciPy, NetCDF4 and GDAL are needed.
+* `Python (3.7 preferred) <https://www.python.org/>`_
+* `Numpy <http://www.numpy.org/>`_
+* `Scipy <http://www.scipy.org/>`_
+* `GDAL <http://www.gdal.org/>`_
+* `netcdf4-python <https://code.google.com/p/netcdf4-python>`_;
+* For parallel execution, `mpi4py <https://github.com/mpi4py/mpi4py>`_ is required;
 
 
 Package structures
@@ -55,6 +69,7 @@ four modules:
 **Utilities** module includes supporting tools such as:
  
 * blrb.py;
+* convert.py;
 * files.py;
 * get_pixel_size_grid.py;
 * meta.py;
@@ -66,9 +81,18 @@ four modules:
 Background
 ===========================================
 
-Wind multipliers are factors that transform regional wind speeds to local wind speeds considering local effects of land cover and topographic influences. It includes terrain, shielding, topographic and direction multipliers. Except the direction multiplier whose value can be defined specifically by the 
-Australian wind loading standard AS/NZS 1170.2, terrain, shielding and topographic multipliers are calculated using this software package based on the principles and formulae defined in the AS/NZS 1170.2. The wind multipliers are primarily used for assessment of wind hazard at individual building locations.
-Further details on wind multipliers can be found in Geoscience Australia record: *Local Wind Assessment in Australia: Computation Methodology for Wind Multipliers*, which is available via http://www.ga.gov.au/metadata-gateway/metadata/record/75299. 
+Wind multipliers are factors that transform regional wind speeds to local wind
+speeds  considering local effects of land cover and topographic influences. It
+includes terrain, shielding, topographic and direction multipliers. Except the
+direction multiplier whose value can be defined specifically by the 
+Australian wind loading standard AS/NZS 1170.2, terrain, shielding and
+topographic  multipliers are calculated using this software package based on the
+principles and formulae defined in the AS/NZS 1170.2. The wind multipliers are
+primarily used for assessment of wind hazard at individual building locations.
+
+Further details on wind multipliers can be found in Geoscience Australia record:
+*Local Wind Assessment in Australia: Computation Methodology for Wind
+Multipliers*, which is available via http://pid.geoscience.gov.au/dataset/ga/75299.
 
 
 Issues

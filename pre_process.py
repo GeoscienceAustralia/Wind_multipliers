@@ -12,6 +12,7 @@ from rtree import index
 from osgeo import ogr, gdal
 import numpy as np
 
+
 logger = logging.getLogger('shapefile converter')
 logger.setLevel(logging.DEBUG)
 # create file handler which logs even debug messages
@@ -32,6 +33,7 @@ logger.addHandler(ch)
 
 
 def rasterize(input, output, input_topo, crop_topo):
+
     """
     Function to rasterize a shapefile
 
