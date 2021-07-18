@@ -70,6 +70,7 @@ def rasterize(input, output, input_topo, crop_topo):
 
     logger.info("Output file: %s" %(output) )
     logger.info("Output TRANSFORM %f %f %f %f" %(geotransform_output[0], geotransform_output[3], geotransform_output[2], geotransform_output[5]) )
+
     target_ds = gdal.GetDriverByName('GTiff').Create(
         output, cols, rows, 1, gdal.GDT_UInt16
         )
