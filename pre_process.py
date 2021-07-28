@@ -49,6 +49,7 @@ def rasterize(input, output, input_topo, crop_topo):
     x_min, x_max, y_min, y_max = source_layer.GetExtent()
     if input_topo:
         topo_ds = gdal.Open(input_topo)
+        wkt = topo_ds.GetProjection()
         nrows = topo_ds.RasterYSize
         ncols = topo_ds.RasterXSize
         geoTransform = topo_ds.GetGeoTransform()
@@ -73,6 +74,7 @@ def rasterize(input, output, input_topo, crop_topo):
     target_ds = gdal.GetDriverByName('GTiff').Create(
         output, cols, rows, 1, gdal.GDT_UInt16
         )
+    target_ds.SetProjection(wkt)
     target_ds.SetGeoTransform(geotransform_output)
     band = target_ds.GetRasterBand(1)
     NoData_value = 0
@@ -82,7 +84,7 @@ def rasterize(input, output, input_topo, crop_topo):
                         source_layer, options=["ATTRIBUTE=CAT"])
 
 
-def pre_process(settlment_file, landuse_file,
+def pre_process(settlment_file, settlment_cat, landuse_file, landuse_cat,
                 crop_mask_file, output_shapefile):
     """
     Function to do the pre_processing.
@@ -111,13 +113,13 @@ def pre_process(settlment_file, landuse_file,
     AUTORIZED_SETTELMENTS = ['City', 'Large Town', 'Major CBD',
                              'Small Town', 'Urban']
     for s in settlement.attribute:
-        if s['SETTLEMENT'] not in AUTORIZED_SETTELMENTS:
-            s['SETTLEMENT'] = None
+        if s[settlment_cat] not in AUTORIZED_SETTELMENTS:
+            s[settlment_cat] = None
 
     logger.info("number of element before dissolve %i" % (
                     len(settlement.attribute)))
 
-    settlement.dissolve('SETTLEMENT')
+    settlement.dissolve(settlment_cat)
 
     # Sanity check.
     for i_, g_ in enumerate(settlement.geom):
@@ -134,7 +136,7 @@ def pre_process(settlment_file, landuse_file,
                 len(settlement.attribute)))
 
     for i in range(len(settlement.attribute)):
-        print(i, settlement.attribute[i]['SETTLEMENT'])
+        print(i, settlement.attribute[i][settlment_cat])
 
 
     # settlement.save('intermediate/test_disolve2_crop.shp')
@@ -147,7 +149,7 @@ def pre_process(settlment_file, landuse_file,
     logger.info("Number of features to join %i" % (len(land_use.geom)))
 
     tic = time.perf_counter()
-    land_use.spatial_join(settlement, "SETTLEMENT")
+    land_use.spatial_join(settlement, settlment_cat)
     toc = time.perf_counter()
     logger.info(" Done in %f seconds" % (toc - tic))
 
@@ -174,10 +176,10 @@ def pre_process(settlment_file, landuse_file,
     Local_use_map["Transport"] = 11
 
     for list_ in land_use.attribute:
-        list_.update({"CAT": SETTLEMENT_map[list_['SETTLEMENT']] * 100 +
-                     Local_use_map[list_['MB_CAT16']]})
+        list_.update({"CAT": SETTLEMENT_map[list_[settlment_cat]] * 100 +
+                     Local_use_map[list_[landuse_cat]]})
 
-    land_use.meta['schema']['properties'].update({'SETTLEMENT': 'str:100'})
+    land_use.meta['schema']['properties'].update({settlment_cat: 'str:100'})
     land_use.meta['schema']['properties'].update({'CAT': 'int'})
 
     land_use.save(output_shapefile)
@@ -202,7 +204,11 @@ if __name__ == "__main__":
     from utilities.config import configparser as config
     config.set_config_file(args.config_file)
     settlment_file = config.get('Preprocessing', 'settlement_data')
+    settlment_cat = config.get('Preprocessing', 'settlement_cat')
+
     landuse_file = config.get('Preprocessing', 'land_use_data')
+    landuse_cat = config.get('Preprocessing', 'land_use_cat')
+
     crop_mask_file = config.get('Preprocessing', 'crop_mask')
     output_shapefile = config.get('Preprocessing', 'output_shapefile')
     output_rasterized = config.get('Preprocessing', 'output_rasterized')
@@ -215,5 +221,5 @@ if __name__ == "__main__":
         crop_topo = None
 
     # print(settlment_file, landuse_file)
-    pre_process(settlment_file, landuse_file, crop_mask_file, output_shapefile)
+    pre_process(settlment_file, settlment_cat, landuse_file,  landuse_cat, crop_mask_file, output_shapefile)
     rasterize(output_shapefile, output_rasterized, input_topo, crop_topo)

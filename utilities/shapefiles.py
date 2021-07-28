@@ -55,8 +55,8 @@ class shp_file:
         p2 = Point(bounds[0], bounds[3])
         p3 = Point(bounds[2], bounds[3])
         p4 = Point(bounds[2], bounds[1])
-        pointList = [p1, p2, p3, p4, p1]
-        polybox = Polygon([[p.x, p.y] for p in pointList])
+        point_List = [p1, p2, p3, p4, p1]
+        polybox = Polygon([[p.x, p.y] for p in point_List])
         for idx, poly in enumerate(self.geom):
             result = polybox.intersection(poly)
             if result.area:
