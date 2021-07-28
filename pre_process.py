@@ -46,28 +46,15 @@ def rasterize(input, output, input_topo, crop_topo):
     """
     source_ds = ogr.Open(input)
     source_layer = source_ds.GetLayer()
-    x_min, x_max, y_min, y_max = source_layer.GetExtent()
-    if input_topo:
-        topo_ds = gdal.Open(input_topo)
-        wkt = topo_ds.GetProjection()
-        nrows = topo_ds.RasterYSize
-        ncols = topo_ds.RasterXSize
-        geoTransform = topo_ds.GetGeoTransform()
-        rows = nrows
-        cols = ncols
-        geotransform_output = geoTransform
-        if crop_topo == "False":
-            x0, dx0, _, y0, _, dy0 = geoTransform
-            x_min = np.floor(np.absolute(x_min - x0) / abs(dx0)) * dx0 + x0
-            y_max = np.floor(np.absolute(y_max - y0) / abs(dy0)) * dy0 + y0
-            geotransform_output = (x_min, dx0, 0, y_max, 0, dy0)
-            cols = abs(int((x_max - x_min) / abs(dx0)) + 1)
-            rows = abs(int((y_max - y_min) / abs(dy0)) + 1)
-    else:
-        pixelWidth = pixelHeight = 1/3600.0
-        cols = int((x_max - x_min) / pixelHeight)
-        rows = int((y_max - y_min) / pixelWidth)
-        geotransform_output = (x_min, pixelWidth, 0, y_max, 0, -1*pixelHeight)
+    
+    topo_ds = gdal.Open(input_topo)
+    wkt = topo_ds.GetProjection()
+    nrows = topo_ds.RasterYSize
+    ncols = topo_ds.RasterXSize
+    geoTransform = topo_ds.GetGeoTransform()
+    rows = nrows
+    cols = ncols
+    geotransform_output = geoTransform
 
     logger.info("Output file: %s" %(output) )
     logger.info("Output TRANSFORM %f %f %f %f" %(geotransform_output[0], geotransform_output[3], geotransform_output[2], geotransform_output[5]) )
