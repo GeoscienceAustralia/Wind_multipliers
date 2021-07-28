@@ -14,11 +14,11 @@ def cmdline():
           description="Rasterize a shapefile on geotiff \
           file with the option to crop it on another shapefile",
                                    epilog="(c) Sebastien Allgeyer")
-    args.add_argument("-i", "--input", metavar="shapefile", 
+    args.add_argument("-i", "--input", metavar="shapefile", required=True,
                       type=str,  help="input shapefile")
     args.add_argument("-a", "--attribute", metavar="attribute", 
                       type=str, default="CAT", help="attribute to rasterise")
-    args.add_argument("-t", "--topography", metavar="topo",
+    args.add_argument("-t", "--topography", metavar="topo", required=True,
                       type=str, help="topography georaster")
     args.add_argument("-c", "--crop", metavar="crop",
                        type=str, help="crop mask (optional)" )
