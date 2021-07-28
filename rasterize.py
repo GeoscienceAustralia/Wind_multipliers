@@ -12,8 +12,7 @@ def cmdline():
     """
     args = argparse.ArgumentParser(
           description="Rasterize a shapefile on geotiff \
-          file with the option to crop it on anther shapefile\
-          (containing only one polygone)",
+          file with the option to crop it on another shapefile",
                                    epilog="(c) Sebastien Allgeyer")
     args.add_argument("-i", "--input", metavar="shapefile", 
                       type=str,  help="input shapefile")
