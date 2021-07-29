@@ -44,6 +44,7 @@ def rasterize(input, output, input_topo, crop_topo):
     :type output: str
 
     """
+    print("args ", input, output, input_topo, crop_topo)
     source_ds = ogr.Open(input)
     source_layer = source_ds.GetLayer()
     
@@ -203,10 +204,7 @@ if __name__ == "__main__":
     input_topo = config.get('Preprocessing', 'input_topo')
     if input_topo == "True":
         input_topo = config.get('inputValues', 'dem_data')
-        crop_topo = config.get('Preprocessing', 'topo_crop')
-    else:
-        input_topo = None
-        crop_topo = None
+    crop_topo = None
 
     # print(settlment_file, landuse_file)
     pre_process(settlment_file, settlment_cat, landuse_file,  landuse_cat, crop_mask_file, output_shapefile)
