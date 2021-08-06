@@ -6,7 +6,6 @@ from osgeo import gdal
 from utilities.shapefiles import shp_file
 from pre_process import rasterize
 
-
 def cmdline():
     """
     Command line arguments
