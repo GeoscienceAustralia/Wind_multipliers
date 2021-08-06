@@ -137,7 +137,7 @@ class Converter:
             # Write the pre-multiplied value to a band
             band = out_ds.GetRasterBand(band_index)
             try:
-                band.WriteArray(multiplied.data)
+                band.WriteArray(multiplied.data[::-1])
             except ValueError:
                 log.error("Mismatch between output file and data array")
                 log.error(multiplied.data.shape)
