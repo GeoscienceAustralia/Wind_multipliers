@@ -60,6 +60,9 @@ def rasterize(input, output, input_topo, crop_topo):
     logger.info("Output file: %s" %(output) )
     logger.info("Output TRANSFORM %f %f %f %f" %(geotransform_output[0], geotransform_output[3], geotransform_output[2], geotransform_output[5]) )
 
+    logger.info("Output file: %s" %(output) )
+    logger.info("Output TRANSFORM %f %f %f %f" %(geotransform_output[0], geotransform_output[3], geotransform_output[2], geotransform_output[5]) )
+
     target_ds = gdal.GetDriverByName('GTiff').Create(
         output, cols, rows, 1, gdal.GDT_UInt16
         )
@@ -126,7 +129,6 @@ def pre_process(settlment_file, settlment_cat, landuse_file, landuse_cat,
 
     for i in range(len(settlement.attribute)):
         print(i, settlement.attribute[i][settlment_cat])
-
 
     # settlement.save('intermediate/test_disolve2_crop.shp')
     if crop_mask_file != "None":
