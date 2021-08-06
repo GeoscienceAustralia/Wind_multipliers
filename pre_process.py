@@ -13,6 +13,7 @@ from osgeo import ogr, gdal
 import numpy as np
 
 
+
 logger = logging.getLogger('shapefile converter')
 logger.setLevel(logging.DEBUG)
 # create file handler which logs even debug messages
@@ -33,7 +34,6 @@ logger.addHandler(ch)
 
 
 def rasterize(input, output, input_topo, crop_topo):
-
     """
     Function to rasterize a shapefile
 
@@ -44,6 +44,7 @@ def rasterize(input, output, input_topo, crop_topo):
     :type output: str
 
     """
+
     print("args ", input, output, input_topo, crop_topo)
     source_ds = ogr.Open(input)
     source_layer = source_ds.GetLayer()
@@ -68,6 +69,7 @@ def rasterize(input, output, input_topo, crop_topo):
         )
     target_ds.SetProjection(wkt)
     target_ds.SetGeoTransform(geotransform_output)
+
     band = target_ds.GetRasterBand(1)
     NoData_value = 0
     band.SetNoDataValue(NoData_value)
@@ -113,6 +115,7 @@ def pre_process(settlment_file, settlment_cat, landuse_file, landuse_cat,
 
     settlement.dissolve(settlment_cat)
 
+
     # Sanity check.
     for i_, g_ in enumerate(settlement.geom):
         if not g_.is_valid:
@@ -128,6 +131,7 @@ def pre_process(settlment_file, settlment_cat, landuse_file, landuse_cat,
                 len(settlement.attribute)))
 
     for i in range(len(settlement.attribute)):
+
         print(i, settlement.attribute[i][settlment_cat])
 
     # settlement.save('intermediate/test_disolve2_crop.shp')
@@ -141,6 +145,7 @@ def pre_process(settlment_file, settlment_cat, landuse_file, landuse_cat,
 
     tic = time.perf_counter()
     land_use.spatial_join(settlement, settlment_cat)
+
     toc = time.perf_counter()
     logger.info(" Done in %f seconds" % (toc - tic))
 
@@ -172,7 +177,6 @@ def pre_process(settlment_file, settlment_cat, landuse_file, landuse_cat,
 
     land_use.meta['schema']['properties'].update({settlment_cat: 'str:100'})
     land_use.meta['schema']['properties'].update({'CAT': 'int'})
-
     land_use.save(output_shapefile)
 
 
@@ -211,3 +215,4 @@ if __name__ == "__main__":
     # print(settlment_file, landuse_file)
     pre_process(settlment_file, settlment_cat, landuse_file,  landuse_cat, crop_mask_file, output_shapefile)
     rasterize(output_shapefile, output_rasterized, input_topo, crop_topo)
+

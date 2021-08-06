@@ -11,7 +11,6 @@ import numpy as np
 
 logger = logging.getLogger()
 
-
 class shp_file:
 
     def __init__(self):
@@ -45,7 +44,6 @@ class shp_file:
             tmp_attribute.append( properties[0] )
         self.geom = tmp_geom
         self.attribute = tmp_attribute
-
 
     def crop(self, polygon):
         clip_geom = []
@@ -93,10 +91,11 @@ class shp_file:
         from concurrent.futures import ThreadPoolExecutor
         
         with ThreadPoolExecutor() as executor:
+
             res = list(executor.map(process, range(len(self.geom))))
 
         for i in range(len(self.geom)):
             if res[i] is not None:
-                self.attribute[i].update({var:other.attribute[ res[i] ][var]})
+                self.attribute[i].update({var: other.attribute[res[i]][var]})
             else:
-                self.attribute[i].update({var:None})
+                self.attribute[i].update({var: None})
