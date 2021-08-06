@@ -1,13 +1,12 @@
 import logging
+import itertools
 from shapely.geometry import shape, mapping, Polygon, Point
 from shapely.ops import unary_union
 from shapely.strtree import STRtree
 import fiona
-import itertools
-import time
-import sys
-from rtree import index
 import numpy as np
+
+logger = logging.getLogger()
 
 
 class shp_file:
@@ -15,29 +14,32 @@ class shp_file:
     def __init__(self):
         self.meta = None
         self.geom = []
-        self.attribute = []  # None
+        self.attribute = []
 
     def read(self, fname):
         with fiona.open(fname) as input:
             self.meta = input.meta
-            for poly in input:
-                self.geom.append(shape(poly['geometry']))
-                self.attribute.append(poly['properties'])
+            for i, poly in enumerate(input):
+                if poly['geometry'] is None:
+                    logger.info("geometry %i is empty of %s" % (i, fname))
+                else:
+                    self.geom.append(shape(poly['geometry']))
+                    self.attribute.append(poly['properties'])
 
     def save(self, fname):
         with fiona.open(fname, 'w', **self.meta) as output:
             for i in range(len(self.attribute)):
-                output.write({'geometry': mapping(self.geom[i]),
-                              'properties': self.attribute[i]})
+                output.write({
+                    'geometry': mapping(self.geom[i]),
+                    'properties': self.attribute[i]})
 
     def dissolve(self, attribute_name):
         list_z = zip(self.attribute, self.geom)
         e = sorted(list_z, key=lambda k: k[0][attribute_name] or "None")
         tmp_geom = []
         tmp_attribute = []
-        iter = itertools.groupby(e,
-                                 key=lambda x: x[0][attribute_name] or "None")
-        for key, group in iter:
+        for key, group in itertools.groupby(
+                e, key=lambda x: x[0][attribute_name] or "None"):
             properties, geom = zip(*[(feature[0], feature[1])
                                      for feature in group])
             tmp_geom.append(unary_union(geom))
@@ -53,8 +55,8 @@ class shp_file:
         p2 = Point(bounds[0], bounds[3])
         p3 = Point(bounds[2], bounds[3])
         p4 = Point(bounds[2], bounds[1])
-        pointList = [p1, p2, p3, p4, p1]
-        polybox = Polygon([[p.x, p.y] for p in pointList])
+        point_List = [p1, p2, p3, p4, p1]
+        polybox = Polygon([[p.x, p.y] for p in point_List])
         for idx, poly in enumerate(self.geom):
             result = polybox.intersection(poly)
             if result.area:
@@ -85,10 +87,9 @@ class shp_file:
                     results[ii] = result.area / poly.area
                 argmax = np.argmax(results)
                 return fids[argmax]
-        # multi process
-        from concurrent.futures import ThreadPoolExecutor
 
-        with ThreadPoolExecutor(max_workers=8) as executor:
+        from concurrent.futures import ThreadPoolExecutor
+        with ThreadPoolExecutor() as executor:
             res = list(executor.map(process, range(len(self.geom))))
 
         for i in range(len(self.geom)):
