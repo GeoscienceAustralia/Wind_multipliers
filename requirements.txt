@@ -7,4 +7,6 @@ numexpr
 numpy
 scipy
 # gdal==`gdal-config --version`
+pytz==2020.1
+pandas
 
