@@ -24,7 +24,7 @@ the code's home directory. To install these packages with pip, use:
 
 Input datasets
 ==============
-The wind multipliers code requires two input datasets:
+The wind multipliers code requires four input datasets:
     * **Landcover classification:** 
         The landcover classification dataset is used to calculate the change in wind speed over varying landcover surfaces.
         The input landcover classification dataset must be a classified dataset, broken into desired landcover categories, such as urban, forest, 
@@ -32,27 +32,56 @@ The wind multipliers code requires two input datasets:
         outlined in the accompanying terrain_table.
         The `National Dynamic Land Cover Dataset of Australia Version 2.0 <http://www.ga.gov.au/metadata-gateway/metadata/record/gcat_83868>`_ can be 
         used if a higher resolution dataset is not available.
+
+        In order to update local wind multiplier dataset in 2021, the Land Cover Classification Scheme (LCCS) which is last updated for 2015 by Digital Earth Australia
+        as a single-band GeoTiff with 25m spatial resolution, is collated to be used. This dataset is then overlaid with mesh block-derived dataset (2016) in the preprocessing stage
+        for improving the categories with "Natural surface" types.
     * **Digital elevation model:** 
         The DEM dataset is used to calculate topography and shielding parameters. 
         The `1 second Shuttle Radar Topography Mission (SRTM) Smoothed Digital Elevation Models (DEM-S) Version 1.0 <http://www.ga.gov.au/metadata-gateway/metadata/record/gcat_72759>`_ is
         available to use as an input.
+    * **Mesh blocks:**
+        The administrative boundaries based on PSMA Australia version 2016 is used for processing urban areas.
+    * **Settlement types:**
+        The settlement types based on 2016 census is sourced from Australian Bureau of Statistic (ABS) involved counting dwellings, place of Enumeration as well as UCL by STRD dwelling structure.
+        This dataset is used for processing urban areas along with mesh block input dataset in the preprocessing stage.    
 
-Both input datasets can be placed in the `input` folder within Wind_multipliers, however can be placed anywhere that can be accessed by the code.
+All input datasets can be placed in the `input` folder within Wind_multipliers, however can be placed anywhere that can be accessed by the code.
 The path to these datasets is set in the configuration file.
-At present, both datasets need to be in `.img` format, however this will be changed in future code releases. 
+Previously, both landcover and DEM  datasets need to be in `*.img` format, however this changed with the recent code release. 
 
 .. note:: The lowest resolution of the input Landcover and DEM datasets will determine the resolution of the calculated wind multipliers.     
     
 Configuration file
 ==================
 Before running all_multipliers.py to produce terrain, shielding and topographic multipliers, the configuration file `multiplier_conf.cfg`, in the
-code home directory, needs to be configured. The following options need to be set in the configuration file:
+code home directory, needs to be configured for the preprocessing step with the following options:
+
+    * **settlement_data** the location of the settlement types dataset to be used 
+    * **settlement_cat** the category that defines the attribute in the settlement types for merge  
+    * **land_use_data** the location of the meshblock dataset to be used 
+    * **land_use_cat** the category that defines the attribute in the meshblock dataset for merge 
+    * **crop_mask** the location of the layer for cropping the outcome of preprocessing step including vector and raster layers - set the parameter to None for continental coverage 
+    * **input_topo** In order to map to the topographic file and takes the inputValues.dem_data, needs to be set to True. 
+    * **topo_crop** Set this option to True for cropping the outcome of preprocessing step to the AOI set in **crop_mask** otherwise, default is False.
+
+Running `pre_process.py` in preprocessing step will produce merged mesh block with settlement types as both vector and raster (i.e. shapefile and GeoTiff) layers. The second part of preprocessing step 
+is to overlay merged meshblock raster layer with LCCS dataset in order to improve the categories with "Natural surface" types. For this step, the areas with "Natural surface" types in LCCS dataset 
+will be identified and their code will be replaced with the corresponding and approperiate code in the merged mesh block dataset using the `LCCS_meshblock_continent.py`. The output of this step 
+is an updated LCCS layer that is going to be used as the **terrain_data** for producing multipliers. 
 
     * **root:** the working directory of the task.
     * **upwind_length:** the upwind buffer distance
     * **terrain_data:** the location of the terrain dataset to be used 
     * **terrain_table:** the location of the csv table outlining the format of the terrain dataset to be read in
     * **dem_data:** the location of the DEM dataset to be used
+
+Assuming having the merged shapefile from the preporcess script, There is also one optional step between preprocessing and generating local wind multipliers using `rasterize.py`.
+This step can be used to rasterise merged meshblock from shapefile to GeoTiff on a given topography file.
+
+There are two required arguments with `-i` and `-t` flags for shapefile and topography inputs.Two other agruments are optional with `-a` and `-c` flags for attribute to rasterise and crop mask respectively. At the moment rasterise is based on CAT value set in the preprocess script.
+If `-i` and `-t` are given, it will create the rasterised file (test.tiff) on the extend and resolution of the topography file (same projection). 
+By adding the `-c` option, it will generate the same test.tiff but also two other files test_crop.tiff and [your topo filename]_crop.tiff being the cropped version of the files. It works with random shapes (not necessary rectangular one). 
 
 terrain_table
 -------------
@@ -94,6 +123,22 @@ CATEGORY,DESCRIPTION,ROUGHNESS_LENGTH_m,SHIELDING
 
 Running the code
 ================
+The script for preprocessing mesh blocks and settlement types dataset is ``pre_process.py``. This script merges settlement and land use data using a common merging attribute.
+
+To run ``pre_process.py`` type
+
+``python pre_process.py -c multiplier_conf.cfg``
+
+from the code home directory.
+
+The script for rasterizing merged mesh block dataset is ``rasterize.py``. 
+
+To run ``rasterize.py`` type
+
+``python rasterize.py -c multiplier_conf.cfg -i <path to merged shapefile> -t <path to topography file>``
+
+from the code directory. 
+
 The script for deriving terrain, shielding and topographic multipliers is ``all_multipliers.py``. This script links four modules: terrain, shielding, 
 topographic and utilities.
  

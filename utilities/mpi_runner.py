@@ -5,6 +5,8 @@ import os
 import argparse
 from osgeo import gdal
 
+from utilities.convert import Converter, create_sub_dirs_for_convert
+from utilities.parallel import attempt_parallel
 from convert import Converter, create_sub_dirs_for_convert
 from parallel import attempt_parallel
 

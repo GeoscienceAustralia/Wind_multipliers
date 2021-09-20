@@ -14,6 +14,10 @@ import unittest
 import numpy as np
 from numpy.testing import assert_allclose
 from inspect import getfile, currentframe
+from tests.test_topographic.test_all_topo_engineered_data \
+    import test_slope, test_escarp
+from tests.test_topographic.test_all_topo_engineered_data \
+    import mh_engineered
 from test_all_topo_engineered_data import test_slope, test_escarp
 from test_all_topo_engineered_data import mh_engineered
 

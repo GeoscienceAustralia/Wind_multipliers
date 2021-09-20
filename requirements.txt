@@ -1,5 +1,12 @@
 python-dateutil
 netCDF4>=1.5.4
+pytz>=2020.1
+pandas
+pep8
+numexpr
+numpy
+scipy
+# gdal==`gdal-config --version`
 pytz==2020.1
 pandas
 

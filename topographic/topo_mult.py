@@ -28,8 +28,8 @@ from osgeo import gdal
 from utilities.get_pixel_size_grid import get_pixel_size_grids
 from utilities.nctools import save_multiplier, get_lat_lon, clip_array
 
-import make_path
-import multiplier_calc
+from topographic import make_path
+from topographic import multiplier_calc
 
 __version__ = '1.0 - intergarate with terrian and shileding multiplier for \
                tiling and parallelisation'

@@ -13,6 +13,7 @@ import shutil
 import sys
 import unittest
 
+from utilities.convert import Converter, create_sub_dirs_for_convert
 from convert import Converter, create_sub_dirs_for_convert
 
 

@@ -17,3 +17,4 @@ dependencies:
   - numpy
   - nose
   - mpi4py
+  - pep8

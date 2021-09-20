@@ -72,7 +72,7 @@ def reclassify_aspect(data):
     :return: :class:`numpy.ndarray` the output aspect values 1 ~ 9
     """
 
-    outdata = np.zeros_like(data, dtype=np.int)
+    outdata = np.zeros_like(data, dtype=int)
     outdata.fill(9)
 
     outdata[np.where((data >= 0) & (data < 22.5))] = 1
