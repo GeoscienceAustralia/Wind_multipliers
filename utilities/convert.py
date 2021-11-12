@@ -39,14 +39,16 @@ class Converter:
         except FileExistsError:
             log.debug("Folder already exists")
         except:
-            log.error(f"Failed to create output path: {pjoin(self.path, 'M3')}")
+            log.error(("Failed to create output path: "
+                       f"{pjoin(self.path, 'M3')}"))
 
         try:
             os.makedirs(pjoin(self.path, 'M3_max'))
         except FileExistsError:
             log.debug("Folder already exists")
         except:
-            log.error(f"Failed to create output path: {pjoin(self.path, 'M3_max')}")
+            log.error(("Failed to create output path: "
+                       f"{pjoin(self.path, 'M3_max')}"))
 
     def process_max_tile(self, tile):
         """
